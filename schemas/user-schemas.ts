@@ -55,4 +55,31 @@ export const UserSchema = z.object({
   role: z.string().optional(),
   profile: ProfileSchema.optional(),
   fullname: z.string(),
+  is_roled: z.boolean(),
+});
+
+// class Document(models.Model):
+//     #for organizers
+//     production_page = models.CharField(max_length=255, null=True, blank=True)
+
+//     doc_image1 = models.ImageField(upload_to="images/", null=True, blank=True)
+//     doc_image2 = models.ImageField(upload_to="images/", null=True, blank=True)
+//     doc_image3 = models.ImageField(upload_to="images/", null=True, blank=True)
+//     doc_image4 = models.ImageField(upload_to="images/", null=True, blank=True)
+//     doc_image5 = models.ImageField(upload_to="images/", null=True, blank=True)
+
+//     #for bar owners
+//     business_permit = models.ImageField(upload_to="images/",null=True, blank=True)
+
+//     #for individual // all
+//     government_id = models.ImageField(upload_to="images/", null=True, blank=True)
+//     government_id_type = models.CharField(max_length=255, null=True, blank=True)
+
+export const RolePickingSchema = z.object({
+  category: z.string(), //bar|organizer|regular
+  production_page: z.string().nullable(),
+  organizer_images: z.array(z.instanceof(File)).nullable().optional(),
+  business_permit: z.instanceof(File).nullable().optional(),
+  government_id: z.instanceof(File),
+  government_id_type: z.string(),
 });

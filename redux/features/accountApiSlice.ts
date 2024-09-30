@@ -21,8 +21,19 @@ const AccountApiSlice = apiSlice.injectEndpoints({
         body: profileData,
       }),
     }),
+    rolePick: builder.mutation({
+      query: (data) => ({
+        url: "/role-pick",
+        method: "PATCH",
+        body: data,
+      }),
+    }),
   }),
 });
 
-export const { useFetchMyProfileQuery, useFetchProfileByIdQuery, useProfileSetupMutation } =
-  AccountApiSlice;
+export const {
+  useFetchMyProfileQuery,
+  useFetchProfileByIdQuery,
+  useProfileSetupMutation,
+  useRolePickMutation,
+} = AccountApiSlice;

@@ -69,6 +69,9 @@ const artistApiSlice = apiSlice.injectEndpoints({
     fetchArtistRates: builder.query<z.infer<typeof RateSchema>[], string>({
       query: (artistId) => `/artists/${artistId}/rates`,
     }),
+    hasArtistApplication : builder.query<any, void>({
+        query: () => '/artists/applications?check=True'
+    })
   }),
 });
 
@@ -84,4 +87,5 @@ export const {
   useCreateNewPortfolioMutation,
   useFetchPortfolioQuery,
   useFetchArtistRatesQuery,
+  useHasArtistApplicationQuery
 } = artistApiSlice;

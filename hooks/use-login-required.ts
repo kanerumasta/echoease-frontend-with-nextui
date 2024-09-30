@@ -2,23 +2,29 @@
 
 import { useFetchCurrentUserQuery } from "@/redux/features/authApiSlice";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 export default function useLoginRequired(redirect: string) {
   const router = useRouter();
 
+  const [loginChecked, setLoginChecked] = useState(false);
+
   const {
     data: user,
-    isLoading: isUserLoading,
-    isError: isUserError,
+    isLoading,
+    isError,
     isFetching,
   } = useFetchCurrentUserQuery();
 
   useEffect(() => {
-    if (isUserError) {
-      window.location.href = `/auth/login/?redirect=${encodeURIComponent(`${redirect}`)}`;
+    if (!isLoading) {
+      if (isError || !user) {
+        window.location.href = `/auth/login/?redirect=${encodeURIComponent(`${redirect}`)}`;
+      } else {
+        setLoginChecked(true);
+      }
     }
-  }, [isUserError, router]);
+  }, [isError, router, isLoading, redirect]);
 
-  return { isUserLoading };
+  return { loginChecked, isError };
 }

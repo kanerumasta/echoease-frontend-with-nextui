@@ -1,27 +1,14 @@
 export type SiteConfig = typeof siteConfig;
 
 export const siteConfig = {
-  name: "Next.js + NextUI",
-  description: "Make beautiful websites regardless of your design experience.",
+  name: "Echoease",
+  description: "Book singers with ease",
   navItems: [
     {
-      label: "Home",
-      href: "/",
-    },
-    {
       label: "Echoees",
-      href: "/search/echoees",
-      sub: [
-        {
-          label: "Find Echoees",
-          href: "/search/echoees",
-        },
-      ],
+      href: "/echoees",
     },
-    {
-      label: "Pricing",
-      href: "/pricing",
-    },
+
     {
       label: "Bookings",
       href: "/bookings",
@@ -39,18 +26,6 @@ export const siteConfig = {
     {
       label: "Dashboard",
       href: "/dashboard",
-    },
-    {
-      label: "Projects",
-      href: "/projects",
-    },
-    {
-      label: "Team",
-      href: "/team",
-    },
-    {
-      label: "Calendar",
-      href: "/calendar",
     },
     {
       label: "Settings",

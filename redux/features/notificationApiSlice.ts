@@ -22,6 +22,12 @@ const notificationSlice = apiSlice.injectEndpoints({
     >({
       query: () => "/notifications?new=True",
     }),
+    countNewNotifications: builder.query<{ notifications_count: number }, void>(
+      {
+        query: () => "/notifications?new=True&&count=True",
+      }
+    ),
+
     fetchOldNotifications: builder.query<
       z.infer<typeof NotificationInSchema>[],
       number
@@ -46,6 +52,7 @@ const notificationSlice = apiSlice.injectEndpoints({
 
 export const {
   useFetchNewNotificationsQuery,
+  useCountNewNotificationsQuery,
   useFetchOldNotificationsQuery,
   useReadNotificationMutation,
   useDeleteNotificationMutation,

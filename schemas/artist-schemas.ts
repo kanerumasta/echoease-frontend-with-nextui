@@ -18,8 +18,12 @@ export const AcceptedIDsSchema = z.object({
 
 export const ArtistApplicationSchema = z.object({
   idType: z.string(),
+
+  //idtypeinstring is just a helper to set the id type in string to be used by the picker.
+  idTypeInString: z.string().nullable().optional(),
+
   frontId: z.instanceof(File),
-  backId: z.instanceof(File).optional(),
+  backId: z.instanceof(File),
   sampleVideos: z
     .array(z.instanceof(File), {
       required_error: "At least 2 videos are required.",
@@ -43,7 +47,7 @@ export const ArtistApplicationSchema = z.object({
       name: z.string(),
       amount: z.string(),
     })
-  ),
+  ).min(1, 'You must add at least one artist rate.'),
 });
 
 export const ArtistInSchema = z.object({

@@ -22,10 +22,12 @@ import {
   SearchIcon,
   TwitterIcon,
 } from "@/components/icons";
-import { ThemeSwitch } from "@/components/theme-switch";
 import { siteConfig } from "@/config/site";
 import { useLogout } from "@/hooks/auth";
 import { useFetchCurrentUserQuery } from "@/redux/features/authApiSlice";
+import { useCountNewNotificationsQuery } from "@/redux/features/notificationApiSlice";
+import { useIsCurrentUserAnArtist } from "@/utils/check-is-artist";
+import { Badge } from "@nextui-org/badge";
 import {
   Dropdown,
   DropdownItem,
@@ -41,18 +43,18 @@ import {
   ModalHeader,
   useDisclosure,
 } from "@nextui-org/modal";
-import { Tooltip } from "@nextui-org/tooltip";
 import { User } from "@nextui-org/user";
 import { useRouter } from "next/navigation";
 import { Fragment } from "react";
-import { IoChevronDown, IoNotifications } from "react-icons/io5";
-import { useIsCurrentUserAnArtist } from "@/utils/check-is-artist";
+import { IoNotifications } from "react-icons/io5";
 
 export const Navbar = () => {
   const { data: user, isLoading, isError } = useFetchCurrentUserQuery();
   const { isOpen, onClose, onOpen } = useDisclosure();
   const { logout } = useLogout();
   const router = useRouter();
+  const { data: notifData } = useCountNewNotificationsQuery();
+
   const { isArtist, isLoading: checkUserAnArtistLoading } =
     useIsCurrentUserAnArtist();
 
@@ -94,34 +96,9 @@ export const Navbar = () => {
         <ul className="hidden lg:flex gap-4 justify-start ml-2">
           {siteConfig.navItems.map((item) => (
             <NavbarItem key={item.href}>
-              {item.sub ? (
-                <Tooltip
-                  radius="none"
-                  placement="bottom-start"
-                  content={
-                    <div className="">
-                      {item.sub.map((s) => (
-                        <Link
-                          key={s.label}
-                          className="text-black/60 dark:text-white"
-                          href={s.href}
-                        >
-                          {s.label}
-                        </Link>
-                      ))}
-                    </div>
-                  }
-                >
-                  <p className="text-white flex items-center gap-1">
-                    {item.label}
-                    <IoChevronDown />
-                  </p>
-                </Tooltip>
-              ) : (
-                <Link className="text-white" href={item.href}>
-                  {item.label}
-                </Link>
-              )}
+              <Link className="text-white" href={item.href}>
+                {item.label}
+              </Link>
             </NavbarItem>
           ))}
         </ul>
@@ -131,6 +108,16 @@ export const Navbar = () => {
         className="hidden sm:flex basis-1/5 sm:basis-full"
         justify="end"
       >
+        {
+            !(user?.role === 'artist') && (
+                <NavbarItem>
+                <Link className="text-white" href={"/become-an-echoee"}>
+                  Become an echoee
+                </Link>
+              </NavbarItem>
+            )
+        }
+
         <NavbarItem className="hidden sm:flex gap-2">
           <Link isExternal aria-label="Twitter" href={siteConfig.links.twitter}>
             <TwitterIcon className="text-default-500" />
@@ -143,7 +130,7 @@ export const Navbar = () => {
           </Link>
           {/* <ThemeSwitch /> */}
         </NavbarItem>
-        <NavbarItem className="hidden lg:flex">{searchInput}</NavbarItem>
+        {/* <NavbarItem className="hidden lg:flex">{searchInput}</NavbarItem> */}
 
         {!user && (
           <Fragment>
@@ -167,23 +154,26 @@ export const Navbar = () => {
         )}
         {user && (
           <NavbarItem>
-            <IoNotifications
-              className="hover:cursor-pointer"
-              onClick={() => router.push("/notifications")}
-              color="white"
-              size={24}
-            />
+            {notifData?.notifications_count && notifData.notifications_count > 0 ?
+            <Badge color="danger" content={notifData.notifications_count}>
+              <IoNotifications
+                className="hover:cursor-pointer"
+                onClick={() => router.push("/notifications")}
+                color="white"
+                size={24}
+              />
+            </Badge> :  <IoNotifications
+                className="hover:cursor-pointer"
+                onClick={() => router.push("/notifications")}
+                color="white"
+                size={24}
+              />
+}
           </NavbarItem>
         )}
 
         <NavbarItem className="hidden md:flex">
           {user && (
-            // <Avatar
-            //   isBordered
-            //   color="primary"
-            //   fallback={}
-            //   src={}
-            // />
             <Dropdown>
               <DropdownTrigger>
                 <User
@@ -242,7 +232,7 @@ export const Navbar = () => {
       </NavbarContent>
 
       <NavbarMenu>
-        {searchInput}
+        {/* {searchInput} */}
         <div className="mx-4 mt-2 flex flex-col gap-2">
           {siteConfig.navMenuItems.map((item, index) => (
             <NavbarMenuItem key={`${item}-${index}`}>

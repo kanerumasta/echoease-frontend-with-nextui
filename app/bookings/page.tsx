@@ -1,5 +1,6 @@
 "use client";
 
+import EchoLoading from "@/components/echo-loading";
 import useLoginRequired from "@/hooks/use-login-required";
 import { useFetchCurrentUserQuery } from "@/redux/features/authApiSlice";
 import { useFetchMyBookingsQuery } from "@/redux/features/bookingApiSlice";
@@ -24,10 +25,9 @@ export default function BookingPage() {
   } = useFetchMyBookingsQuery();
   const { data: currentUser, isLoading: isCurrentUserLoading } =
     useFetchCurrentUserQuery();
-  console.log(bookings);
   useLoginRequired("/bookings");
   if (isCurrentUserLoading || isBookingsLoading) {
-    return <Spinner />;
+    return <EchoLoading />
   }
   return (
     <div>
@@ -42,7 +42,7 @@ export default function BookingPage() {
             <TableColumn>TIME</TableColumn>
             <TableColumn>ACTIONS</TableColumn>
           </TableHeader>
-          <TableBody items={bookings ? bookings : []}>
+          <TableBody emptyContent={<div className="space-y-4"><p>You don't have bookings yet</p><Button onClick={()=>router.push('/echoees')} color="primary" size="lg" radius="sm">Find Echoees</Button></div>} items={bookings ? bookings : []}>
             {(item) => (
               <TableRow key={item.id}>
                 <TableCell>

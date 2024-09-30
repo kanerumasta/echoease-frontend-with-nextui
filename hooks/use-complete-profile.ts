@@ -2,7 +2,7 @@
 
 import { useFetchCurrentUserQuery } from "@/redux/features/authApiSlice";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import useLoginRequired from "./use-login-required";
 
 export default function useCompleteProfile(redirect: string) {
@@ -11,14 +11,27 @@ export default function useCompleteProfile(redirect: string) {
     isLoading: currentUserLoading,
     isError: currentUserError,
   } = useFetchCurrentUserQuery();
-  useLoginRequired(redirect);
+  //be true when done checking login and if profile is complete
+  const [profileChecked, setProfileChecked] = useState(false)
+
+
+  const {loginChecked, isError} =useLoginRequired(redirect);
   const router = useRouter();
 
   useEffect(() => {
-    if (currentUser)
-      if (!currentUser?.profile?.is_complete)
+    if (currentUser && loginChecked){
+      if (!currentUser?.profile?.is_complete){
         router.push(
           `/auth/register/profile?redirect=${encodeURIComponent(redirect)}`
         );
-  }, [currentUser]);
+    }else{
+        setProfileChecked(true)
+    }
+    }
+  }, [currentUser,loginChecked]);
+
+  return {
+    profileChecked,
+    isError,
+  }
 }

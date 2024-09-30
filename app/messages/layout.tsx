@@ -13,6 +13,7 @@ import { useFetchCurrentUserQuery } from "@/redux/features/authApiSlice";
 import { redirect, useRouter } from "next/navigation";
 import MainLayout from "@/components/main-layout";
 import useLoginRequired from "@/hooks/use-login-required";
+import EchoLoading from "@/components/echo-loading";
 
 const ConversationCount = () => {
   return (
@@ -83,13 +84,16 @@ export default function MessagesLayout({
   const { data: currentUser, isLoading: iscurrentUserLoading } =
     useFetchCurrentUserQuery();
 
+if(isConversationsLoading){
+    return <EchoLoading />
+}
+
   return (
     <MainLayout>
       <div className="flex">
         <div className="min-w-[300px]">
           <h1 className="text-2xl font-semibold">Messages</h1>
           {/* SEARCH */}
-
           <Spacer y={6} />
           <SearchInput />
           <Spacer y={4} />
