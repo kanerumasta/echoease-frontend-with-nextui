@@ -11,17 +11,7 @@ export default function EchoverseLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const { loginChecked } = useLoginRequired("/echoverse");
-  const { isArtist, isLoading, isError } = useIsArtistOnly();
 
-  //login and isartist checking
-  if (!loginChecked || isLoading) {
-    return <div>Loading...</div>;
-  }
-
-  if (!isLoading && !isArtist) {
-    return notFound();
-  }
   return <MainLayout>
     <div className="flex">
     <Sidebar />
@@ -33,13 +23,11 @@ export default function EchoverseLayout({
 
 
 const Sidebar = () => {
-    return <div className="w-[100px]  h-full rounded-xl">
-        <ul className="">
-            <li className="p-4 bg-white/10 rounded-md">About</li>
-            <li className="p-4 bg-white/10 rounded-md">About</li>
-            <li className="p-4 bg-white/10 rounded-md">About</li>
-            <li className="p-4 bg-white/10 rounded-md">About</li>
-            <li className="p-4 bg-white/10 rounded-md">About</li>
+    return <div className="  h-full rounded-xl">
+        <ul className="bg-blue-500 rounded-md">
+            <li className="p-4 border-2 border-red-300"><a href="/echoverse/about">About</a></li>
+            <li className="p-4 border-2 border-red-300"><a href="/echoverse/portfolio">Portfolio</a></li>
+            <li className="p-4 border-2 border-red-300"><a href="/bookings">Bookings</a></li>
 
         </ul>
     </div>
