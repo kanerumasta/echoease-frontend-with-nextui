@@ -1,9 +1,12 @@
 "use client";
 
+import useIsArtistOnly from "@/hooks/use-is-artist-only";
+import useLoginRequired from "@/hooks/use-login-required";
 import { useFetchDetailCurrentArtistQuery } from "@/redux/features/artistApiSlice";
 import { Image } from "@nextui-org/image";
 import { Input } from "@nextui-org/input";
 import { Spinner } from "@nextui-org/spinner";
+import { notFound } from "next/navigation";
 
 export default function AboutPage() {
   const {
@@ -11,7 +14,17 @@ export default function AboutPage() {
     isLoading: isCurrentArtistLoading,
     isError: isCurrentArtistError,
   } = useFetchDetailCurrentArtistQuery();
+  const { loginChecked } = useLoginRequired("/echoverse");
+  const { isArtist, isLoading: artistLoading } = useIsArtistOnly();
 
+  // login and isArtist checking
+  if (!loginChecked || artistLoading) {
+      return <div>Loading...</div>;
+  }
+
+  if (!artistLoading && !isArtist) {
+      return notFound();
+  }
   if (isCurrentArtistLoading) return <Spinner size="lg" />;
   console.log(currentArtist);
   return (

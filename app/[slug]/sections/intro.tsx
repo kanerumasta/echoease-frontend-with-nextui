@@ -38,7 +38,7 @@ export const IntroductionSection = ({
         <p className={cn(interBold.className, "text-7xl capitalize font-bold")}>
           {artist.user.fullname}
         </p>
-        <p>A passionate singer </p>
+        <p>{artist.bio} </p>
       </div>
     </div>
   );

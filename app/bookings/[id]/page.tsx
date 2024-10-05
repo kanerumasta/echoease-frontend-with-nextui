@@ -21,14 +21,10 @@ import { Fragment, useEffect, useRef } from "react";
 import { DisputeReasonOptions } from "./utils";
 import { useCreateClientDispute } from "@/hooks/disputes";
 import { toast } from "react-toastify";
-import useCreateOrder from "@/hooks/payment/use-create-order";
-import { useCreatePaymongoPaymentLinkMutation } from "@/redux/features/paymentApiSlice";
-
 export default function BookingDetailPage() {
   const params = useParams<{ id: string }>();
   const { isOpen, onClose, onOpen, onOpenChange } = useDisclosure();
-  const [createPaymongoLink, { isLoading, isError, data }] =
-    useCreatePaymongoPaymentLinkMutation();
+
   const {
     form,
     onSubmit,
@@ -59,27 +55,7 @@ export default function BookingDetailPage() {
       />
     );
   }
-  const handlePayButtonPress = () => {
-    const formData = new FormData();
-    bookingDetail && formData.append("booking_id", bookingDetail.id.toString());
-    formData.append("amount", "200");
-    bookingDetail &&
-      formData.append(
-        "cancel_url",
-        `localhost:3000/bookings/${bookingDetail.id}`
-      );
 
-    const payload = {
-      amount: "200",
-    };
-
-    createPaymongoLink(payload);
-  };
-  useEffect(() => {
-    if (data) {
-      window.location.href = data.checkout_link;
-    }
-  }, [data]);
 
   const handleSubmitButtonPress = () => {
     if (disputeFormRef.current) {
@@ -99,7 +75,7 @@ export default function BookingDetailPage() {
             <div>
               {!bookingDetail.is_completed && (
                 <Button
-                  onClick={handlePayButtonPress}
+                //   onClick={handlePayButtonPress}
                   color="primary"
                   size="lg"
                   radius="sm"

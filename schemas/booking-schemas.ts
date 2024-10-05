@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { ArtistInSchema } from "./artist-schemas";
+import { ArtistInSchema, RateSchema } from "./artist-schemas";
 import { UserSchema } from "./user-schemas";
 
 export const BookingSchema = z.object({
@@ -33,4 +33,5 @@ export const BookInSchema = z.object({
   status: z.string(),
   artist: ArtistInSchema,
   client: UserSchema,
+  rate:RateSchema
 });

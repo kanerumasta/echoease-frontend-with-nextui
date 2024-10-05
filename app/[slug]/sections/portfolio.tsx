@@ -12,8 +12,6 @@ export const PortfolioSection = ({
 }) => {
   const { data } = useFetchPortfolioQuery(artist.id.toString());
 
-  console.log(data);
-
   return (
     <div className="flex flex-col min-h-screen lg:flex-row md:px-20 gap-4">
       {data?.items.map((item) => {

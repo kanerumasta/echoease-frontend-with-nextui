@@ -2,7 +2,10 @@
 
 import CustomImage from "@/components/image";
 import {
+    useConnectArtistMutation,
+  useFetchConnectionRequestsQuery,
   useFetchDetailArtistBySlugQuery,
+  useFetchDetailCurrentArtistQuery,
   useFollowArtistMutation,
   useUnfollowArtistMutation,
 } from "@/redux/features/artistApiSlice";
@@ -11,7 +14,7 @@ import {
   useFetchChatBySlugQuery,
   useFetchChatsQuery,
 } from "@/redux/features/chatApiSlice";
-import { ArtistInSchema } from "@/schemas/artist-schemas";
+import { ArtistInSchema, ConnectionRequestSchema } from "@/schemas/artist-schemas";
 import { Button } from "@nextui-org/button";
 import { Chip } from "@nextui-org/chip";
 import { Spacer } from "@nextui-org/spacer";
@@ -27,6 +30,9 @@ import { z } from "zod";
 import { Links } from "../components/links";
 import { useInView } from "react-intersection-observer";
 import { useSpring, animated } from "@react-spring/web";
+import { UserRoles } from "@/config/constants";
+import { useEffect } from "react";
+import { toast } from "react-toastify";
 
 export default function AboutSection({
   artist,
@@ -35,13 +41,16 @@ export default function AboutSection({
 }) {
   const params = useParams<{ slug: string }>();
   const { refetch } = useFetchDetailArtistBySlugQuery(params.slug);
+  const {data:connectionRequests, refetch:refetchConnectionRequests}  = useFetchConnectionRequestsQuery()
+
   const { refetch: refetchChats } = useFetchChatsQuery();
   const { data: currentUser, isLoading } = useFetchCurrentUserQuery();
   const {
     data: conversation,
-    isLoading: conversationLoading,
-    isError: isConversationLoading,
   } = useFetchChatBySlugQuery(params.slug);
+  const {data:currentUserArtist} = useFetchDetailCurrentArtistQuery()
+
+  const [connectArtist, {isLoading:connectingArtist, isError:errorConnectingArtist, isSuccess:successConnectingArtist}] = useConnectArtistMutation()
 
   const [followArtist, { isLoading: followLoading, isError: followError }] =
     useFollowArtistMutation();
@@ -78,10 +87,39 @@ export default function AboutSection({
       .catch();
   };
 
+  const handleSendArtistConnection =()=>{
+    const sender = currentUserArtist?.id
+    const receiver = artist.id
+
+    const payload = {
+        "sender":sender,
+        "receiver":receiver
+    }
+    connectArtist(payload)
+  }
+
   const handleMessageMeClick = () => {
     refetchChats();
     router.push(`/messages/${conversation?.code}`);
   };
+
+  const artistInRequest = (connectionRequests:z.infer<typeof ConnectionRequestSchema>[],artistId:number):boolean => {
+    return connectionRequests.some(req => req.receiver.id === artistId);
+  }
+  const artistInConnections = () => {
+    return currentUserArtist?.connections.includes(artist.id) || false
+  }
+
+  useEffect(()=>{
+    if(successConnectingArtist){
+        toast.success("Connection request sent.")
+        refetchConnectionRequests()
+    }
+    if(errorConnectingArtist){
+        toast.error("Connection request failed. Please try again.")
+    }
+  },[successConnectingArtist, errorConnectingArtist])
+
   return (
     <div className="flex gap-4 duration-1000 animate-appearance-in min-h-screen w-full">
       {/* Image Profile */}
@@ -105,7 +143,7 @@ export default function AboutSection({
           <Spacer y={4} />
 
           <div className="flex items-center gap-2">
-            {currentUser && !artist.followers.includes(currentUser.id) && (
+            {currentUser && !artist.followers.includes(currentUser.id)&& currentUser.role !== UserRoles.artist   && (
               <Button
                 startContent={<RiUserFollowFill size={24} />}
                 isLoading={followLoading}
@@ -116,7 +154,7 @@ export default function AboutSection({
                 Follow
               </Button>
             )}
-            {currentUser && artist.followers.includes(currentUser.id) && (
+            {currentUser && artist.followers.includes(currentUser.id)&& currentUser.role !== UserRoles.artist  && (
               <Button
                 startContent={<SlUserFollowing size={24} />}
                 onPress={handleUnfollow}
@@ -126,6 +164,7 @@ export default function AboutSection({
                 Following
               </Button>
             )}
+            {currentUser && currentUser.role !== UserRoles.artist &&
             <Button
               startContent={<HiChat size={24} />}
               onClick={handleMessageMeClick}
@@ -134,6 +173,16 @@ export default function AboutSection({
             >
               Message Me
             </Button>
+}
+            {currentUser && currentUser.role === UserRoles.artist && artist.user.id !== currentUser.id && connectionRequests && !artistInRequest(connectionRequests, artist.id) && !artistInConnections() &&
+            <Button onPress={handleSendArtistConnection}  isLoading={connectingArtist} isDisabled={connectingArtist} color="warning">
+                Send Connection Request
+            </Button>
+}
+            {connectionRequests && artistInRequest(connectionRequests, artist.id) && <Button isDisabled>Request Sent</Button>}
+
+            {currentUserArtist && artistInConnections() && <Button isDisabled>Connected</Button>}
+
           </div>
           <Spacer y={4} />
           <p className="text-sm mb-1 dark:text-white/30">Personal Details</p>

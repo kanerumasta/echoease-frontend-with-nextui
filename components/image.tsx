@@ -11,7 +11,7 @@ export default function CustomImage({ width, height, src }: CustomImageProps) {
   };
 
   return (
-    <div style={style}>
+    <div style={style} className="overflow-hidden rounded-md">
       <img className="w-full h-full object-cover" src={src} />
     </div>
   );

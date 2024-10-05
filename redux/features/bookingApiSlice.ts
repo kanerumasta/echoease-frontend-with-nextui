@@ -33,19 +33,37 @@ const DetailBookingInSchema = z.object({
 
 const bookingApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
+    fetchMyBookings: builder.query<z.infer<typeof BookInSchema>[], void>({
+        query: () => "/bookings",
+        providesTags:['Bookings'],
+      }),
+    fetchPendingBookings: builder.query<z.infer<typeof BookInSchema>[], void>({
+        query: () => "/bookings?status=pending",
+        providesTags:['PendingBookings'],
+      }),
     createNewBooking: builder.mutation<z.infer<typeof DetailBookingInSchema>, any>({
       query: (data) => ({
         method: "POST",
         url: "/bookings/",
         body: data,
+
       }),
+      invalidatesTags:['Bookings','PendingBookings']
     }),
-    fetchMyBookings: builder.query<z.infer<typeof BookInSchema>[], void>({
-      query: () => "/bookings",
-    }),
+
     fetchBookingDetail: builder.query<z.infer<typeof BookInSchema>, string>({
       query: (id) => `/bookings/${id}`,
     }),
+    fetchApprovedBookings:builder.query<z.infer<typeof BookInSchema>[], void>({
+        query:() => '/bookings?status=approved'
+    }),
+    confirmBooking:builder.mutation<any,string>({
+        query:(id)=>({
+            method:'PATCH',
+            url:`/bookings/${id}/confirm`
+        }),
+        invalidatesTags:['PendingBookings','Bookings']
+    })
   }),
 });
 
@@ -53,4 +71,7 @@ export const {
   useCreateNewBookingMutation,
   useFetchMyBookingsQuery,
   useFetchBookingDetailQuery,
+  useFetchPendingBookingsQuery,
+  useFetchApprovedBookingsQuery,
+  useConfirmBookingMutation,
 } = bookingApiSlice;

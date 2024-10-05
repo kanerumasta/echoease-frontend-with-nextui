@@ -3,8 +3,10 @@ import { apiSlice } from "../services/apiSlice";
 import {
   AcceptedIDsSchema,
   ArtistInSchema,
+  ConnectionRequestSchema,
   GenreSchema,
   InPortfolioSchema,
+  MyConnectionsSchema,
   RateSchema,
 } from "@/schemas/artist-schemas";
 
@@ -28,7 +30,7 @@ const artistApiSlice = apiSlice.injectEndpoints({
       z.infer<typeof ArtistInSchema>,
       void
     >({
-      query: () => "/artists/?current=True",
+      query: () => "/artists?current=True",
     }),
     fetchDetailArtistBySlug: builder.query<
       z.infer<typeof ArtistInSchema>,
@@ -71,21 +73,51 @@ const artistApiSlice = apiSlice.injectEndpoints({
     }),
     hasArtistApplication : builder.query<any, void>({
         query: () => '/artists/applications?check=True'
+    }),
+    connectArtist: builder.mutation<any,any>({
+        query: (data) => ({
+            method: 'POST',
+            url: '/artists/connection-requests',
+            body: data
+        })
+    }),
+    fetchConnectionRequests : builder.query<z.infer<typeof ConnectionRequestSchema>[],void>({
+        query:()=>'/artists/connection-requests'
+    }),
+    fetchMyConnections :builder.query<z.infer<typeof MyConnectionsSchema>,void>({
+        query:()=>'/artists/connections'
+    }),
+    fetchReceivedConnectionRequests:builder.query<z.infer<typeof ConnectionRequestSchema>[], void>({
+        query:()=>'/artists/connection-requests/received'
+    }),
+    fetchSentConnectionRequests:builder.query<z.infer<typeof ArtistInSchema>[], void>({
+        query:()=>'/artists/connection-requests/received'
+    }),
+    fetchArtistUnavailableDates:builder.query<string[],string>({
+        query:(artistId)=>`/artists/${artistId}/unavailable-dates`
     })
   }),
 });
 
 export const {
+    useFetchListArtistsQuery,
+    useFetchDetailArtistBySlugQuery,
+    useFetchGenresQuery,
+    useFetchPortfolioQuery,
+    useFetchArtistRatesQuery,
+    useFetchDetailCurrentArtistQuery,
+    useFetchAcceptedIdsQuery,
+    useFetchConnectionRequestsQuery,
+    useFetchMyConnectionsQuery,
+    useFetchReceivedConnectionRequestsQuery,
+    useFetchSentConnectionRequestsQuery,
+    useFetchArtistUnavailableDatesQuery,
+
+
   useCreateArtistApplicationMutation,
-  useFetchListArtistsQuery,
-  useFetchDetailArtistBySlugQuery,
-  useFetchGenresQuery,
-  useFetchDetailCurrentArtistQuery,
-  useFetchAcceptedIdsQuery,
   useFollowArtistMutation,
   useUnfollowArtistMutation,
   useCreateNewPortfolioMutation,
-  useFetchPortfolioQuery,
-  useFetchArtistRatesQuery,
-  useHasArtistApplicationQuery
+  useHasArtistApplicationQuery,
+  useConnectArtistMutation,
 } = artistApiSlice;

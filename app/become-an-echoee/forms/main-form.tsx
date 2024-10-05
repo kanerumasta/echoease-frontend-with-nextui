@@ -77,7 +77,7 @@ export default function MainForm() {
         const payload = {
           artist_application: artistApplication.id,
           name: r.name,
-          amount: r.amount,
+          amount: r.amount
         };
         await fetch(`${process.env.NEXT_PUBLIC_HOST}/api/artists/rates`, {
           method: "POST",

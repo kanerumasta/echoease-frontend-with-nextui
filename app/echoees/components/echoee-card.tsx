@@ -14,7 +14,7 @@ export default function EchoeeCard({
 }) {
   const router = useRouter();
   return (
-    <AnimatedSide className="max-w-[250px] min-w-[250px] min-h-[300px] p-2 bg-white/75 rounded-md">
+    <AnimatedSide className="max-w-[250px] min-w-[250px] min-h-[300px] p-2 bg-gradient-to-br from-blue-500/60 to-purple-400/60 rounded-md">
       <CustomImage
         width="100%"
         height="220px"

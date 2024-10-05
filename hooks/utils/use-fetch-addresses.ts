@@ -5,19 +5,19 @@ const provinceSchema = z.object({
     code: z.string(),
     name: z.string(),
   });
-  
+
   const cityMunicipalitySchema = z.object({
     code: z.string(),
     name: z.string(),
   });
-  
+
   const barangaySchema = z.object({
     code: z.string(),
     name: z.string(),
   });
 
 export default function useFetchAddresses(){
-    
+
 
     const [provinces, setProvinces] = useState<z.infer<typeof provinceSchema>[] | []>([])
     const [municipalities, setMunicipalities] = useState<
@@ -26,15 +26,15 @@ export default function useFetchAddresses(){
     const [barangays, setBarangays] =
     useState<z.infer<typeof barangaySchema>[]>();
 
-    
+
     const [pronvinceLoading, setProvinceLoading] = useState(false)
     const [municipalityLoading, setMunicipalityLoading] = useState(false);
     const [brgyLoading, setBrgyLoading] = useState(false);
 
-  
+
     const fetchProvinces = async () => {
         setProvinceLoading(true);
-  
+
         const provinces = await fetch("https://psgc.gitlab.io/api/provinces");
         provinces
           .json()
@@ -60,24 +60,22 @@ export default function useFetchAddresses(){
         municipalities
           .json()
           .then((res) => {
-            console.log(res);
             const validatedResult = z.array(cityMunicipalitySchema).safeParse(res);
-            console.log(validatedResult.data);
             if (validatedResult.success) {
               const sortedMunicipalities = validatedResult.data.sort((a, b) =>
                 a.name.localeCompare(b.name)
               );
-    
+
               setMunicipalities(sortedMunicipalities);
-              console.log(sortedMunicipalities);
+
             } else {
-              console.log("not success");
+
             }
           })
           .catch((err) => console.log(err))
           .finally(() => setMunicipalityLoading(false));
       };
-    
+
       const fetchBarangays = async (municipalityCode: string) => {
         setBrgyLoading(true);
         const barangays = await fetch(
@@ -87,7 +85,7 @@ export default function useFetchAddresses(){
           .json()
           .then((res) => {
             const validatedResult = z.array(barangaySchema).safeParse(res);
-    
+
             if (validatedResult.success) {
               const sortedBarangays = validatedResult.data.sort((a, b) =>
                 a.name.localeCompare(b.name)

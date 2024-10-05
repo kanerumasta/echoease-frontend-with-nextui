@@ -21,6 +21,8 @@ const notificationSlice = apiSlice.injectEndpoints({
       void
     >({
       query: () => "/notifications?new=True",
+      providesTags:['newNotifications']
+
     }),
     countNewNotifications: builder.query<{ notifications_count: number }, void>(
       {
@@ -33,6 +35,7 @@ const notificationSlice = apiSlice.injectEndpoints({
       number
     >({
       query: (page) => `/notifications?old=True&page=${page}`,
+      providesTags:['oldNotifications']
     }),
     readNotification: builder.mutation<any, string>({
       query: (id) => ({
@@ -40,12 +43,14 @@ const notificationSlice = apiSlice.injectEndpoints({
 
         url: `/notifications/${id}/read`,
       }),
+      invalidatesTags:['oldNotifications','newNotifications']
     }),
     deleteNotification: builder.mutation<any, number>({
       query: (id) => ({
         method: "DELETE",
         url: `/notifications/${id}/delete`,
       }),
+      invalidatesTags:['oldNotifications','newNotifications']
     }),
   }),
 });

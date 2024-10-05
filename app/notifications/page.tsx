@@ -19,57 +19,38 @@ export default function NotificationPage() {
 
   const [page, setPage] = useState(1);
 
-  const [oldNotificationsCache, setOldNotificationsCache] = useState<
-    z.infer<typeof NotificationInSchema>[] | []
-  >([]);
+
 
   const {
-    data,
+    data:oldNotifications,
     isLoading,
     isError,
     isFetching,
-    refetch: refetchOld,
+
   } = useFetchOldNotificationsQuery(page);
 
-  useEffect(() => {
-    if (data && !isFetching) {
-      setOldNotificationsCache((prev) => {
-        const existingIds = new Set(prev.map((notif) => notif.id));
-        const newNotifications = data.filter(
-          (notif) => !existingIds.has(notif.id)
-        );
-        return [...prev, ...newNotifications];
-      });
-    }
-  }, [data, isFetching, refetchOld]);
 
-  const handleOnDelete = () => {
-    refetchNew();
-    refetchOld();
-  };
 
   return (
     <div className="w-full md:w-[70%] lg:w-[50%] mx-auto">
       <h1 className={title()}>Notifications</h1>
       <Spacer y={8} />
-
-      {newNotifications && newNotifications?.length > 0 && (
+      <h1 className="capitalize font-semibold text-2xl">Unread</h1>
+      {newNotifications && (
         <NotificationList
-          onDelete={handleOnDelete}
-          title="unread"
+
           isNew
           notifications={newNotifications}
         />
       )}
-
-      {oldNotificationsCache && oldNotificationsCache?.length > 0 && (
+      <Spacer y={8}/>
+    <h1 className="capitalize font-semibold text-2xl">Recent</h1>
+{oldNotifications &&
         <NotificationList
-          onDelete={handleOnDelete}
-          title="recent"
           isNew={false}
-          notifications={oldNotificationsCache}
+          notifications={oldNotifications}
         />
-      )}
+}
       {isFetching && <Spinner />}
       {/* sentinel  */}
 

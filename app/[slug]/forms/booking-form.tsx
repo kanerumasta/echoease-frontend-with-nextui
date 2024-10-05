@@ -15,6 +15,7 @@ import { z } from "zod";
 import { Step1 } from "./step1";
 import { Step2 } from "./step2";
 import { FinalBookingStep } from "./final-step";
+import { useFetchArtistUnavailableDatesQuery } from "@/redux/features/artistApiSlice";
 
 export const BookingForm = ({
   artist,
@@ -23,6 +24,7 @@ export const BookingForm = ({
 }) => {
   const [currentStep, setCurrentStep] = useState(0);
   const { form, bookingState, onSubmit } = useCreateBooking();
+  const {refetch:refetchUnavailableDates} = useFetchArtistUnavailableDatesQuery(artist.id.toString())
   const formRef = useRef<HTMLFormElement | null>(null);
 
   const steps = [
@@ -50,8 +52,7 @@ export const BookingForm = ({
     type FieldName = keyof z.infer<typeof BookingSchema>;
 
     const valid = await form.trigger(fields as FieldName[]);
-    console.log(valid);
-    console.log(fields);
+
     if (!valid) {
       return;
     }
@@ -64,6 +65,12 @@ export const BookingForm = ({
       formRef.current.requestSubmit();
     }
   };
+
+  useEffect(()=>{
+    if(bookingState.isSuccess){
+        refetchUnavailableDates()
+    }
+  },[bookingState.isSuccess])
 
   return (
     <ModalContent>

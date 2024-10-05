@@ -8,14 +8,12 @@ import NotificationCard from "./card";
 
 export default function Notifications({
   notifications,
-  title,
   isNew,
-  onDelete,
+
 }: {
   notifications: z.infer<typeof NotificationInSchema>[];
-  title: string;
   isNew: boolean;
-  onDelete: () => void;
+
 }) {
   const router = useRouter();
 
@@ -37,10 +35,9 @@ export default function Notifications({
 
   return (
     <div className="">
-      <h1 className="capitalize font-semibold text-2xl">{title}</h1>
-      {notifications.map((notif) => (
-        <NotificationCard onDelete={onDelete} notif={notif} isNew={isNew} />
-      ))}
+      {notifications.length > 0 ? notifications.map((notif) => (
+        <NotificationCard  notif={notif} isNew={isNew} />
+      )) : <div className="p-8 bg-white/5 rounded-md flex justify-center">Empty notifications</div>}
     </div>
   );
 }

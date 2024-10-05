@@ -71,6 +71,7 @@ export const ArtistInSchema = z.object({
   genres: z.array(z.object({ id: z.number(), name: z.string() })).nullable(),
   followers: z.array(z.number()),
   portfolio: z.number(),
+  connections : z.array(z.number())
 });
 
 export const CreatePortfolioItemSchema = z
@@ -125,41 +126,22 @@ export const RateSchema = z.object({
   artist_application: z.number(),
   artist: z.number(),
 });
-// {
-//   "amount": 5000,
-//   "name": "1-3 songs",
-//   "artist_application": 5,
-//   "artist": 3
-// }
-
-
-
 
 // {
-//   "id": 16,
-//   "genres": [
-//     1,
-//     2
-//   ],
-//   "bio": null,
-//   "sample_video1": null,
-//   "sample_video2": null,
-//   "sample_video3": null,
-//   "fb_link": "fb.com",
-//   "instagram": "instag.com",
-//   "twitter": "twitte.com",
-//   "created": "2024-09-23T09:35:07.730518Z",
-//   "updated": "2024-09-23T09:35:07.730518Z",
-//   "status": "under_review",
-//   "idol": "jordan",
-//   "years_experience": null,
-//   "spotify": null,
-//   "youtube": null,
-//   "award_image1": null,
-//   "award_image2": null,
-//   "award_image3": null,
-//   "front_id": null,
-//   "back_id": null,
-//   "user": 8,
-//   "id_type": null
-// }
+//     "id": 5,
+//     "timestamp": "2024-10-01T03:28:15.247875Z",
+//     "status": "pending",
+//     "sender": 8,
+//     "receiver": 7
+//   }
+export const ConnectionRequestSchema = z.object({
+id:z.number(),
+timestamp:z.string(),
+status : z.string(),
+sender : ArtistInSchema,
+receiver : ArtistInSchema
+})
+
+export const MyConnectionsSchema = z.object({
+    connections : z.array(ArtistInSchema)
+})

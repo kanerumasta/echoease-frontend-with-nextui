@@ -12,11 +12,11 @@ import { z } from "zod";
 export default function NotificationCard({
   notif,
   isNew,
-  onDelete,
+
 }: {
   notif: z.infer<typeof NotificationInSchema>;
   isNew: boolean;
-  onDelete: () => void;
+
 }) {
   const hoverRef = useRef<HTMLDivElement | null>(null);
   const [deleteMutation] = useDeleteNotificationMutation();
@@ -47,20 +47,16 @@ export default function NotificationCard({
       const response = await deleteMutation(id);
       if (response.data) {
         toast.success("Deleted successfully.");
-        onDelete();
+
       }
     }
   };
 
-  const handlePress = () => {
-    notif?.booking?.id &&
-      router.push(`/bookings/${notif.booking?.id.toString()}`);
-  };
 
   return (
     <div
       ref={hoverRef}
-      onClick={handlePress}
+
       key={notif.id}
       className="shadow-md flex items-center justify-between shadow-blue-200/10 my-2 hover:cursor-pointer text-white/75 rounded-md p-4 bg-white/10"
     >

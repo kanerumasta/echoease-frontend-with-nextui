@@ -12,11 +12,12 @@ import {
   ModalHeader,
   useDisclosure,
 } from "@nextui-org/modal";
-import {
+import React, {
   Dispatch,
   Fragment,
   Ref,
   SetStateAction,
+  useCallback,
   useEffect,
   useRef,
   useState,
@@ -36,6 +37,9 @@ import {
 import { z } from "zod";
 import { FaPlay } from "react-icons/fa";
 import { cn } from "@/lib/utils";
+import useLoginRequired from "@/hooks/use-login-required";
+import useIsArtistOnly from "@/hooks/use-is-artist-only";
+import { notFound } from "next/navigation";
 
 export default function PortfolioPage() {
   const { isOpen, onOpen, onClose, onOpenChange } = useDisclosure();
@@ -45,37 +49,33 @@ export default function PortfolioPage() {
     data: currentArtist,
     isLoading: isCurrentArtistLoading,
     isError: isCurrentArtistError,
-    refetch,
   } = useFetchDetailCurrentArtistQuery();
-
   const {
     data: portfolio,
-    isLoading: isPortfolioLoading,
-    isError: isPortfolioError,
     refetch: refetchPortfolio,
-  } = useFetchPortfolioQuery(currentArtist?.id?.toString() || "", {
-    skip: !currentArtist?.id,
-  });
+  } = useFetchPortfolioQuery(currentArtist?.id?.toString() || "");
 
   const formReference = useRef<HTMLFormElement | null>(null);
 
-  const reset = () => {
+  const reset = useCallback(() => {
     setIsUploadingPortfolio(false);
     setIsUploadSuccess(false);
     onClose();
-  };
+  },[]);
+
+
 
   useEffect(() => {
     if (isUploadSuccess) {
       toast.success("Portfolio added");
       reset();
     }
-  }, [isUploadSuccess, isUploadingPortfolio]);
+  }, [isUploadSuccess]);
   useEffect(() => {
     if (currentArtist?.id) {
       refetchPortfolio();
     }
-  }, [currentArtist]);
+  }, [currentArtist?.id, refetchPortfolio]);
   return (
     <Fragment>
       {portfolio && <PortfolioItems portfolio={portfolio} />}
@@ -135,7 +135,7 @@ export default function PortfolioPage() {
 // image4 = models.ImageField(upload_to="images/", null=True, blank=True)
 // image5 = models.ImageField(upload_to="images/", null=True, blank=True)
 
-const PortfolioItems = ({
+const PortfolioItems = React.memo(({
   portfolio,
 }: {
   portfolio: z.infer<typeof InPortfolioSchema>;
@@ -153,7 +153,7 @@ const PortfolioItems = ({
       })}
     </Fragment>
   );
-};
+});
 
 const Grid = ({ item }: { item: z.infer<typeof InPortfolioItemSchema> }) => {
   const maxVisible = 4; // Maximum number of media to display
@@ -192,7 +192,7 @@ const Grid = ({ item }: { item: z.infer<typeof InPortfolioItemSchema> }) => {
               alt="Portfolio Media"
             />
           )}
-          {mediaIndex === 3 && (
+          {mediaIndex === 3 && maxVisible < allMedia.length && (
             <div className="absolute bottom-0 right-0 bg-black bg-opacity-70 flex items-center justify-center text-3xl text-white w-full h-full rounded-md z-10">
               {`+${remainingCount}`}
             </div>

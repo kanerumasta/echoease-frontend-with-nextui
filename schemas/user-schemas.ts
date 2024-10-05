@@ -31,7 +31,7 @@ export const ProfileSchema = z.object({
   brgy: z.string({ required_error: "This field is required" }),
   street: z.string({ required_error: "This field is required" }),
   zipcode: z.string({ required_error: "This field is required" }),
-  profile_image: z.instanceof(File).nullable(),
+  profile_image: z.string(),
   nationality: z.string().nullable().optional(),
   language: z.string().nullable().optional(),
   fb_page: z.string().nullable().optional(),

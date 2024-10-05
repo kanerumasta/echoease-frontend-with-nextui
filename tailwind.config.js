@@ -9,6 +9,9 @@ module.exports = {
   ],
   theme: {
     extend: {
+        backgroundImage:{
+            'mic-background':"url('/media/micBG.jpeg')"
+        },
         animation: {
             'bounce': 'bounce 3s linear infinite',
             'wiggle': 'wiggle 1s ease-in-out infinite',
