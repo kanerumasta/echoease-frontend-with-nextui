@@ -11,6 +11,7 @@ export const PortfolioSection = ({
   artist: z.infer<typeof ArtistInSchema>;
 }) => {
   const { data } = useFetchPortfolioQuery(artist.id.toString());
+  console.log('data',data)
 
   return (
     <div className="flex flex-col min-h-screen lg:flex-row md:px-20 gap-4">

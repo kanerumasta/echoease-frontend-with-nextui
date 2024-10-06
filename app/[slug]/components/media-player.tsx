@@ -2,7 +2,7 @@ import { useSpring, animated } from "@react-spring/web";
 import { useEffect, useState } from "react";
 
 type Props = {
-  mediaUrls: string[];
+  mediaUrls: {field:string, url:string}[];
   onClose: () => void;
 };
 
@@ -33,17 +33,17 @@ const MediaPlayer = ({ mediaUrls, onClose }: Props) => {
       >
         {mediaUrls.length > 0 && (
           <div className="flex flex-col items-center">
-            {mediaUrls[currentMediaIndex].endsWith(".mp4") ? (
+            {mediaUrls[currentMediaIndex].url.endsWith(".mp4") ? (
               <video controls className="w-full h-[80vh]">
                 <source
-                  src={`${process.env.NEXT_PUBLIC_HOST}${mediaUrls[currentMediaIndex]}`}
+                  src={`${process.env.NEXT_PUBLIC_HOST}${mediaUrls[currentMediaIndex].url}`}
                 />
                 Your browser does not support the video tag.
               </video>
             ) : (
               <img
                 className="h-[80vh]"
-                src={`${process.env.NEXT_PUBLIC_HOST}${mediaUrls[currentMediaIndex]}`}
+                src={`${process.env.NEXT_PUBLIC_HOST}${mediaUrls[currentMediaIndex].url}`}
                 alt={`Media ${currentMediaIndex + 1}`}
               />
             )}

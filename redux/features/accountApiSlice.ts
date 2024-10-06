@@ -6,7 +6,7 @@ import { ProfileSchema } from "@/schemas/user-schemas";
 const AccountApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     fetchMyProfile: builder.query<z.infer<typeof ProfileSchema>, void>({
-      query: () => "/profile",
+      query: () => "/profile/",
     }),
     fetchProfileById: builder.query<
       z.infer<typeof ProfileSchema>,
@@ -28,6 +28,32 @@ const AccountApiSlice = apiSlice.injectEndpoints({
         body: data,
       }),
     }),
+    updateProfile:builder.mutation<any,any>({
+        query:(data)=>({
+            method:'PATCH',
+            url:'/profile/',
+            body:data
+        }),
+        invalidatesTags:['CurrentUser']
+    }),
+
+    updateName:builder.mutation<any,any>({
+        query:(data)=>({
+            method:'PATCH',
+            url:'/change-name',
+            body:data
+        }),
+        invalidatesTags:['CurrentUser']
+    }),
+    changePassword:builder.mutation<any, any>({
+        query:(data)=>({
+            url:'/change-password',
+            method:'POST',
+            body:data
+        })
+    })
+
+
   }),
 });
 
@@ -36,4 +62,13 @@ export const {
   useFetchProfileByIdQuery,
   useProfileSetupMutation,
   useRolePickMutation,
+  useUpdateProfileMutation,
+  useUpdateNameMutation,
+  useChangePasswordMutation
+
 } = AccountApiSlice;
+
+
+const ChangeProfileSchema = z.object({
+    profile_image:z.instanceof(File)
+})

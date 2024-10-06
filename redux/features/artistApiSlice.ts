@@ -4,10 +4,12 @@ import {
   AcceptedIDsSchema,
   ArtistInSchema,
   ConnectionRequestSchema,
+  CreateSpecialTimeSlotSchema,
   GenreSchema,
   InPortfolioSchema,
   MyConnectionsSchema,
   RateSchema,
+  TimeslotSchema,
 } from "@/schemas/artist-schemas";
 
 const artistApiSlice = apiSlice.injectEndpoints({
@@ -95,6 +97,35 @@ const artistApiSlice = apiSlice.injectEndpoints({
     }),
     fetchArtistUnavailableDates:builder.query<string[],string>({
         query:(artistId)=>`/artists/${artistId}/unavailable-dates`
+    }),
+    fetchTimeSlots:builder.query<z.infer<typeof TimeslotSchema>[], {artistId:string, date:string}>({
+        query:({artistId, date})=>`/artists/time-slots/${artistId}?date=${date}`,
+        providesTags: (result, error, { artistId, date }) =>
+            result ? [{ type: 'TimeSlots', date }] : [],
+    }),
+    fetchAllTimeSlots:builder.query<z.infer<typeof TimeslotSchema>[], string>({
+        query:(artistId)=>`/artists/time-slots/${artistId}`
+    }),
+    createTimeSlotException:builder.mutation<any,{date:string,time_slot:number }>({
+        query:(data) => ({
+            url:'/artists/time-slot-exceptions',
+            method:'POST',
+            body:data
+
+        }),
+        invalidatesTags: (result, error, { date }) => [
+            { type: 'TimeSlots', date },  // Invalidate this tag after mutation
+          ],
+    }),
+    createSpecialTimeSlot:builder.mutation<any,z.infer<typeof CreateSpecialTimeSlotSchema>>({
+        query:(data)=>({
+            method:'POST',
+            url:`/artists/special-time-slots`,
+            body:data
+        }),
+        invalidatesTags: (result, error, { date }) => [
+            { type: 'TimeSlots', date },  // Invalidate this tag after mutation
+          ],
     })
   }),
 });
@@ -112,6 +143,8 @@ export const {
     useFetchReceivedConnectionRequestsQuery,
     useFetchSentConnectionRequestsQuery,
     useFetchArtistUnavailableDatesQuery,
+    useFetchTimeSlotsQuery,
+    useFetchAllTimeSlotsQuery,
 
 
   useCreateArtistApplicationMutation,
@@ -120,4 +153,7 @@ export const {
   useCreateNewPortfolioMutation,
   useHasArtistApplicationQuery,
   useConnectArtistMutation,
+  useCreateTimeSlotExceptionMutation,
+  useCreateSpecialTimeSlotMutation,
+
 } = artistApiSlice;

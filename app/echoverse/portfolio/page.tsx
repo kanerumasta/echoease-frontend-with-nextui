@@ -141,27 +141,28 @@ const PortfolioItems = React.memo(({
   portfolio: z.infer<typeof InPortfolioSchema>;
 }) => {
   return (
-    <Fragment>
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
       {portfolio.items.map((item, index) => {
         return (
-          <div className="flex flex-col justify-center">
+          <div className="flex flex-col bg-blue-400 justify-center">
             <p>{item.title}</p>
             {item.description && <p>{item.description}</p>}
             <Grid item={item} />
           </div>
         );
       })}
-    </Fragment>
+    </div>
   );
 });
 
 const Grid = ({ item }: { item: z.infer<typeof InPortfolioItemSchema> }) => {
   const maxVisible = 4; // Maximum number of media to display
+  const [maxV, setMaxV] = useState(maxVisible)
   const allMedia = [...item.videos, ...item.images]; // Combine videos and images into one array
   const visibleMedia = allMedia.slice(0, maxVisible); // Show only the first 9 media
   const remainingCount = allMedia.length - maxVisible;
   return (
-    <div className="grid relative grid-cols-2 grid-rows-2 w-full md:w-[50%] gap-2">
+    <div className="grid bg-red-400 relative grid-cols-2 grid-rows-2 w-full  gap-2">
       {visibleMedia.map((media, mediaIndex) => (
         <div
           key={mediaIndex}
@@ -172,10 +173,10 @@ const Grid = ({ item }: { item: z.infer<typeof InPortfolioItemSchema> }) => {
             }
           )}
         >
-          {media.endsWith(".mp4") ? (
+          {media.url.endsWith(".mp4") ? (
             <div className="relative w-full h-full">
               <video className="w-full h-full object-cover" width={200}>
-                <source src={`${process.env.NEXT_PUBLIC_HOST}${media}`} />
+                <source src={`${process.env.NEXT_PUBLIC_HOST}${media.url}`} />
               </video>
               <FaPlay
                 color="white"
@@ -188,17 +189,26 @@ const Grid = ({ item }: { item: z.infer<typeof InPortfolioItemSchema> }) => {
               className="w-full h-full object-cover"
               width={200}
               height={200}
-              src={`${process.env.NEXT_PUBLIC_HOST}${media}`}
+              src={`${process.env.NEXT_PUBLIC_HOST}${media.url}`}
               alt="Portfolio Media"
             />
           )}
           {mediaIndex === 3 && maxVisible < allMedia.length && (
-            <div className="absolute bottom-0 right-0 bg-black bg-opacity-70 flex items-center justify-center text-3xl text-white w-full h-full rounded-md z-10">
+            <div onClick={()=>setMaxV(allMedia.length)} className="absolute bottom-0 right-0 bg-black bg-opacity-70 flex items-center justify-center text-3xl text-white w-full h-full rounded-md z-10">
               {`+${remainingCount}`}
             </div>
           )}
         </div>
       ))}
+      <Modal>
+        <ModalContent>
+            <ModalBody>
+                <div>
+
+                </div>
+            </ModalBody>
+        </ModalContent>
+      </Modal>
     </div>
   );
 };

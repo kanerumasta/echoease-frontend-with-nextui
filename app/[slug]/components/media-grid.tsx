@@ -5,7 +5,7 @@ import MediaPlayer from "./media-player";
 
 type Props = {
   maxVisible: number;
-  mediaUrls: string[];
+  mediaUrls: {field:string, url:string}[];
 };
 
 // Portfolio grid component
@@ -13,12 +13,14 @@ export const MediaGrid = ({ maxVisible, mediaUrls }: Props) => {
   const visibleMedia = mediaUrls.slice(0, maxVisible); // Show only the first 'maxVisible' media
   const remainingCount = mediaUrls.length - maxVisible;
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedMedia, setSelectedMedia] = useState<string[]>([]);
+  const [selectedMedia, setSelectedMedia] = useState<{field:string, url:string}[]>([]);
 
   const openModal = () => {
     setSelectedMedia(mediaUrls);
     setIsModalOpen(true);
   };
+
+  console.log('mEida', mediaUrls)
 
   return (
     <>
@@ -34,10 +36,10 @@ export const MediaGrid = ({ maxVisible, mediaUrls }: Props) => {
             )}
             onClick={openModal} // Open modal on click
           >
-            {media.endsWith(".mp4") ? (
+            {media.url.endsWith(".mp4") ? (
               <div className="relative w-full h-full">
                 <video className="w-full h-full object-cover" width={200}>
-                  <source src={`${process.env.NEXT_PUBLIC_HOST}${media}`} />
+                  <source src={`${process.env.NEXT_PUBLIC_HOST}${media.url}`} />
                 </video>
                 <FaPlay
                   color="white"
@@ -50,7 +52,7 @@ export const MediaGrid = ({ maxVisible, mediaUrls }: Props) => {
                 className="w-full h-full object-cover"
                 width={200}
                 height={200}
-                src={`${process.env.NEXT_PUBLIC_HOST}${media}`}
+                src={`${process.env.NEXT_PUBLIC_HOST}${media.url}`}
                 alt="Portfolio Media"
               />
             )}

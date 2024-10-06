@@ -25,6 +25,7 @@ const authApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     fetchCurrentUser: builder.query<z.infer<typeof UserSchema>, void>({
       query: () => "/whoami",
+      providesTags:['CurrentUser']
     }),
     loginUser: builder.mutation({
       query: ({ email, password }) => ({
@@ -97,9 +98,9 @@ const authApiSlice = apiSlice.injectEndpoints({
           "Content-Type": "x-www-form-urlencoded",
         },
       }),
-    
+
     }),
-   
+  
   }),
 });
 

@@ -94,11 +94,9 @@ export const CreatePortfolioItemSchema = z
   .refine(
     (data) => {
       if (!data.images && !data.videos) {
-        console.log("here");
         return false;
       }
       return true;
-      console.log("here1");
     },
     { message: "Attach at least an image or a video.", path: ["images"] }
   );
@@ -109,8 +107,8 @@ export const InPortfolioItemSchema = z.object({
   description: z.string(),
   group: z.string(),
   portfolio: z.number(),
-  videos: z.array(z.string()),
-  images: z.array(z.string()),
+  videos: z.array(z.object({field:z.string(), url:z.string()})),
+  images: z.array(z.object({field:z.string(), url:z.string()})),
 });
 
 export const InPortfolioSchema = z.object({
@@ -145,3 +143,43 @@ receiver : ArtistInSchema
 export const MyConnectionsSchema = z.object({
     connections : z.array(ArtistInSchema)
 })
+
+
+export const TimeslotSchema = z.object({
+    id:z.number(),
+    start_time:z.string(),
+    end_time:z.string(),
+    artist:z.number()
+})
+
+
+export const SpecialTimeSlotsSchema = z.object({
+    time_slots: z
+      .array(z.object({
+        start_time:z.string(),
+        end_time:z.string()
+      }))
+      .refine((slots) => {
+        // Check for overlapping time slots
+        for (let i = 0; i < slots.length; i++) {
+          for (let j = i + 1; j < slots.length; j++) {
+            if (
+              (slots[i].start_time < slots[j].end_time &&
+                slots[i].end_time > slots[j].start_time) ||
+              (slots[j].start_time < slots[i].end_time &&
+                slots[j].end_time > slots[i].start_time)
+            ) {
+              return false;
+            }
+          }
+        }
+        return true;
+      }, { message: "Time slots cannot overlap" }),
+  });
+
+  export const CreateSpecialTimeSlotSchema = z.object({
+    date:z.string(),
+    start_time:z.string(),
+    end_time:z.string(),
+    artist:z.number().nullable().optional()
+  })

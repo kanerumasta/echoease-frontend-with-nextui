@@ -101,7 +101,7 @@ export default function CompleteProfilePage() {
                   date && form.setValue("dob", date.toString())
                 }
                 radius="sm"
-                maxValue={today(getLocalTimeZone()).subtract({ years: 2 })}
+                maxValue={today(getLocalTimeZone()).subtract({ years: 5 })}
                 variant="faded"
                 label="Date of Birth"
                 endContent={
