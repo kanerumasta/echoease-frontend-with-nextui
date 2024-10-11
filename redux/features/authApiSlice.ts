@@ -37,6 +37,7 @@ const authApiSlice = apiSlice.injectEndpoints({
         },
         body: { email, password },
       }),
+      invalidatesTags:['CurrentUser']
     }),
     registerNewUser: builder.mutation({
       query: ({ first_name, last_name, email, password, re_password }) => ({
@@ -66,6 +67,13 @@ const authApiSlice = apiSlice.injectEndpoints({
         url: "/users/activation/",
         method: "POST",
         body: { uid, token },
+      }),
+    }),
+    resendActivation: builder.mutation({
+      query: (data) => ({
+        url: "/users/resend_activation/",
+        method: "POST",
+        body: data,
       }),
     }),
     resetPassword: builder.mutation({
@@ -100,7 +108,7 @@ const authApiSlice = apiSlice.injectEndpoints({
       }),
 
     }),
-  
+
   }),
 });
 
@@ -114,5 +122,6 @@ export const {
   useVerifyUserMutation,
   useResetPasswordConfirmMutation,
   useResetPasswordMutation,
+  useResendActivationMutation
 
 } = authApiSlice;

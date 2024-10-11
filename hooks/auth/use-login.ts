@@ -23,13 +23,14 @@ export default function useLogin() {
   const [loginUser, { isLoading, isSuccess, isError, error, status }] =
     useLoginUserMutation();
 
-  const onSubmit = (data: z.infer<typeof LoginSchema>) => {
+  const onSubmit =async (data: z.infer<typeof LoginSchema>) => {
     const validatedData = LoginSchema.safeParse(data);
     if (!validatedData.success) {
       toast.error("Invalid Data Passed");
       return;
     }
-    loginUser(validatedData.data).unwrap().then().catch();
+   await loginUser(validatedData.data).unwrap()
+   form.reset()
   };
 
   useEffect(() => {

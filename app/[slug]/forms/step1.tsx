@@ -1,38 +1,42 @@
 "use client";
 
 import useFetchAddresses from "@/hooks/utils/use-fetch-addresses";
-import { useFetchArtistUnavailableDatesQuery } from "@/redux/features/artistApiSlice";
-import { ArtistInSchema } from "@/schemas/artist-schemas";
+
+import { ArtistInSchema, InTimeslotSchema } from "@/schemas/artist-schemas";
 import { BookingSchema } from "@/schemas/booking-schemas";
-import { DateValue, getLocalTimeZone, today } from "@internationalized/date";
 import { Autocomplete, AutocompleteItem } from "@nextui-org/autocomplete";
-import { TimeInput } from "@nextui-org/date-input";
-import { DatePicker } from "@nextui-org/date-picker";
+
 import { Input } from "@nextui-org/input";
 import { Fragment, Key, useEffect, useState } from "react";
 import { useFormContext } from "react-hook-form";
 import { z } from "zod";
-import { useLocale } from "@react-aria/i18n";
 
-export const Step1 = ({
-  artist,
-}: {
-  artist: z.infer<typeof ArtistInSchema>;
-}) => {
+
+import { cn } from "@/lib/utils";
+import { CustomDatePicker } from "../components/custom-datepicker";
+import { useFetchArtistUnavailableDatesQuery } from "@/redux/features/scheduleApiSlice";
+import { SelectTime } from "../components/select-time";
+import { Time } from "@internationalized/date";
+import { Chip } from "@nextui-org/chip";
+import { TimeInput } from "@nextui-org/date-input";
+import { useFetchArtistRatesQuery } from "@/redux/features/artistApiSlice";
+
+export const Step1 = ({artist}:{artist:z.infer<typeof ArtistInSchema>}) => {
+const {data:unavailableDates = []}  = useFetchArtistUnavailableDatesQuery(artist.id)
+
   const {
     barangays,
     brgyLoading,
     fetchBarangays,
     fetchMunicipalities,
-    fetchProvinces,
     municipalities,
     municipalityLoading,
-    pronvinceLoading,
-    provinces,
-  } = useFetchAddresses();
 
-  const {data:unavailableDates, isLoading:loadingUnavailableDates} = useFetchArtistUnavailableDatesQuery(artist.id.toString())
-  console.log('unavaialbe', unavailableDates)
+  } = useFetchAddresses();
+  const [selectedDate, setSelectedDate] = useState<Date>(new Date())
+  const [selectedStartTime, setSelectedStartTime] = useState(new Time(5))
+  const [selectedEndTime, setSelectedEndTime] = useState(new Time(10))
+
 
   const form = useFormContext<z.infer<typeof BookingSchema>>();
   const [selectedMunicipalityCode, setSelectedMunicipalityCode] =
@@ -41,7 +45,6 @@ export const Step1 = ({
 
   useEffect(() => {
     fetchMunicipalities(provinceCode);
-
   }, []);
 
   useEffect(() => {
@@ -57,17 +60,43 @@ export const Step1 = ({
     );
     return filtered[0].name;
   }
-console.log(unavailableDates)
-const isDateUnavailable = (date:DateValue)=>{
 
-    const formattedDate = `${date.year}-${String(date.month).padStart(2, '0')}-${String(date.day).padStart(2, '0')}`;
-console.log(formattedDate)
-return unavailableDates?.includes(formattedDate) || false
-}
+
+useEffect(()=>{
+    form.setValue('eventDate', selectedDate)
+    form.setValue('startTime', selectedStartTime)
+    form.setValue('endTime', selectedEndTime)
+},[artist, selectedDate,selectedStartTime, selectedEndTime])
+
+
+const handleStartTimeChange = (time: Time) => {
+    if (time.compare(selectedEndTime) > 0) {
+      form.setError("startTime", {
+        type: "manual",
+        message: "Start time must be earlier than end time.",
+      });
+    } else {
+      form.clearErrors("startTime");
+    }
+    setSelectedStartTime(time);
+  };
+
+const handleEndTimeChange = (time: Time) => {
+    if (time.compare(selectedStartTime) < 0) {
+      form.setError("endTime", {
+        type: "manual",
+        message: "End time must be ahead than start time.",
+      });
+    } else {
+      form.clearErrors("endTime");
+    }
+    setSelectedEndTime(time);
+  };
 
   return (
     <Fragment>
       <input
+
         {...form.register("artist")}
         value={artist.id}
         style={{ display: "none" }}
@@ -75,45 +104,26 @@ return unavailableDates?.includes(formattedDate) || false
 
       <Input
         size="lg"
-        color="primary"
-        variant="underlined"
+
+        variant="bordered"
         radius="sm"
         {...form.register("eventName")}
         label="What's the event?"
         placeholder="E.g Birthday"
         isInvalid={!!form.formState.errors.eventName}
       />
-      <DatePicker
-        color="primary"
-        size="lg"
-        variant="underlined"
-        classNames={{calendarContent:'text-5xl w-full min-w-[600px]',popoverContent:"min-w-[600px]",calendar:'min-w-[600px] min-h-[400px]'}}
-        radius="sm"
-        onChange={(e) =>
-          form.setValue("eventDate", `${e.month}/${e.day}/${e.year}`)
-        }
-        label="When should we mark our calendars?"
-        minValue={today(getLocalTimeZone()).add({ days: 1 })}
 
-        maxValue={today(getLocalTimeZone()).add({ years: 1 })}
-        isDateUnavailable={isDateUnavailable}
-        isInvalid={!!form.formState.errors.eventDate}
-      />
-      <TimeInput
-        color="primary"
-        size="lg"
-        variant="underlined"
-        radius="sm"
-        aria-label="time-input"
-        label="At what time?"
-        onChange={(e) => form.setValue("eventTime", e.toString())}
-        isInvalid={!!form.formState.errors.eventTime}
-      />
+      <div className={cn("p-3 w-full flex gap-2 items-center justify-between border-2 border-white/20 rounded-lg",{"border-3 border-red-500":!!form.formState.errors.eventDate})}>
+      <CustomDatePicker unavailableDates={unavailableDates} selectedDate={selectedDate} setSelectedDate={setSelectedDate}/>
+      </div>
+<div className="flex gap-3">
+      <TimeInput isInvalid={!!form.formState.errors.startTime} errorMessage={form.formState.errors.startTime?.message} classNames={{input:'text-2xl'}} label="Start Time" variant="bordered" size="lg" radius="sm" onChange={handleStartTimeChange} value={selectedStartTime}/>
+      <TimeInput  isInvalid={!!form.formState.errors.endTime} errorMessage={form.formState.errors.endTime?.message} classNames={{input:'text-2xl'}}  label="Estimated End Time" variant="bordered" size="lg" radius="sm"  onChange={handleEndTimeChange} value={selectedEndTime}/>
+      </div>
+      <div className="lg:flex gap-3 space-y-2 lg:space-y-0 items-center">
       <Input
-        color="primary"
-        {...form.register("province")}
         size="lg"
-        variant="underlined"
+        variant="bordered"
         radius="sm"
         label="Province"
         value={"Cebu"}
@@ -121,10 +131,10 @@ return unavailableDates?.includes(formattedDate) || false
       />
 
       <Autocomplete
-        color="primary"
+
         size="lg"
         radius="sm"
-        variant="underlined"
+        variant="bordered"
         isInvalid={!!form.formState.errors.municipality}
         label="Select city or municipality"
         isLoading={municipalityLoading}
@@ -144,12 +154,14 @@ return unavailableDates?.includes(formattedDate) || false
           </AutocompleteItem>
         ))}
       </Autocomplete>
+      </div>
+      <div className="md:flex gap-2 space-y-2 md:space-y-0 items-center">
       <Autocomplete
-        color="primary"
+
         size="lg"
         isInvalid={!!form.formState.errors.barangay}
         radius="sm"
-        variant="underlined"
+        variant="bordered"
         label="Select a barangay"
         isLoading={brgyLoading}
         onSelectionChange={(v) => v && form.setValue("barangay", v.toString())}
@@ -162,21 +174,24 @@ return unavailableDates?.includes(formattedDate) || false
         ))}
       </Autocomplete>
       <Input
-        color="primary"
+
         isInvalid={!!form.formState.errors.street}
         size="lg"
-        variant="underlined"
+        variant="bordered"
         {...form.register("street")}
         label="Street"
+        radius="sm"
       />
       <Input
-        color="primary"
+
         isInvalid={!!form.formState.errors.landmark}
         size="lg"
-        variant="underlined"
+        radius="sm"
+        variant="bordered"
         {...form.register("landmark")}
         label="Landmark"
       />
+      </div>
     </Fragment>
   );
 };

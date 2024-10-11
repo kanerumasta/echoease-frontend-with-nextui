@@ -38,7 +38,7 @@ export default function ProfilePage(){
                 </div>
 
 
-               {currentUser && <ChangeProfileImage currentUser={currentUser}/>}
+               {currentUser  && <ChangeProfileImage  currentUser={currentUser}/>}
             </div>
         <Spacer y={40}/>
 <div className="w-full">

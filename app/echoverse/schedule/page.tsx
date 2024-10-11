@@ -1,32 +1,39 @@
 'use client'
-import { DatePicker } from "@/components/echo-date-picker";
-import { useCreateTimeSlotExceptionMutation, useFetchDetailCurrentArtistQuery, useFetchTimeSlotsQuery } from "@/redux/features/artistApiSlice";
-import { TimeslotSchema } from "@/schemas/artist-schemas";
-import { useState } from "react";
+import { useFetchDetailCurrentArtistQuery } from "@/redux/features/artistApiSlice";
+import { useFetchMyUnavailableDatesQueryQuery } from "@/redux/features/scheduleApiSlice";
+import { InTimeslotSchema } from "@/schemas/artist-schemas";
+import { useMemo, useState } from "react";
 import { z } from "zod";
-import { EchoverseTimeSlotPicker } from "./components/custom-timeslot-picker";
+import { DatePicker } from "./components/custom-date-picker";
+import { SetDateUnavailable } from "./components/set-date-unavailable";
 
 export default function SchedulePage(){
-    const [selectedDate, setSelectedDate] = useState<Date|null>(null)
+    const [selectedDate, setSelectedDate] = useState<Date>(new Date())
     const {data:currentArtist} = useFetchDetailCurrentArtistQuery()
-    const [selectedSlot, setSelectedSlot] = useState<z.infer<typeof TimeslotSchema>|null>(null)
-    const [createTimeSlotException] = useCreateTimeSlotExceptionMutation()
+    const [selectedSlot, setSelectedSlot] = useState<z.infer<typeof InTimeslotSchema>|null>(null)
+    const { data: unavailableDates =[] } = useFetchMyUnavailableDatesQueryQuery()
 
-    const handleCreateTimeSlotException =  () => {
-        if(selectedDate && selectedSlot){
-            const dateString = `${selectedDate.getFullYear()}-${selectedDate.getMonth()+1}-${selectedDate.getDate()}`
-        const payload = {
-            date:dateString,
-            time_slot:selectedSlot.id
-        }
-             createTimeSlotException(payload).unwrap()
-    }else{
-        alert('k')
-    }
-}
+    const extractedDates:Date[] = useMemo(() => {
+        return unavailableDates.map((date)=>new Date(date.date))
+    }, [unavailableDates])
+
+    const isDateUnavailable = (date:Date) => {
+        return extractedDates.some(unavailableDate =>
+            date.getFullYear() === unavailableDate.getFullYear() &&
+            date.getMonth() === unavailableDate.getMonth() &&
+            date.getDate() === unavailableDate.getDate()
+        );
+    };
 
     return <div className="flex">
-        <DatePicker dateSelected={selectedDate} setDateSelected={setSelectedDate}/>
-        {selectedDate && currentArtist && <EchoverseTimeSlotPicker createSlotExceptionHandler={handleCreateTimeSlotException} date={selectedDate} selectedSlot={selectedSlot} setSelectedSlot={setSelectedSlot} artist={currentArtist}/>}
+            {
+                unavailableDates && currentArtist &&
+        <div>
+
+                <DatePicker  unavailableDates={unavailableDates} dateSelected={selectedDate} setDateSelected={setSelectedDate} />
+        </div>
+            }
+        <SetDateUnavailable date={selectedDate} />
+
     </div>
 }

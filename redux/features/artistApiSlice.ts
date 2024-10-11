@@ -4,12 +4,13 @@ import {
   AcceptedIDsSchema,
   ArtistInSchema,
   ConnectionRequestSchema,
-  CreateSpecialTimeSlotSchema,
   GenreSchema,
   InPortfolioSchema,
+  InTimeslotSchema,
   MyConnectionsSchema,
   RateSchema,
-  TimeslotSchema,
+  RecommendedArtistsConnectionsSchema,
+  TimeSlotSchema,
 } from "@/schemas/artist-schemas";
 
 const artistApiSlice = apiSlice.injectEndpoints({
@@ -33,6 +34,7 @@ const artistApiSlice = apiSlice.injectEndpoints({
       void
     >({
       query: () => "/artists?current=True",
+      providesTags:['CurrentArtist']
     }),
     fetchDetailArtistBySlug: builder.query<
       z.infer<typeof ArtistInSchema>,
@@ -45,6 +47,14 @@ const artistApiSlice = apiSlice.injectEndpoints({
     }),
     fetchAcceptedIds: builder.query<z.infer<typeof AcceptedIDsSchema>[], void>({
       query: () => "/artists/accepted-ids",
+    }),
+    updateArtist:builder.mutation<any, any>({
+        query:(data) => ({
+            url:'/artists/',
+            method:'PATCH',
+            body:data
+        }),
+        invalidatesTags:['CurrentArtist']
     }),
     followArtist: builder.mutation<any, any>({
       query: (data) => ({
@@ -60,18 +70,80 @@ const artistApiSlice = apiSlice.injectEndpoints({
         body: data,
       }),
     }),
-    createNewPortfolio: builder.mutation<any, any>({
+    createNewPortfolioItem: builder.mutation<any, any>({
       query: (data) => ({
         method: "POST",
         url: "/artists/portfolio-item",
         body: data,
       }),
+      invalidatesTags:['Portfolio']
+    }),
+    addNewPortfolioItemMedia: builder.mutation<any, any>({
+      query: (data) => ({
+        method: "POST",
+        url: "/artists/portfolio-item-media",
+        body: data,
+      }),
+      invalidatesTags:['Portfolio']
     }),
     fetchPortfolio: builder.query<z.infer<typeof InPortfolioSchema>, string>({
       query: (artistId) => `/artists/portfolio/${artistId}`,
+      providesTags:['Portfolio']
     }),
+    deletePortofolioItem:builder.mutation<any,string>({
+        query:(id)=>({
+            url:`/artists/portfolio-item/${id}`,
+            method:'DELETE'
+        }),
+        invalidatesTags:['Portfolio']
+    }),
+    deletePortofolioItemMedia:builder.mutation<any,string>({
+        query:(id)=>({
+            url:`/artists/portfolio-item-media/${id}`,
+            method:'DELETE'
+        }),
+        invalidatesTags:['Portfolio']
+    }),
+
     fetchArtistRates: builder.query<z.infer<typeof RateSchema>[], string>({
       query: (artistId) => `/artists/${artistId}/rates`,
+    }),
+    addArtistRates: builder.mutation<any, any>({
+      query: (data) => ({
+        url:'/artists/rates',
+        method:'POST',
+        body:data
+      }),
+      invalidatesTags:['CurrentArtist']
+    }),
+    editArtistRate: builder.mutation<any, any>({
+      query: (data) => ({
+        url:'/artists/rates',
+        method:'PATCH',
+        body:data
+      }),
+      invalidatesTags:['CurrentArtist']
+    }),
+    deleteArtistRate: builder.mutation<any, string>({
+      query: (id) => ({
+        url:`/artists/rates/${id}`,
+        method:'DELETE',
+      }),
+      invalidatesTags:['CurrentArtist']
+    }),
+    deleteGenre: builder.mutation<any, string>({
+      query: (id) => ({
+        url:`/artists/genres/${id}/delete`,
+        method:'DELETE',
+      }),
+      invalidatesTags:['CurrentArtist']
+    }),
+    addGenre: builder.mutation<any, string>({
+      query: (id) => ({
+        url:`/artists/genres/${id}/add`,
+        method:'POST',
+      }),
+      invalidatesTags:['CurrentArtist']
     }),
     hasArtistApplication : builder.query<any, void>({
         query: () => '/artists/applications?check=True'
@@ -81,52 +153,60 @@ const artistApiSlice = apiSlice.injectEndpoints({
             method: 'POST',
             url: '/artists/connection-requests',
             body: data
-        })
+        }),
+        invalidatesTags:["SentConnectionRequests","RecommendedArtists"]
     }),
     fetchConnectionRequests : builder.query<z.infer<typeof ConnectionRequestSchema>[],void>({
-        query:()=>'/artists/connection-requests'
+        query:()=>'/artists/connection-requests?status=pending'
     }),
     fetchMyConnections :builder.query<z.infer<typeof MyConnectionsSchema>,void>({
-        query:()=>'/artists/connections'
+        query:()=>'/artists/connections',
+        providesTags:['Connections']
     }),
     fetchReceivedConnectionRequests:builder.query<z.infer<typeof ConnectionRequestSchema>[], void>({
-        query:()=>'/artists/connection-requests/received'
+        query:()=>'/artists/connection-requests/received?status=pending',
+        providesTags:["ConnectionRequests"]
     }),
-    fetchSentConnectionRequests:builder.query<z.infer<typeof ArtistInSchema>[], void>({
-        query:()=>'/artists/connection-requests/received'
+    fetchSentConnectionRequests:builder.query<z.infer<typeof ConnectionRequestSchema>[], void>({
+        query:()=>'/artists/connection-requests/sent?status=pending',
+        providesTags:['SentConnectionRequests']
     }),
-    fetchArtistUnavailableDates:builder.query<string[],string>({
-        query:(artistId)=>`/artists/${artistId}/unavailable-dates`
+    deleteConnectionRequest:builder.mutation<any, string>({
+        query:(id)=>({
+            url:`/artists/connection-requests/${id}`,
+            method:'DELETE'
+        }),
+        invalidatesTags:['SentConnectionRequests', 'RecommendedArtists']
     }),
-    fetchTimeSlots:builder.query<z.infer<typeof TimeslotSchema>[], {artistId:string, date:string}>({
-        query:({artistId, date})=>`/artists/time-slots/${artistId}?date=${date}`,
-        providesTags: (result, error, { artistId, date }) =>
-            result ? [{ type: 'TimeSlots', date }] : [],
-    }),
-    fetchAllTimeSlots:builder.query<z.infer<typeof TimeslotSchema>[], string>({
-        query:(artistId)=>`/artists/time-slots/${artistId}`
-    }),
-    createTimeSlotException:builder.mutation<any,{date:string,time_slot:number }>({
-        query:(data) => ({
-            url:'/artists/time-slot-exceptions',
-            method:'POST',
-            body:data
 
-        }),
-        invalidatesTags: (result, error, { date }) => [
-            { type: 'TimeSlots', date },  // Invalidate this tag after mutation
-          ],
+    fetchRecommendedArtistConnections : builder.query<z.infer<typeof RecommendedArtistsConnectionsSchema
+    >[],void>({
+        query: () => '/artists/get-recommended-artists',
+        providesTags:['RecommendedArtists']
     }),
-    createSpecialTimeSlot:builder.mutation<any,z.infer<typeof CreateSpecialTimeSlotSchema>>({
-        query:(data)=>({
-            method:'POST',
-            url:`/artists/special-time-slots`,
-            body:data
+    acceptConnectionRequest:builder.mutation<any, string>({
+        query:(id) => ({
+            url:'/artists/connection-requests',
+            method:'PATCH',
+            body:{
+                request_id:id,
+                action:'accept'
+            }
         }),
-        invalidatesTags: (result, error, { date }) => [
-            { type: 'TimeSlots', date },  // Invalidate this tag after mutation
-          ],
+        invalidatesTags:['Connections', 'ConnectionRequests','RecommendedArtists']
+    }),
+    declineConnectionRequest:builder.mutation<any, string>({
+        query:(id) => ({
+            url:'/artists/connection-requests',
+            method:'PATCH',
+            body:{
+                request_id:id,
+                action:'reject'
+            }
+        }),
+        invalidatesTags:['ConnectionRequests']
     })
+
   }),
 });
 
@@ -142,18 +222,25 @@ export const {
     useFetchMyConnectionsQuery,
     useFetchReceivedConnectionRequestsQuery,
     useFetchSentConnectionRequestsQuery,
-    useFetchArtistUnavailableDatesQuery,
-    useFetchTimeSlotsQuery,
-    useFetchAllTimeSlotsQuery,
-
+    useFetchRecommendedArtistConnectionsQuery,
 
   useCreateArtistApplicationMutation,
   useFollowArtistMutation,
   useUnfollowArtistMutation,
-  useCreateNewPortfolioMutation,
+  useCreateNewPortfolioItemMutation,
   useHasArtistApplicationQuery,
   useConnectArtistMutation,
-  useCreateTimeSlotExceptionMutation,
-  useCreateSpecialTimeSlotMutation,
+    useAddNewPortfolioItemMediaMutation,
+    useDeletePortofolioItemMutation,
+    useDeletePortofolioItemMediaMutation,
+    useAcceptConnectionRequestMutation,
+    useDeclineConnectionRequestMutation,
+    useDeleteConnectionRequestMutation,
+    useAddArtistRatesMutation,
+    useEditArtistRateMutation,
+    useDeleteArtistRateMutation,
+    useDeleteGenreMutation,
+    useAddGenreMutation,
+    useUpdateArtistMutation
 
 } = artistApiSlice;

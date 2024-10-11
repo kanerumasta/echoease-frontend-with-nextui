@@ -34,8 +34,7 @@ export default function useSetupProfile() {
 
     profileSetup(formData)
       .unwrap()
-      .then(() => {})
-      .catch(() => console.log("error"));
+
   };
 
   return {

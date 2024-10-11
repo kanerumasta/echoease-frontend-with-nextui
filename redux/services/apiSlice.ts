@@ -13,9 +13,7 @@ import {
   setRedirectToLogin,
 } from "../features/authSlice";
 
-// create a new mutex
 
-type NotificationTag = { type: 'oldNotifications'; id: string };
 const mutex = new Mutex();
 const baseQuery = fetchBaseQuery({
   baseUrl: `${process.env.NEXT_PUBLIC_HOST}/api`,
@@ -60,7 +58,7 @@ const baseQueryWithReauth: BaseQueryFn<
 
 export const apiSlice = createApi({
   reducerPath: "api",
-  tagTypes: ['CurrentUser','oldNotifications','newNotifications','Bookings','Echoees','ConnectionRequests','PendingBookings','TimeSlots'],
+  tagTypes: ['CurrentUser','oldNotifications','newNotifications','Bookings','Echoees','ConnectionRequests','PendingBookings','TimeSlots','Portfolio', 'Connections','RecommendedArtists','SentConnectionRequests','CurrentArtist','AwaitingDownpayments','ApprovedBookings','MyUnavailableDates', 'CompletedBookings','PendingPayments','UpcomingEvents'],
   baseQuery: baseQueryWithReauth,
   endpoints: (builder) => ({}),
 });

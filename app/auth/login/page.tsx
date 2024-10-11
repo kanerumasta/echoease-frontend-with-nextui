@@ -3,12 +3,11 @@
 import LoginForm from "@/components/forms/auth/login-form";
 import SocialButtons from "@/components/forms/auth/SocialButtons";
 import { Divider } from "@nextui-org/divider";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { Suspense } from "react";
+import ClientSearchParamsHandler from "./client-searchparam-handler";
 
 const Page = () => {
-  const searchParams = useSearchParams();
-  const redirect = searchParams.get("redirect") || '/';
   const router = useRouter();
   return (
     <Suspense>
@@ -20,7 +19,7 @@ const Page = () => {
         <h1 className="text-center text-2xl py-4"></h1>
       </div>
 
-      <LoginForm redirect={redirect}/>
+      <ClientSearchParamsHandler />
       <Divider className="my-4 h-[0.5px]" />
       <small className="text-black/50 dark:text-white/50">
         OR SIGN IN WITH
@@ -41,4 +40,3 @@ const Page = () => {
 };
 
 export default Page;
-

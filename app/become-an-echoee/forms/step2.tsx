@@ -1,5 +1,6 @@
 'use client'
 
+import { ArtistApplicationSchema } from "@/schemas/artist-schemas";
 import { Button } from "@nextui-org/button";
 import { Spacer } from "@nextui-org/spacer";
 import { Fragment, useRef } from "react";
@@ -8,9 +9,10 @@ import { FaPlus } from "react-icons/fa";
 import { IoMdCloudUpload } from "react-icons/io";
 import { MdAdd } from "react-icons/md";
 import { TiDelete } from "react-icons/ti";
+import { z } from "zod";
 
 export default function Step2() {
-    const form = useFormContext();
+    const form = useFormContext<z.infer<typeof ArtistApplicationSchema>>();
   const dropZoneRef = useRef<HTMLDivElement | null>(null);
   const sampleVideosInputRef = useRef<HTMLInputElement | null>(null);
   const selectedFiles: File[] | [] = form.watch("sampleVideos") || [];
@@ -129,8 +131,6 @@ export default function Step2() {
                   color="#f34139"
                 />
 
-
-
               </li>
             ))}
           </ul>
@@ -145,6 +145,7 @@ export default function Step2() {
             </div>
           )}
         </div>
+          {form.formState.errors.sampleVideos &&  <p className="text-danger-500">{form.formState.errors.sampleVideos.message}</p>}
       </div>
     </Fragment>
   );

@@ -18,7 +18,11 @@ export default function MainLayout({
         poppins.className
       )}
     >
-        <div style={{zIndex:0}} className="bg-gradient-to-b from-black/80 to-black/100 h-screen w-full fixed top-0 left-0 z-0"></div>
+      <div
+  style={{ zIndex: 0 }}
+  className="bg-gradient-to-b from-black/80 to-black/100 h-screen w-full fixed top-0 left-0 z-0 pointer-events-none"
+/>
+
         <div className="relative z-10">
       <Navbar />
       <main className="container pb-8 mx-auto max-w-7xl pt-16 px-6 flex-grow">

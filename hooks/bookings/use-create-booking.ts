@@ -12,39 +12,36 @@ import { z } from "zod";
 
 export default function useCreateBooking() {
   const [createNewBooking, bookingState] = useCreateNewBookingMutation();
-  const { refetch } = useFetchMyBookingsQuery();
 
   const form = useForm<z.infer<typeof BookingSchema>>({
-    resolver: zodResolver(BookingSchema),
-    shouldUnregister: false,
+    resolver: zodResolver(BookingSchema)
   });
 
-  const router = useRouter();
   const onSubmit = (data: z.infer<typeof BookingSchema>) => {
-    console.log(data)
-    if (data.artist) {
-      const formData = new FormData();
-      formData.append("artist", data.artist.toString());
-      formData.append("event_name", data.eventName);
-      formData.append("event_date", data.eventDate);
-      formData.append("event_time", data.eventTime);
-      formData.append("province", data.province);
-      formData.append("municipality", data.municipality);
-      formData.append("barangay", data.barangay);
-      formData.append("street", data.street);
-      formData.append("landmark", data.landmark);
-      formData.append("rate", data.rate);
+    const validatedData = BookingSchema.safeParse(data)
+    if(validatedData.success){
+            if (data.artist) {
+                const formattedDate  = `${data.eventDate.getFullYear()}-${data.eventDate.getMonth()+1}-${data.eventDate.getDate()}`
+            const payload = {
+                "artist":data.artist.toString(),
+                "event_name":data.eventName,
+                "event_date":formattedDate,
+                "start_time":data.startTime.toString(),
+                "end_time":data.endTime.toString(),
+                "province":'Cebu',
+                "municipality":data.municipality,
+                "barangay":data.barangay,
+                "street":data.street,
+                "landmark":data.landmark,
+                "rate":data.rate,
+            }
 
+              createNewBooking(payload)
+                .unwrap()
 
-
-      createNewBooking(formData)
-        .unwrap()
-        .then(() => {
-          refetch();
-        })
-        .catch(() =>
-          toast.error("Error creating your booking. Please try again later.")
-        );
+                }
+    }else{
+        toast.error("Invalid data passed.")
     }
   };
   useEffect(() => {

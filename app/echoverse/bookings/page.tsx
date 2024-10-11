@@ -3,12 +3,19 @@
 import useIsArtistOnly from "@/hooks/use-is-artist-only"
 import useLoginRequired from "@/hooks/use-login-required"
 import { useFetchMyBookingsQuery } from "@/redux/features/bookingApiSlice"
+import { Button } from "@nextui-org/button"
 import { Spinner } from "@nextui-org/spinner"
 import { Table, TableBody, TableCell, TableColumn, TableHeader, TableRow } from "@nextui-org/table"
 import { notFound, useRouter } from "next/navigation"
+import { ApprovedBookings } from "./components/approved"
+import { CompleteBookings } from "./components/complete"
+import PendingPayments from "@/app/bookings/components/pending-payments"
+import { AwaitingDownpayments } from "@/app/bookings/components/awaiting-downpayment"
+import { Spacer } from "@nextui-org/spacer"
+import { PendingBookings } from "./components/pending"
 
 export default function BookingsPage(){
-    const {data:myBookings = [], isLoading, isError} = useFetchMyBookingsQuery()
+
     const { loginChecked } = useLoginRequired("/echoverse");
     const { isArtist, isLoading: artistLoading } = useIsArtistOnly();
 
@@ -20,32 +27,9 @@ export default function BookingsPage(){
     if (!artistLoading && !isArtist) {
         return notFound();
     }
-    const loadingState = isLoading ? 'loading' :'idle'
-    const router = useRouter()
-
-    return <div className="mt-12">
-        <Table classNames={{tr:"hover:cursor-pointer hover:bg-white/5"}} onRowAction={(key)=>router.push(`/echoverse/bookings/${key.toString()}`)}>
-            <TableHeader>
-                <TableColumn>Booking Reference</TableColumn>
-                <TableColumn>Event</TableColumn>
-                <TableColumn>Date</TableColumn>
-                <TableColumn>Time</TableColumn>
-                <TableColumn>Status</TableColumn>
-                <TableColumn>Echoer</TableColumn>
-            </TableHeader>
-            <TableBody loadingContent={<Spinner />} emptyContent={'No bookings yet'} loadingState={loadingState} items={myBookings}>
-                {(item)=>(
-                    <TableRow className="hover:cursor-pointer" key={item.id}>
-                        <TableCell>{item.id}</TableCell>
-                        <TableCell>{item.event_name}</TableCell>
-                        <TableCell>{item.formatted_event_date}</TableCell>
-                        <TableCell>{item.formatted_event_time}</TableCell>
-                        <TableCell>{item.status}</TableCell>
-                        <TableCell className="capitalize" >{item.client.fullname}</TableCell>
-                    </TableRow>
-                )}
-            </TableBody>
-        </Table>
-
+    return <div className="space-y-2">
+        <PendingBookings />
+        <ApprovedBookings/>
+        <CompleteBookings />
     </div>
 }

@@ -19,7 +19,7 @@ const ChangeProfileSchema = z.object({
 })
 
 export default function ChangeProfileImage({currentUser}:{currentUser:z.infer<typeof UserSchema>}){
-    const [updateProfile,{isSuccess, isError}] = useUpdateProfileMutation()
+    const [updateProfile,{isSuccess, isError,isLoading}] = useUpdateProfileMutation()
     const {onOpen, onOpenChange, isOpen, onClose} = useDisclosure()
 const {handleSubmit,setValue,watch,reset} = useForm<z.infer<typeof ChangeProfileSchema>>({resolver:zodResolver(ChangeProfileSchema)})
 const inputRef = useRef<HTMLInputElement|null>(null)
@@ -89,7 +89,7 @@ setValue("profile_image", e.target.files[0])
 
          </div>
          <Spacer y={4}/>
-             {watch('profile_image') && <Button size="lg" fullWidth radius="sm"  color="primary" type="submit"><FaSave />Save</Button>}
+             {watch('profile_image') && <Button isLoading={isLoading} isDisabled={isLoading} size="lg" fullWidth radius="sm"  color="primary" type="submit"><FaSave />Save</Button>}
          </form>
      </ModalBody>
  </ModalContent>

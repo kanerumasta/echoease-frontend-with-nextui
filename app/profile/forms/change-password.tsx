@@ -18,7 +18,7 @@ export const ChangePassword = () => {
     const {handleSubmit, reset, register, formState:{errors}} = useForm<z.infer<typeof ChangePasswordSchema>>({resolver:zodResolver(ChangePasswordSchema)})
     const {logout} = useLogout()
 
-    const [changePassword,{isSuccess, isError}] = useChangePasswordMutation()
+    const [changePassword,{isSuccess, isError, isLoading}] = useChangePasswordMutation()
 
     const [showPassword, setShowPassword] = useState(false)
 
@@ -62,7 +62,7 @@ export const ChangePassword = () => {
                     </div>
                     <div className="flex items-center justify-end my-4 gap-2">
                         <Button radius="sm" type="button" onPress={onClose} startContent={<MdCancel />}>Cancel</Button>
-                        <Button radius="sm" type="submit" color="primary" startContent={<FaSave />}>Save</Button>
+                        <Button isLoading={isLoading} isDisabled={isLoading} radius="sm" type="submit" color="primary" startContent={<FaSave />}>Save</Button>
                     </div>
                 </form>
             </ModalBody>

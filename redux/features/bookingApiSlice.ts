@@ -35,12 +35,9 @@ const bookingApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     fetchMyBookings: builder.query<z.infer<typeof BookInSchema>[], void>({
         query: () => "/bookings",
-        providesTags:['Bookings'],
+        providesTags: ["Bookings"]
       }),
-    fetchPendingBookings: builder.query<z.infer<typeof BookInSchema>[], void>({
-        query: () => "/bookings?status=pending",
-        providesTags:['PendingBookings'],
-      }),
+
     createNewBooking: builder.mutation<z.infer<typeof DetailBookingInSchema>, any>({
       query: (data) => ({
         method: "POST",
@@ -51,27 +48,59 @@ const bookingApiSlice = apiSlice.injectEndpoints({
       invalidatesTags:['Bookings','PendingBookings']
     }),
 
+    fetchPendingBookings: builder.query<z.infer<typeof BookInSchema>[], void>({
+        query: () => "/bookings?status=pending",
+        providesTags:['PendingBookings'],
+      }),
     fetchBookingDetail: builder.query<z.infer<typeof BookInSchema>, string>({
-      query: (id) => `/bookings/${id}`,
+        query: (id) => `/bookings/${id}`,
+        providesTags: (result, error, id) => [{ type: 'Bookings', id }],
     }),
     fetchApprovedBookings:builder.query<z.infer<typeof BookInSchema>[], void>({
-        query:() => '/bookings?status=approved'
+        query:() => '/bookings?status=approved',
+       providesTags: (result, error, arg, meta) =>
+           ['ApprovedBookings']
+       ,
+    }),
+    fetchCompletedBookings:builder.query<z.infer<typeof BookInSchema>[], void>({
+        query:() => '/bookings?status=completed',
+       providesTags: (result, error, arg, meta) =>
+           ['CompletedBookings']
+       ,
+    }),
+    fetchAwaitingDownpaymentBookings:builder.query<z.infer<typeof BookInSchema>[], void>({
+        query:() => '/bookings?status=awaiting_downpayment',
+        providesTags:['AwaitingDownpayments']
+    }),
+    fetchPendingPayments :builder.query<z.infer<typeof BookInSchema>[], void>({
+        query:() => '/bookings/pending-payments',
+        providesTags:['PendingPayments']
+    }),
+    fetchUpcomingEvents:builder.query<z.infer<typeof BookInSchema>[], void>({
+        query:() => '/bookings/upcoming-events',
+        providesTags:['UpcomingEvents']
     }),
     confirmBooking:builder.mutation<any,string>({
         query:(id)=>({
             method:'PATCH',
             url:`/bookings/${id}/confirm`
         }),
-        invalidatesTags:['PendingBookings','Bookings']
-    })
+        invalidatesTags: (result, error,  id ) => [{ type: 'Bookings', id },'Bookings','PendingBookings','AwaitingDownpayments']
+    }),
+
   }),
 });
 
 export const {
   useCreateNewBookingMutation,
   useFetchMyBookingsQuery,
+  useConfirmBookingMutation,
+
   useFetchBookingDetailQuery,
   useFetchPendingBookingsQuery,
   useFetchApprovedBookingsQuery,
-  useConfirmBookingMutation,
+  useFetchAwaitingDownpaymentBookingsQuery,
+  useFetchCompletedBookingsQuery,
+  useFetchPendingPaymentsQuery,
+  useFetchUpcomingEventsQuery
 } = bookingApiSlice;

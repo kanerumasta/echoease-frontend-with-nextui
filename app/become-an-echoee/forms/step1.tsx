@@ -107,13 +107,13 @@ export default function Step1(){
             </Button>
           </div>
         ))}
-        {form.formState.errors.rates && <p className="text-sm text-[#f31260]">{form.formState.errors.rates.message}</p>}
-<div className="flex  justify-end">
 
-<Button  startContent={<FaPlus />}  radius="full" size="lg"  type="button" onClick={() => append({ name: "", amount: "" })}>
+
+<Button fullWidth radius="sm" size="lg" startContent={<FaPlus />}  type="button" onClick={() => append({ name: "", amount: "" })}>
           Add Rate
         </Button>
-</div>
+
+        {form.formState.errors.rates && <p className="text-sm text-[#f31260]">{form.formState.errors.rates.message}</p>}
 
       </Fragment>
     );

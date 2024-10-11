@@ -1,9 +1,25 @@
 import { cn } from "@/lib/utils"
+import { UnavailableDateSchema } from "@/schemas/schedule-schemas"
 import { Button } from "@nextui-org/button"
-import { Dispatch, SetStateAction, useEffect, useState } from "react"
+import { Dispatch, SetStateAction, useEffect, useMemo, useState } from "react"
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa"
+import { z } from "zod"
 
-export const DatePicker = ({dateSelected, setDateSelected, unavailableDates}:{dateSelected:Date|null, setDateSelected:Dispatch<SetStateAction<Date|null>>, unavailableDates?:Date[]}) => {
+export const DatePicker = ({dateSelected, setDateSelected, unavailableDates, onDatePick}:{dateSelected:Date, setDateSelected:Dispatch<SetStateAction<Date>>, unavailableDates:z.infer<typeof UnavailableDateSchema>[], onDatePick?:()=>void}) => {
+
+    const extractedDates:Date[] = useMemo(() => {
+        return unavailableDates.map((date)=>new Date(date.date))
+    }, [unavailableDates])
+
+    const isDateUnavailable = (day: number) => {
+        const dateToCheck = new Date(currentYear, currentMonth, day);
+        return extractedDates.some(unavailableDate =>
+            dateToCheck.getFullYear() === unavailableDate.getFullYear() &&
+            dateToCheck.getMonth() === unavailableDate.getMonth() &&
+            dateToCheck.getDate() === unavailableDate.getDate()
+        );
+        };
+
     const months = [
         'January',
         'February',
@@ -54,6 +70,9 @@ const nextMonth = () => {
 
 const handleDayClick = (day: number) => {
     const clickedDate = new Date(currentYear, currentMonth, day);
+    if(isDateUnavailable(day)){
+        return
+    }
     setDateSelected(clickedDate);
 };
 
@@ -62,13 +81,6 @@ const isPastDate = (day: number, currentDate: Date) => {
 
     const today = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate());
     return dateToCheck < today;
-};
-
-const isDateUnavailable = (day: number) => {
-    const dateToCheck = new Date(currentYear, currentMonth, day);
-    return unavailableDates?.some(unavailableDate =>
-        unavailableDate.getTime() === dateToCheck.getTime()
-    );
 };
 
 
@@ -103,7 +115,7 @@ return <div className="">
             ))}
             {
                 Array.from({ length: daysInMonth }, (_, index) => index ).map((day)=>(
-                    <span className={cn("text-4xl text-white/50 p-4 cursor-pointer  text-center",{"bg-blue-500 rounded-lg shadow-blue-900 shadow-md":(day +1 ) === dateSelected?.getDate() && dateSelected?.getMonth() === currentMonth,"text-green-500": currentDate.getMonth() === currentMonth && (day+1) === currentDate.getDate()," text-red-500":isDateUnavailable(day + 1),'text-white/10':isPastDate(day+1, currentDate)})} onClick={()=> !isPastDate(day+1, currentDate)&& !isDateUnavailable(day+1) && handleDayClick(day+1)} key={day+1}>{day+1}</span>
+                    <span className={cn("text-4xl text-green-500 p-4 cursor-pointer  text-center",{"bg-blue-500 rounded-lg shadow-blue-900 shadow-md":(day +1 ) === dateSelected?.getDate() && dateSelected?.getMonth() === currentMonth,"text-yellow-500": currentDate.getMonth() === currentMonth && (day+1) === currentDate.getDate()," text-red-500 cursor-default":isDateUnavailable(day + 1),'text-white/10':isPastDate(day+1, currentDate)})} onClick={()=> {!isPastDate(day+1, currentDate)&& !isDateUnavailable(day+1) && handleDayClick(day+1);onDatePick && setTimeout(()=>{onDatePick()},200) ;}} key={day+1}>{day+1}</span>
                 ))
             }
         </div>

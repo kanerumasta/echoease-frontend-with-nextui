@@ -15,7 +15,8 @@ import { z } from "zod";
 import { Step1 } from "./step1";
 import { Step2 } from "./step2";
 import { FinalBookingStep } from "./final-step";
-import { useFetchArtistUnavailableDatesQuery } from "@/redux/features/artistApiSlice";
+import { useFetchCurrentUserQuery } from "@/redux/features/authApiSlice";
+import { useFetchArtistRatesQuery } from "@/redux/features/artistApiSlice";
 
 export const BookingForm = ({
   artist,
@@ -23,9 +24,12 @@ export const BookingForm = ({
   artist: z.infer<typeof ArtistInSchema>;
 }) => {
   const [currentStep, setCurrentStep] = useState(0);
+  const {data:currentUser} = useFetchCurrentUserQuery()
+
+  const { data: rates } = useFetchArtistRatesQuery(artist.id.toString());
   const { form, bookingState, onSubmit } = useCreateBooking();
-  const {refetch:refetchUnavailableDates} = useFetchArtistUnavailableDatesQuery(artist.id.toString())
   const formRef = useRef<HTMLFormElement | null>(null);
+
 
   const steps = [
     {
@@ -33,12 +37,12 @@ export const BookingForm = ({
       fields: [
         "eventName",
         "eventDate",
-
         "municipality",
         "barangay",
         "street",
         "landmark",
-        "eventTime",
+        "endTime",
+        "startTime"
       ],
     },
     {
@@ -48,10 +52,12 @@ export const BookingForm = ({
   ];
   const handleNext = async () => {
     const fields = steps[currentStep].fields;
+    console.log(fields)
 
     type FieldName = keyof z.infer<typeof BookingSchema>;
 
-    const valid = await form.trigger(fields as FieldName[]);
+    const valid = await form.trigger();
+    console.log(valid)
 
     if (!valid) {
       return;
@@ -67,10 +73,8 @@ export const BookingForm = ({
   };
 
   useEffect(()=>{
-    if(bookingState.isSuccess){
-        refetchUnavailableDates()
-    }
-  },[bookingState.isSuccess])
+    rates && form.setValue('rate', rates[0].id.toString())
+  },[rates])
 
   return (
     <ModalContent>
@@ -91,9 +95,9 @@ export const BookingForm = ({
                 onSubmit={form.handleSubmit(onSubmit)}
                 className="space-y-4"
               >
-                {currentStep === 0 && <Step1 artist={artist} />}
-                {currentStep === 1 && <Step2 artist={artist} />}
-                {currentStep === 2 && <FinalBookingStep artist={artist} />}
+                {currentStep === 0 && <Step1 artist={artist}/>}
+                {currentStep === 1 && <Step2 artist={artist}/>}
+                {currentStep === 2 && currentUser && <FinalBookingStep artist={artist} currentUser={currentUser}/>}
               </form>
             </FormProvider>
           </ModalBody>

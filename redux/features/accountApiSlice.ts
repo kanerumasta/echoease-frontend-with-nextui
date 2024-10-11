@@ -1,7 +1,7 @@
 import { ArtistInSchema } from "@/schemas/artist-schemas";
 import { apiSlice } from "../services/apiSlice";
 import { z } from "zod";
-import { ProfileSchema } from "@/schemas/user-schemas";
+import { ProfileSchema, UserSchema } from "@/schemas/user-schemas";
 
 const AccountApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
@@ -13,6 +13,12 @@ const AccountApiSlice = apiSlice.injectEndpoints({
       { userId: number }
     >({
       query: (userId) => `/profile/${userId}`,
+    }),
+    fetchUserDetailById: builder.query<
+      z.infer<typeof UserSchema>,
+      string
+    >({
+      query: (userId) => `/users/${userId}`,
     }),
     profileSetup: builder.mutation<void, any>({
       query: (profileData) => ({
@@ -34,7 +40,7 @@ const AccountApiSlice = apiSlice.injectEndpoints({
             url:'/profile/',
             body:data
         }),
-        invalidatesTags:['CurrentUser']
+        invalidatesTags:['CurrentUser', 'CurrentArtist']
     }),
 
     updateName:builder.mutation<any,any>({
@@ -43,7 +49,7 @@ const AccountApiSlice = apiSlice.injectEndpoints({
             url:'/change-name',
             body:data
         }),
-        invalidatesTags:['CurrentUser']
+        invalidatesTags:['CurrentUser','CurrentArtist']
     }),
     changePassword:builder.mutation<any, any>({
         query:(data)=>({
@@ -64,7 +70,8 @@ export const {
   useRolePickMutation,
   useUpdateProfileMutation,
   useUpdateNameMutation,
-  useChangePasswordMutation
+  useChangePasswordMutation,
+  useFetchUserDetailByIdQuery
 
 } = AccountApiSlice;
 

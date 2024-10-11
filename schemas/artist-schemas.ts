@@ -6,6 +6,15 @@ export const GenreOptionSchema = z.object({
   value: z.string(),
   disable: z.boolean().optional(),
 });
+export const RateSchema = z.object({
+    id: z.number(),
+    amount: z.number(),
+    name: z.string(),
+    artist_application: z.number(),
+    artist: z.number(),
+    description:z.string().nullable(),
+  });
+
 
 export const GenreSchema = z.object({
   id: z.number().min(1),
@@ -71,7 +80,8 @@ export const ArtistInSchema = z.object({
   genres: z.array(z.object({ id: z.number(), name: z.string() })).nullable(),
   followers: z.array(z.number()),
   portfolio: z.number(),
-  connections : z.array(z.number())
+  connections : z.array(z.number()),
+  rates : z.array(RateSchema)
 });
 
 export const CreatePortfolioItemSchema = z
@@ -101,14 +111,20 @@ export const CreatePortfolioItemSchema = z
     { message: "Attach at least an image or a video.", path: ["images"] }
   );
 
+export const MediaSchema = z.object({
+    id:z.number(),
+    media_type:z.string(),
+    file: z.string(),
+    portfolio_item : z.number()
+})
+
 export const InPortfolioItemSchema = z.object({
   id: z.number(),
   title: z.string(),
   description: z.string(),
   group: z.string(),
-  portfolio: z.number(),
-  videos: z.array(z.object({field:z.string(), url:z.string()})),
-  images: z.array(z.object({field:z.string(), url:z.string()})),
+  medias : z.array(MediaSchema),
+  portfolio:z.number()
 });
 
 export const InPortfolioSchema = z.object({
@@ -117,21 +133,8 @@ export const InPortfolioSchema = z.object({
   artist: z.number(),
 });
 
-export const RateSchema = z.object({
-  id: z.number(),
-  amount: z.number(),
-  name: z.string(),
-  artist_application: z.number(),
-  artist: z.number(),
-});
 
-// {
-//     "id": 5,
-//     "timestamp": "2024-10-01T03:28:15.247875Z",
-//     "status": "pending",
-//     "sender": 8,
-//     "receiver": 7
-//   }
+
 export const ConnectionRequestSchema = z.object({
 id:z.number(),
 timestamp:z.string(),
@@ -144,42 +147,46 @@ export const MyConnectionsSchema = z.object({
     connections : z.array(ArtistInSchema)
 })
 
-
-export const TimeslotSchema = z.object({
-    id:z.number(),
-    start_time:z.string(),
-    end_time:z.string(),
-    artist:z.number()
+//must have artist when posting
+export const TimeSlotSchema = z.object({
+    start_time: z.string(),
+    end_time:z.string()
 })
 
 
-export const SpecialTimeSlotsSchema = z.object({
-    time_slots: z
-      .array(z.object({
-        start_time:z.string(),
-        end_time:z.string()
-      }))
-      .refine((slots) => {
-        // Check for overlapping time slots
-        for (let i = 0; i < slots.length; i++) {
-          for (let j = i + 1; j < slots.length; j++) {
-            if (
-              (slots[i].start_time < slots[j].end_time &&
-                slots[i].end_time > slots[j].start_time) ||
-              (slots[j].start_time < slots[i].end_time &&
-                slots[j].end_time > slots[i].start_time)
-            ) {
-              return false;
-            }
-          }
-        }
-        return true;
-      }, { message: "Time slots cannot overlap" }),
-  });
+export const InTimeslotSchema = z.object({
+    id: z.number(),
+    date:z.string().nullable().optional(),
+    start_time:z.string(),
+    end_time:z.string(),
+    formatted_start_time:z.string(),
+    formatted_end_time:z.string(),
+    artist:z.number()
 
-  export const CreateSpecialTimeSlotSchema = z.object({
+})
+
+export const InSpecialTimeSlotsSchema = z.object({
+    id: z.number(),
     date:z.string(),
     start_time:z.string(),
     end_time:z.string(),
-    artist:z.number().nullable().optional()
+    formatted_start_time:z.string(),
+    formatted_end_time:z.string(),
+    artist:z.number()
+})
+
+export const SpecialTimeSlotsSchema = z.object({
+    date: z.date(),
+    start_time:z.string(),
+    end_time: z.string(),
+    artist:z.number()
+  });
+
+
+  export const RecommendedArtistsConnectionsSchema = z.object({
+    id:z.number(),
+    user:UserSchema,
+    slug:z.string(),
+    genres:z.array(GenreSchema),
+    mutual:z.array(ArtistInSchema)
   })

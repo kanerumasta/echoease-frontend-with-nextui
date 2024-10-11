@@ -36,10 +36,9 @@ export default function LoginForm({ redirect }: { redirect: string }) {
 
   useEffect(() => {
     if (isSuccess) {
+
       toast.success("Logged in successfully.");
-      setTimeout(() => {
-        window.location.href = redirect;
-      }, 2000);
+        router.replace('/')
     }
     if (isError) {
       toast.error("Email or password is incorrect.");

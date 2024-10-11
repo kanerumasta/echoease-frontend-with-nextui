@@ -16,7 +16,7 @@ export const ChangePhone = () => {
     const {register, handleSubmit,reset, formState:{errors}} = useForm<z.infer<typeof PhoneSchema>>
     ({resolver:zodResolver(PhoneSchema)})
 
-    const [updateProfile,{isSuccess, isError}] = useUpdateProfileMutation()
+    const [updateProfile,{isSuccess, isError,isLoading}] = useUpdateProfileMutation()
     const  {onClose, onOpen, onOpenChange, isOpen} = useDisclosure()
     const onSubmit = async (data:z.infer<typeof PhoneSchema>) => {
         await updateProfile(data).unwrap()
@@ -46,7 +46,7 @@ export const ChangePhone = () => {
                         </div>
                         <div className="my-4 flex items-center justify-end gap-2">
                             <Button type="button" radius="sm" size="lg" startContent={<MdCancel />} onClick={()=>{reset(); onClose()}}>Cancel</Button>
-                            <Button type="submit" radius="sm" size="lg" startContent={<FaSave/>} color="primary">Save</Button>
+                            <Button isLoading={isLoading} isDisabled={isLoading} type="submit" radius="sm" size="lg" startContent={<FaSave/>} color="primary">Save</Button>
                         </div>
                     </form>
                 </ModalBody>

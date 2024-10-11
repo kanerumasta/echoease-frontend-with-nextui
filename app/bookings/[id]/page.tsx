@@ -16,11 +16,12 @@ import {
 } from "@nextui-org/modal";
 import { Select, SelectItem } from "@nextui-org/select";
 import { Spinner } from "@nextui-org/spinner";
-import { useParams } from "next/navigation";
+import { notFound, useParams } from "next/navigation";
 import { Fragment, useEffect, useRef } from "react";
 import { DisputeReasonOptions } from "./utils";
 import { useCreateClientDispute } from "@/hooks/disputes";
 import { toast } from "react-toastify";
+import { UserRoles } from "@/config/constants";
 export default function BookingDetailPage() {
   const params = useParams<{ id: string }>();
   const { isOpen, onClose, onOpen, onOpenChange } = useDisclosure();
@@ -47,14 +48,10 @@ export default function BookingDetailPage() {
     isError: isBookingError,
   } = useFetchBookingDetailQuery(bookingId);
 
-  if (isBookingError) {
-    return (
-      <CustomError
-        message="Error fetching your booking!"
-        onRetry={() => alert("retry")}
-      />
-    );
-  }
+
+    if (curUser && curUser.role === UserRoles.artist) {
+        return notFound()
+    }
 
 
   const handleSubmitButtonPress = () => {
@@ -70,7 +67,7 @@ export default function BookingDetailPage() {
           <p>{bookingDetail.event_name}</p>
           <p>{bookingDetail.event_location}</p>
           <p>{bookingDetail.formatted_event_date}</p>
-          <p>{bookingDetail.formatted_event_time}</p>
+          <p>{bookingDetail.formatted_start_time}</p>
           {bookingDetail.status === "approved" && (
             <div>
               {!bookingDetail.is_completed && (

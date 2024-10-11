@@ -3,6 +3,7 @@ import { ArtistInSchema } from "@/schemas/artist-schemas";
 import { Poppins } from "next/font/google";
 import { z } from "zod";
 
+
 const interReg = Poppins({
   subsets: ["latin"],
   weight: "400",
@@ -13,11 +14,8 @@ const interBold = Poppins({
   weight: "800",
 });
 
-export const IntroductionSection = ({
-  artist,
-}: {
-  artist: z.infer<typeof ArtistInSchema>;
-}) => {
+export const IntroductionSection = ({artist}:{artist:z.infer<typeof ArtistInSchema>}) => {
+
   return (
     <div
       className={cn(

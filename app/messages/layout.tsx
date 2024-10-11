@@ -46,7 +46,7 @@ const MessagesList = ({
   useEffect(() => {
     // Redirect to the first conversation if in /messages and there are conversations
     if (pathname === "/messages" && conversations && conversations.length > 0) {
-      router.push(`/messages/${conversations[0].code}`);
+      router.push(`/messages/${conversations[0]?.code}`);
     }
   }, [pathname, conversations, router]);
 
@@ -63,7 +63,7 @@ const MessagesList = ({
             className="flex cursor-pointer hover:bg-black/10 transition duration-300 ease-out dark:hover:bg-white/10 p-2 items-center space-x-2 capitalize"
             key={filteredConversation.code}
           >
-            <Avatar src={`${process.env.NEXT_PUBLIC_HOST}${filteredConversation.participants[0].profile?.profile_image}`}/>
+            <Avatar src={`${process.env.NEXT_PUBLIC_HOST}${filteredConversation.participants[0]?.profile?.profile_image}`}/>
             <p>
               {filteredConversation.participants.map(
                 (p) => `${p.first_name} ${p.last_name}`

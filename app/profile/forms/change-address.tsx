@@ -15,7 +15,7 @@ import { z } from "zod";
 
 export const ChangeAddress = () => {
     const [selectedProvinceCode, setSelectedProvinceCode] = useState<any>(null);
-    const [updateProfile,{isSuccess, isError}] = useUpdateProfileMutation()
+    const [updateProfile,{isSuccess, isError,isLoading}] = useUpdateProfileMutation()
     const [selectedMunicipalityCode, setSelectedMunicipalityCode] =
       useState<any>(null);
 
@@ -175,7 +175,7 @@ export const ChangeAddress = () => {
                     radius="sm" />
                     <div className="flex items-center gap-2 my-4 justify-end">
                         <Button onPress={()=>{onClose(); form.reset()}} type="button" radius="sm" startContent={<MdCancel />}>Cancel</Button>
-                        <Button type="submit" radius="sm" color="primary" startContent={<FaSave />}>Save</Button>
+                        <Button isLoading={isLoading} isDisabled={isLoading} type="submit" radius="sm" color="primary" startContent={<FaSave />}>Save</Button>
                     </div>
 
                     </div>

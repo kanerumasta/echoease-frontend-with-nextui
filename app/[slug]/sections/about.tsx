@@ -34,11 +34,9 @@ import { UserRoles } from "@/config/constants";
 import { useEffect } from "react";
 import { toast } from "react-toastify";
 
-export default function AboutSection({
-  artist,
-}: {
-  artist: z.infer<typeof ArtistInSchema>;
-}) {
+
+export default function AboutSection({artist}:{artist:z.infer<typeof ArtistInSchema>}) {
+
   const params = useParams<{ slug: string }>();
   const { refetch } = useFetchDetailArtistBySlugQuery(params.slug);
   const {data:connectionRequests, refetch:refetchConnectionRequests}  = useFetchConnectionRequestsQuery()
@@ -56,7 +54,7 @@ export default function AboutSection({
     useFollowArtistMutation();
   const [
     unfollowArtist,
-    { isLoading: unfollowLoading, isError: unfollowError },
+    { isLoading: unfollowLoading, isError },
   ] = useUnfollowArtistMutation();
 
   const router = useRouter();

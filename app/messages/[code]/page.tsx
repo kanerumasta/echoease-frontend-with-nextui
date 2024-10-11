@@ -128,10 +128,10 @@ const Header = ({
   }) => {
     return (
         <div className="flex items-center">
-            <Avatar src={`${process.env.NEXT_PUBLIC_HOST}${conversation.participants[0].profile?.profile_image}`}/>
+            <Avatar src={`${process.env.NEXT_PUBLIC_HOST}${conversation.participants[0]?.profile?.profile_image}`}/>
       <h1 className="capitalize text-2xl h-12 w-full flex items-center ml-1">
         {
-          `${conversation.participants[0].first_name} ${conversation.participants[0].last_name}`
+          `${conversation.participants[0].first_name} ${conversation.participants[0]?.last_name}`
         }
       </h1>
       </div>

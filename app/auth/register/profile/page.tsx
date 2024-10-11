@@ -17,8 +17,9 @@ import { toast } from "react-toastify";
 export default function CompleteProfilePage() {
   const imageRef = useRef<HTMLInputElement | null>(null);
   const [gender, setGender] = useState<"male" | "female">("male");
-  const searchParams = useSearchParams();
-  const redirect = searchParams.get("redirect") || "/";
+
+  const redirect = typeof window !== "undefined" ? new URL(window.location.href).searchParams.get("redirect") || "/" : "/";
+
   const { form, onSubmit, isLoading, isSuccess, isError } = useSetupProfile();
   const profileImage = form.watch("profile_image");
 
@@ -96,7 +97,8 @@ export default function CompleteProfilePage() {
           <div className="flex items-end justify-between space-x-2">
             <div className="space-y-4 w-full">
               <GenderPicker value={gender} onChange={setGender} />
-              <DateInput
+                <DateInput
+                   
                 onChange={(date) =>
                   date && form.setValue("dob", date.toString())
                 }
@@ -155,19 +157,23 @@ export default function CompleteProfilePage() {
 
           <Input
             {...form.register("phone")}
-            type="number"
+                      type="number"
+                      startContent={'+63'}
             variant="faded"
             isInvalid={!!form.formState.errors.phone}
             errorMessage={form.formState.errors.phone?.message}
-            label="Contact No."
-            radius="sm"
+                      label="Contact No."
+                      placeholder="9xxxxxxxxx"
+                      radius="sm"
+                      size="lg"
             endContent={
               <PhoneIcon className="text-2xl text-default-400 pointer-events-none flex-shrink-0" />
             }
           />
           <div className="flex space-x-2">
             <Input
-              variant="faded"
+                          variant="faded"
+                          size="lg"
               radius="sm"
               label="Country"
               defaultValue="Philippines"
@@ -178,6 +184,7 @@ export default function CompleteProfilePage() {
               isInvalid={!!form.formState.errors.province}
               errorMessage={form.formState.errors.province?.message}
               radius="sm"
+              size="lg"
               variant="faded"
               label="Select a province"
               onSelectionChange={(val) => {
@@ -196,6 +203,7 @@ export default function CompleteProfilePage() {
           </div>
           <div className="flex space-x-2">
             <Autocomplete
+            size="lg"
               isInvalid={!!form.formState.errors.municipality}
               errorMessage={form.formState.errors.municipality?.message}
               radius="sm"
@@ -222,6 +230,7 @@ export default function CompleteProfilePage() {
               ))}
             </Autocomplete>
             <Autocomplete
+            size="lg"
               isInvalid={!!form.formState.errors.brgy}
               errorMessage={form.formState.errors.brgy?.message}
               radius="sm"
@@ -244,6 +253,7 @@ export default function CompleteProfilePage() {
             <Input
               {...form.register("street")}
               variant="faded"
+              size="lg"
               isInvalid={!!form.formState.errors.street}
               errorMessage={form.formState.errors.street?.message}
               label="Street"
@@ -252,6 +262,7 @@ export default function CompleteProfilePage() {
             <Input
               {...form.register("zipcode")}
               variant="faded"
+              size="lg"
               label="Zip Code"
               isInvalid={!!form.formState.errors.zipcode}
               errorMessage={form.formState.errors.zipcode?.message}

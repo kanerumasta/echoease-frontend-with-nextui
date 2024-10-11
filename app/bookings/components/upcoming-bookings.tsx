@@ -8,9 +8,13 @@ type Props = {
 
 
 export default function UpcomingBookings({bookings}:Props){
-    return <div className="flex w-full overflow-x-scroll gap-2 scrollbar-hide">
+    return <div className="flex flex-col w-full max-h-[75vh] overflow-y-scroll gap-2 scrollbar-hide">
 {bookings.map((booking)=>(
-    <BookingCard booking={booking}/>
+    <BookingCard booking={booking}>
+        <div>
+            o;sidf
+        </div>
+    </BookingCard>
 ))}
     </div>
 }

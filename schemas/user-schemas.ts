@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-const GenderSchema = z.union([z.literal("male"), z.literal("female")]);
+export const GenderSchema = z.union([z.literal("male"), z.literal("female")]);
 
 export const SetupProfileSchema = z.object({
   dob: z.string({ required_error: "This field is required" }),

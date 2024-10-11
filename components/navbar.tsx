@@ -104,7 +104,7 @@ export const Navbar = () => {
 
         {!isArtist &&
            <NavbarItem >
-           <Link className={cn("text-white p-2 rounded-md",{"bg-blue-500":isActiveTab('/echoees')})} href={'/echoees'}>
+           <Link className={cn("text-white/50 p-2 rounded-md",{"bg-blue-500 text-white":isActiveTab('/echoees')})} href={'/echoees'}>
                  Echoees
            </Link>
          </NavbarItem>
@@ -112,43 +112,43 @@ export const Navbar = () => {
 
         {isArtist &&
             <NavbarItem >
-              <Link className={cn("text-white p-2 rounded-md",{"bg-blue-500":isActiveTab('/echoverse'),"bg-transparent":isActiveTab('/echoverse/bookings')})} href={'/echoverse'}>
+              <Link className={cn("text-white/50 p-2 rounded-md",{"bg-blue-500 text-white":isActiveTab('/echoverse')})} href={'/echoverse'}>
                     Echoverse
               </Link>
             </NavbarItem>
         }
             <NavbarItem >
-              <Link className={cn("text-white p-2 rounded-md",{"bg-blue-500":isActiveTab('/messages')})} href={'/messages'}>
+              <Link className={cn("text-white/50 p-2 rounded-md",{"bg-blue-500 text-white":isActiveTab('/messages')})} href={'/messages'}>
                     Messages
               </Link>
             </NavbarItem>
 
             <NavbarItem>
-  {isArtist ? (
-    pendingBookings.length > 0 ? (
-      <Badge color="danger" content={pendingBookings.length}>
-        <Link
-          className={cn(
-            "text-white p-2 rounded-md",
-            isActiveTab('/echoverse/bookings') && "bg-blue-500"
-          )}
-          href={'/echoverse/bookings'}
-        >
-          Bookings
-        </Link>
-      </Badge>
-    ) : (
-      <Link
-        className={cn(
-          "text-white p-2 rounded-md",
-          isActiveTab('/echoverse/bookings') && "bg-blue-500"
-        )}
-        href={'/echoverse/bookings'}
-      >
-        Bookings
-      </Link>
-    )
-  ) : (
+  {!isArtist && (
+    // pendingBookings.length > 0 ? (
+    //   <Badge color="danger" content={pendingBookings.length}>
+    //     <Link
+    //       className={cn(
+    //         "text-white/50 p-2 rounded-md",
+    //         isActiveTab('/echoverse/bookings') && "text-white bg-blue-500"
+    //       )}
+    //       href={'/echoverse/bookings'}
+    //     >
+    //       Bookings
+    //     </Link>
+    //   </Badge>
+    // ) : (
+//       <Link
+//         className={cn(
+//           "text-white p-2 rounded-md",
+//           isActiveTab('/echoverse/bookings') && "bg-blue-500"
+//         )}
+//         href={'/echoverse/bookings'}
+//       >
+//         Bookings
+//       </Link>
+//     )
+//   ) : (
     <Link
       className={cn(
         "text-white p-2 rounded-md",

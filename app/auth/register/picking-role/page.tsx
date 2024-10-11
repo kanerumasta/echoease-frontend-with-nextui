@@ -34,6 +34,7 @@ const MainForm = () => {
   const [productionPage, setProductionPage] = useState<string | null>(null);
   const searchParams = useSearchParams();
   const redirect = searchParams.get("redirect") || "/";
+  const open = searchParams.get('open') || '0'
 
   const formRef = useRef<HTMLFormElement | null>(null);
 

@@ -11,7 +11,8 @@ export default function BookingPolicyPage(){
 
   const BookingPolicy = () => {
     return (
-      <div className="max-w-3xl mx-auto p-6 bg-white/10 rounded-lg">
+
+      <div className="max-w-3xl my-12 mx-auto p-6 bg-white/10 rounded-lg">
         <h1 className="text-3xl font-bold mb-4">EchoEase Booking Policy</h1>
 
         <Section title="1. Introduction">

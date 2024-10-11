@@ -4,18 +4,20 @@ import { cn } from "@/lib/utils";
 import { useFetchArtistRatesQuery } from "@/redux/features/artistApiSlice";
 import { ArtistInSchema } from "@/schemas/artist-schemas";
 import { BookingSchema } from "@/schemas/booking-schemas";
-import { Fragment } from "react";
+import { Fragment, useEffect } from "react";
 import { useFormContext } from "react-hook-form";
 import { z } from "zod";
 
-export const Step2 = ({
-  artist,
-}: {
-  artist: z.infer<typeof ArtistInSchema>;
-}) => {
+
+export const Step2 = ({artist}:{artist:z.infer<typeof ArtistInSchema>}) => {
+
   const { data: rates } = useFetchArtistRatesQuery(artist.id.toString());
   const form = useFormContext<z.infer<typeof BookingSchema>>();
+
   const selectedRateId = form.watch("rate");
+
+  useEffect(()=>{console.log(selectedRateId)})
+
   return (
     <Fragment>
       <h1 className="text-center">Choose a Rate</h1>
