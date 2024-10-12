@@ -120,23 +120,27 @@ export default function MessagePage() {
   );
 }
 
-//Declare that participants is many but assumes that only one, thats why we get the first one only
 const Header = ({
     conversation,
   }: {
     conversation: z.infer<typeof ChatSchema>;
   }) => {
+    const firstParticipant = conversation.participants?.[0];
+
     return (
-        <div className="flex items-center">
-            <Avatar src={`${process.env.NEXT_PUBLIC_HOST}${conversation.participants[0]?.profile?.profile_image}`}/>
-      <h1 className="capitalize text-2xl h-12 w-full flex items-center ml-1">
-        {
-          `${conversation.participants[0].first_name} ${conversation.participants[0]?.last_name}`
-        }
-      </h1>
+      <div className="flex items-center">
+
+            <Avatar
+              src={`${process.env.NEXT_PUBLIC_HOST}${firstParticipant.profile?.profile_image || '/default-avatar.png'}`}
+            />
+            <h1 className="capitalize text-2xl h-12 w-full flex items-center ml-1">
+              {`${firstParticipant.first_name} ${firstParticipant.last_name}`}
+            </h1>
+
       </div>
     );
   };
+
 
   const Body = ({
     messages,

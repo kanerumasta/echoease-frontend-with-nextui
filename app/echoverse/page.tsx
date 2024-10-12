@@ -32,7 +32,7 @@ export default function EchoversePage() {
   return (
     <div className="space-y-2">
         <div className="md:flex md:gap-2 space-y-2 md:space-y-0">
-      <div className="p-3 bg-white/10 flex flex-wrap  rounded-lg h-[300px] w-full ">
+      <div className="p-3 bg-white/10 flex flex-wrap gap-4 rounded-lg h-[300px] w-full ">
         <EchoverseMenu href="/echoverse/about" title={"About"}/>
         <EchoverseMenu href="/echoverse/portfolio" title={"Portfolio"}/>
         <EchoverseMenu href="/echoverse/bookings" title={"Bookings"}/>

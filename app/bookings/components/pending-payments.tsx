@@ -1,6 +1,7 @@
 'use client'
 
 import { useFetchPendingPaymentsQuery } from "@/redux/features/bookingApiSlice"
+import { Button } from "@nextui-org/button"
 import { Dropdown, DropdownItem, DropdownMenu, DropdownTrigger } from "@nextui-org/dropdown"
 import { Table, TableBody, TableCell, TableColumn, TableHeader, TableRow } from "@nextui-org/table"
 import { useState } from "react"
@@ -37,7 +38,7 @@ export default function PendingPayments (){
                             <TableCell>
                                 <Dropdown>
                                     <DropdownTrigger>
-                                        <HiDotsVertical />
+                                       <Button isIconOnly> <HiDotsVertical /></Button>
                                     </DropdownTrigger>
                                     <DropdownMenu>
                                         <DropdownItem onClick={handlePayNowClick}>Pay Now</DropdownItem>

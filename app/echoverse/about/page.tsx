@@ -38,6 +38,7 @@ import { ChangeDob } from "@/app/profile/forms/change-dob";
 import { ChangeGender } from "@/app/profile/forms/change-gender";
 import { ChangePhone } from "@/app/profile/forms/change-phone";
 import { EditSocialLinks } from "./forms/edit-social-links";
+import { Spacer } from "@nextui-org/spacer";
 
 export default function AboutPage() {
   const {
@@ -111,7 +112,7 @@ const PersonalDetails = ({artist}:{artist:z.infer<typeof ArtistInSchema>}) => {
     }
 
  return (
-    <div className="p-4 gap-4  flex bg-white/10 rounded-md ">
+    <div className="p-4 gap-4  flex bg-white/5 rounded-md ">
         <input type="file" accept="image/jpeg, image/png, image/jpg" style={{display:"none"}} onChange={onFileChange} ref={inputRef}/>
         <div className="relative group ">
             {file ?
@@ -132,35 +133,35 @@ const PersonalDetails = ({artist}:{artist:z.infer<typeof ArtistInSchema>}) => {
         <div className="space-y-2">
     <div className="flex justify-between items-center">
         <div className="flex">
-        <p className="w-[120px]">Name:</p>
+        <p className="w-[120px] text-white/50">Name:</p>
         <p className="capitalize">{artist.user.fullname}</p>
         </div>
         <ChangeName user={artist.user}/>
     </div>
     <div className="flex items-center justify-between">
         <div className="flex">
-        <p className="w-[120px]">Address:</p>
+        <p className="w-[120px] text-white/50">Address:</p>
         <p className="capitalize">{artist.user.profile?.complete_address}</p>
         </div>
         <ChangeAddress />
     </div>
     <div className="flex justify-between items-center">
         <div className="flex">
-        <p className="w-[120px]">Date of Birth:</p>
+        <p className="w-[120px] text-white/50">Date of Birth:</p>
         <p className="capitalize">{artist.user.profile?.dob}</p>
         </div>
         <ChangeDob />
     </div>
     <div className="flex justify-between items-center">
         <div className="flex">
-        <p className="w-[120px]">Gender:</p>
+        <p className="w-[120px] text-white/50">Gender:</p>
         <p className="capitalize">{artist.user.profile?.gender}</p>
         </div>
         <ChangeGender user={artist.user}/>
     </div>
     <div className="flex items-center justify-between">
         <div className="flex">
-        <p className="w-[120px]">Phone:</p>
+        <p className="w-[120px] text-white/50">Phone:</p>
         <p className="capitalize">{artist.user.profile?.phone}</p>
         </div>
         <ChangePhone />
@@ -174,7 +175,7 @@ const PersonalDetails = ({artist}:{artist:z.infer<typeof ArtistInSchema>}) => {
 const SocialLinks = ({artist}:{artist:z.infer<typeof ArtistInSchema>}) => {
 
     return (
-        <div className="p-4 relative min-w-[45%]  bg-white/10 rounded-md">
+        <div className="p-4 relative min-w-[45%]  bg-white/5 rounded-md">
             <EditSocialLinks artist={artist}/>
             <h1 className="mb-4 text-white/50">Social Links</h1>
             <div className="space-y-2">
@@ -220,7 +221,7 @@ const ArtistDetails = ({artist}:{artist:z.infer<typeof ArtistInSchema>}) => {
     const {data:allGenres} = useFetchGenresQuery()
     const [edit, setEdit] = useState(false)
     return (
-        <div className="p-4 w-full space-y-4 rounded-md bg-white/10">
+        <div className="p-4 w-full space-y-4 rounded-md bg-white/5">
             <h1 className="text-white/50 mb-4">Echoee Details</h1>
             <div>
                 <p>Genres</p>
@@ -234,7 +235,7 @@ const ArtistDetails = ({artist}:{artist:z.infer<typeof ArtistInSchema>}) => {
             <div>
                 <p className="mb-3">Rates</p>
 
-                <Table radius="sm" classNames={{tbody:'capitalize',tr:"group",td:'text-xs text-white/80'}}>
+                <Table  radius="sm" classNames={{wrapper:'bg-transparent',tbody:'capitalize',tr:"group",td:'text-xs text-white/80'}}>
                     <TableHeader>
                         <TableColumn>Rate</TableColumn>
                         <TableColumn>Amount</TableColumn>
@@ -245,7 +246,7 @@ const ArtistDetails = ({artist}:{artist:z.infer<typeof ArtistInSchema>}) => {
                         {(item)=>(
                             <TableRow key={item.id}>
                                 <TableCell>{item.name}</TableCell>
-                                <TableCell>{item.amount}</TableCell>
+                                <TableCell>&#8369;{parseFloat(item.amount.toString())}</TableCell>
                                 <TableCell>{item.description ? item.description : ''}</TableCell>
                                 <TableCell>
                                     <div className="flex gap-2 opacity-0 group-hover:opacity-100">
@@ -259,6 +260,7 @@ const ArtistDetails = ({artist}:{artist:z.infer<typeof ArtistInSchema>}) => {
                     </TableBody>
 
                 </Table>
+                <Spacer y={2}/>
                 <AddRate artist={artist}/>
 
             </div>
@@ -266,31 +268,6 @@ const ArtistDetails = ({artist}:{artist:z.infer<typeof ArtistInSchema>}) => {
     )
 }
 
-
-
-// const ArtistContext = createContext<z.infer<typeof ArtistInSchema> | null>(null);
-
-// // Create a provider component to pass down the artist data
-// export const ArtistProvider = ({
-//   artist,
-//   children,
-// }: {
-//   artist: z.infer<typeof ArtistInSchema>;
-//   children: ReactNode;
-// }) => {
-//   return (
-//     <ArtistContext.Provider value={artist}>{children}</ArtistContext.Provider>
-//   );
-// };
-
-// // Custom hook to access the artist context
-// export const useArtist = () => {
-//   const context = useContext(ArtistContext);
-//   if (!context) {
-//     throw new Error("useArtist must be used within an ArtistProvider");
-//   }
-//   return context;
-// };
 
 
 const Genre = ({genre, genreCount}:{genre:z.infer<typeof GenreSchema>, genreCount:number}) => {

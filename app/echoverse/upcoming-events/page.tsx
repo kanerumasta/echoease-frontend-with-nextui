@@ -1,11 +1,11 @@
 'use client'
 
-import { useFetchApprovedBookingsQuery } from "@/redux/features/bookingApiSlice"
+import { useFetchApprovedBookingsQuery, useFetchUpcomingEventsQuery } from "@/redux/features/bookingApiSlice"
 import { BookInSchema } from "@/schemas/booking-schemas"
 import { z } from "zod"
 
 export default function UpcomingEventsPage() {
-    const {data:approvedBookings = [], isLoading} = useFetchApprovedBookingsQuery()
+    const {data:approvedBookings = [], isLoading} = useFetchUpcomingEventsQuery()
     return (
         <div className="w-full flex gap-3 overflow-x-scroll">
             {approvedBookings.map((booking) => (

@@ -17,7 +17,7 @@ export const PendingBookings = () => {
     const [clickedBooking, setClickedBooking] = useState<z.infer<typeof BookInSchema>|null>(null)
     const loadingState = isLoading ? 'loading' :'idle'
     const {isOpen, onOpen, onOpenChange, onClose} = useDisclosure()
-    const [declineBooking] = useRejectBookingMutation()
+    const [declineBooking,{isLoading:isDeclining}] = useRejectBookingMutation()
     const [confirmBooking ,{isLoading:isConfirming, isError:isConfirmError, isSuccess:isConfirmed}] = useConfirmBookingMutation()
 
     const handleRowClick = (booking: z.infer<typeof BookInSchema>) => {
@@ -32,11 +32,12 @@ export const PendingBookings = () => {
 
     const handleConfirm = async (booking:z.infer<typeof BookInSchema>) => {
         await confirmBooking(booking.id.toString()).unwrap()
+        closeModal()
 
     }
     const handleDecline = async (booking:z.infer<typeof BookInSchema>) => {
         await declineBooking(booking.id.toString()).unwrap()
-
+        closeModal()
     }
 
     useEffect(()=>{
@@ -91,7 +92,7 @@ export const PendingBookings = () => {
 
         </ModalBody>
         <ModalFooter>
-            <Button color="danger"size="lg" radius="sm" onPress={()=>clickedBooking && handleDecline(clickedBooking)}  >  Decline</Button>
+            <Button color="danger"size="lg" radius="sm" isLoading={isDeclining} onPress={()=>clickedBooking && handleDecline(clickedBooking)}  >  Decline</Button>
             <Button onPress={()=>clickedBooking && handleConfirm(clickedBooking)} isLoading={isConfirming} isDisabled={isConfirming}  color="primary" size="lg" radius="sm">Confirm</Button>
         </ModalFooter>
     </ModalContent>

@@ -14,7 +14,6 @@ export const AddGenre = ({myGenres}:{myGenres:z.infer<typeof GenreSchema>[]}) =>
     const [addGenre] = useAddGenreMutation()
     const onSubmit = () => {
         for(const genre of pickedGenres){
-            alert('gsd')
             addGenre(genre.id.toString())
         }
     }

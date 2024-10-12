@@ -80,12 +80,20 @@ const bookingApiSlice = apiSlice.injectEndpoints({
         query:() => '/bookings/upcoming-events',
         providesTags:['UpcomingEvents']
     }),
+
     confirmBooking:builder.mutation<any,string>({
         query:(id)=>({
             method:'PATCH',
             url:`/bookings/${id}/confirm`
         }),
-        invalidatesTags: (result, error,  id ) => [{ type: 'Bookings', id },'Bookings','PendingBookings','AwaitingDownpayments']
+        invalidatesTags: ['Bookings','PendingBookings','AwaitingDownpayments']
+    }),
+    rejectBooking:builder.mutation<any,string>({
+        query:(id)=>({
+            method:'PATCH',
+            url:`/bookings/${id}/reject`
+        }),
+        invalidatesTags:['Bookings','PendingBookings']
     }),
 
   }),
@@ -95,7 +103,7 @@ export const {
   useCreateNewBookingMutation,
   useFetchMyBookingsQuery,
   useConfirmBookingMutation,
-
+  useRejectBookingMutation,
   useFetchBookingDetailQuery,
   useFetchPendingBookingsQuery,
   useFetchApprovedBookingsQuery,
