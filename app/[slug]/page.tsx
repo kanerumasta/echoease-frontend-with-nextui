@@ -48,7 +48,7 @@ export default function SlugPage() {
 
 
     }
-    
+
     //check if current user has no user role (organizer, regular, bar owner)
     else if (!currentUser.is_roled) {
       window.location.href = `/auth/register/picking-role?redirect=${encodeURIComponent(`/${artist?.slug}`)}`;
@@ -82,10 +82,11 @@ export default function SlugPage() {
             Book Me
           </Button>
         )}
-        <Modal size="3xl" onOpenChange={handleOpenchange} scrollBehavior="outside" isDismissable={false} isKeyboardDismissDisabled={false} isOpen={isOpen || firstOpen}>
-          <BookingForm artist={artist} />
-          <div>dfd</div>
+        {currentUser &&
+        <Modal classNames={{base:'bg-white/5',backdrop:'bg-black/80 backdrop-blur-xl'}} size="3xl" onOpenChange={handleOpenchange} scrollBehavior="outside" isDismissable={false} isKeyboardDismissDisabled={false} isOpen={isOpen || firstOpen}>
+          <BookingForm artist={artist} currentUser={currentUser} />
         </Modal>
+    }
       </div>
 
 }

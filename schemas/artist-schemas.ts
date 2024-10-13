@@ -147,41 +147,6 @@ export const MyConnectionsSchema = z.object({
     connections : z.array(ArtistInSchema)
 })
 
-//must have artist when posting
-export const TimeSlotSchema = z.object({
-    start_time: z.string(),
-    end_time:z.string()
-})
-
-
-export const InTimeslotSchema = z.object({
-    id: z.number(),
-    date:z.string().nullable().optional(),
-    start_time:z.string(),
-    end_time:z.string(),
-    formatted_start_time:z.string(),
-    formatted_end_time:z.string(),
-    artist:z.number()
-
-})
-
-export const InSpecialTimeSlotsSchema = z.object({
-    id: z.number(),
-    date:z.string(),
-    start_time:z.string(),
-    end_time:z.string(),
-    formatted_start_time:z.string(),
-    formatted_end_time:z.string(),
-    artist:z.number()
-})
-
-export const SpecialTimeSlotsSchema = z.object({
-    date: z.date(),
-    start_time:z.string(),
-    end_time: z.string(),
-    artist:z.number()
-  });
-
 
   export const RecommendedArtistsConnectionsSchema = z.object({
     id:z.number(),

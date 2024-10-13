@@ -46,7 +46,7 @@ export default function EchoeeGroup({ echoeeList }: Props) {
     >
       {echoeeList.map((echoee) => (
         <>
-          <EchoeeCard echoee={echoee} />
+          <EchoeeCard key={echoee.id} echoee={echoee} />
 
         </>
       ))}

@@ -2,6 +2,7 @@ import {
     useCreateNewBookingMutation,
     useFetchMyBookingsQuery,
 } from "@/redux/features/bookingApiSlice";
+import { ArtistInSchema } from "@/schemas/artist-schemas";
 import { BookingSchema } from "@/schemas/booking-schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
@@ -10,7 +11,7 @@ import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import { z } from "zod";
 
-export default function useCreateBooking() {
+export default function useCreateBooking(artist:z.infer<typeof ArtistInSchema>) {
   const [createNewBooking, bookingState] = useCreateNewBookingMutation();
 
   const form = useForm<z.infer<typeof BookingSchema>>({
@@ -18,12 +19,12 @@ export default function useCreateBooking() {
   });
 
   const onSubmit = (data: z.infer<typeof BookingSchema>) => {
-    const validatedData = BookingSchema.safeParse(data)
-    if(validatedData.success){
-            if (data.artist) {
+
+
+
                 const formattedDate  = `${data.eventDate.getFullYear()}-${data.eventDate.getMonth()+1}-${data.eventDate.getDate()}`
             const payload = {
-                "artist":data.artist.toString(),
+                "artist":artist.id.toString(),
                 "event_name":data.eventName,
                 "event_date":formattedDate,
                 "start_time":data.startTime.toString(),
@@ -36,13 +37,10 @@ export default function useCreateBooking() {
                 "rate":data.rate,
             }
 
-              createNewBooking(payload)
-                .unwrap()
+              createNewBooking(payload).unwrap()
 
-                }
-    }else{
-        toast.error("Invalid data passed.")
-    }
+
+
   };
   useEffect(() => {
     if (bookingState.isSuccess) {

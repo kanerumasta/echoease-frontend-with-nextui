@@ -2,6 +2,13 @@ import { z } from "zod";
 import { ArtistInSchema, RateSchema } from "./artist-schemas";
 import { UserSchema } from "./user-schemas";
 import { Time } from "@internationalized/date";
+
+export const TimeSlotSchema = z.object({
+    start_time : z.string(),
+end_time : z.string(),
+    is_booked:z.boolean()
+})
+
 export const BookingSchema = z
   .object({
     eventName: z.string().min(1, "Event name is required."),
@@ -13,18 +20,19 @@ export const BookingSchema = z
     street: z.string().min(1, "Event location is required."),
     landmark: z.string().min(1, "Event location is required."),
     artist: z.string().optional().nullable(),
-    rate: z.string().optional().nullable(),
+    rate: z.string(),
     rateName: z.string().optional().nullable(),
     rateAmount: z.string().optional().nullable(),
+    time_slot:TimeSlotSchema.nullable(),
   })
-  .refine((data) => {
-    console.log('Comparing startTime and endTime:', data.startTime.compare(data.endTime));
-    return data.startTime.compare(data.endTime) < 0;
-  }, {
-    message: "Start time must be earlier than end time.",
-    path: ["startTime"],
-  })
-  
+//   .refine((data) => {
+//     console.log('Comparing startTime and endTime:', data.endTime.compare(data.startTime));
+//     return data.startTime.compare(data.endTime) < 0;
+//   }, {
+//     message: "Start time must be earlier than end time.",
+//     path: ["startTime"],
+//   })
+
 
 export const BookInSchema = z.object({
   id: z.number(),
@@ -44,7 +52,7 @@ export const BookInSchema = z.object({
   status: z.string(),
   artist: ArtistInSchema,
   client: UserSchema,
+
 rate: RateSchema,
     location: z.string(),
-  timeslot:z.string()
 });

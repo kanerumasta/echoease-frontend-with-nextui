@@ -1,12 +1,10 @@
 import { z } from "zod";
 import { apiSlice } from "../services/apiSlice";
-import { InSpecialTimeSlotsSchema, InTimeslotSchema, SpecialTimeSlotsSchema } from "@/schemas/artist-schemas";
-import { UnavailableDateSchema } from "@/schemas/schedule-schemas";
+import { UnavailableDateSchema, WeekdayAvailabilitySchema } from "@/schemas/schedule-schemas";
+import { TimeSlotSchema } from "@/schemas/booking-schemas";
 
 const scheduleApiSlice = apiSlice.injectEndpoints({
     endpoints: (builder) => ({
-
-
         //WILL GET (date) as DATA
         createUnavailableDate: builder.mutation<any,any >({
             query: (data) => ({
@@ -33,6 +31,12 @@ const scheduleApiSlice = apiSlice.injectEndpoints({
             query: (artist) => `/artists/unavailable-dates`,
             providesTags:['MyUnavailableDates']
         }),
+        fetchArtistAvailabilities:builder.query<z.infer<typeof TimeSlotSchema>[],{artist:number, date:string}>({
+            query:({artist, date})=>`/schedule/artist-time-slot/${artist}/${date}`
+        }),
+        fetchArtistWeekdaysAvailability:builder.query<number[],number>({
+            query:(artist) => `/schedule/artist-weekdays/${artist}`
+        })
     })
 })
 
@@ -46,6 +50,8 @@ export const {
     //FETCHES
     useFetchArtistUnavailableDatesQuery,
     useFetchMyUnavailableDatesQueryQuery, //FOR ARTIST
+    useFetchArtistAvailabilitiesQuery,
+    useFetchArtistWeekdaysAvailabilityQuery
 
 
 } = scheduleApiSlice
