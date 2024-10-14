@@ -1,5 +1,4 @@
 import { cn } from "@/lib/utils"
-import { InTimeslotSchema } from "@/schemas/artist-schemas"
 import { UnavailableDateSchema } from "@/schemas/schedule-schemas"
 import { Button } from "@nextui-org/button"
 import { Dropdown, DropdownItem, DropdownMenu, DropdownTrigger } from "@nextui-org/dropdown"

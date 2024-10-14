@@ -21,7 +21,6 @@ const EventCard = ({booking}:{booking:z.infer<typeof BookInSchema>}) => {
             <h1 className="text-2xl font-bold">{booking.event_name}</h1>
             <p>{booking.location}</p>
             <p>{booking.event_date}</p>
-            <p>{`${booking.timeslot}`}</p>
 
         </div>
     )

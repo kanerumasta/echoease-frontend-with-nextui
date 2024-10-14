@@ -2,17 +2,11 @@
 
 import useIsArtistOnly from "@/hooks/use-is-artist-only";
 import useLoginRequired from "@/hooks/use-login-required";
-import { useFetchReceivedConnectionRequestsQuery } from "@/redux/features/artistApiSlice";
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import NewBookings from "./sections/bookings";
-import UpcomingEvents from "./sections/upcoming-events";
-import { User } from "@nextui-org/user";
-import CustomImage from "@/components/image";
-import { Button } from "@nextui-org/button";
-import { Spacer } from "@nextui-org/spacer";
 import { ConnectionRequests } from "./sections/connection-requests";
-import { Spinner } from "@nextui-org/spinner";
-import Link from "next/link";
+import UpcomingEvents from "./sections/upcoming-events";
 
 //Artist Profile Page
 

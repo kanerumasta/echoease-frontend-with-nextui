@@ -6,11 +6,9 @@ import {
   ConnectionRequestSchema,
   GenreSchema,
   InPortfolioSchema,
-  InTimeslotSchema,
   MyConnectionsSchema,
   RateSchema,
   RecommendedArtistsConnectionsSchema,
-  TimeSlotSchema,
 } from "@/schemas/artist-schemas";
 
 const artistApiSlice = apiSlice.injectEndpoints({

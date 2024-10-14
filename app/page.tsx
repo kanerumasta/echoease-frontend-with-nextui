@@ -12,6 +12,7 @@ import { AnimatedComponent } from "@/components/animated-container";
 import { Spacer } from "@nextui-org/spacer";
 
 export default function Home() {
+
   const springs = useSpring({
     from: { x: 0 },
     to: { x: 100 },

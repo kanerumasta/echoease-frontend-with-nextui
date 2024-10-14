@@ -39,7 +39,7 @@ export const AwaitingDownpayments = () => {
             payment_intent_id: data?.payment_intent_id,
             payment_method: method,
             booking: booking.id,
-            return_url: "http://localhost:3000/pay/validate",
+            return_url: `${process.env.NEXT_PUBLIC_SITE}/pay/validate/down-payment`,
             email: currentUser?.email,
             name:currentUser?.fullname
         }

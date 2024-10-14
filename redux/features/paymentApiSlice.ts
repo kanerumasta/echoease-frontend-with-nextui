@@ -23,6 +23,27 @@ const paymentApiSlice = apiSlice.injectEndpoints({
                 body:data
             })
         }),
+        createFinalPaymentIntent:builder.mutation<{payment_intent_id:string },{booking:number}>({
+            query:(data)=>({
+                url:'/payments/create-finalpayment-intent',
+                method:'POST',
+                body:data
+            })
+        }),
+        attachFinalPayment:builder.mutation({
+            query:(data)=>({
+                url:'/payments/attach-finalpayment-intent',
+                method:'POST',
+                body:data
+            })
+        }),
+        finalizeFinalPayment:builder.mutation({
+            query:(data)=>({
+                url:'/payments/retrieve-finalpayment-intent',
+                method:'POST',
+                body:data
+            })
+        })
 
     }),
 })
@@ -30,5 +51,8 @@ const paymentApiSlice = apiSlice.injectEndpoints({
 export const {
     useCreateDownPaymentIntentMutation,
     useAttachDownPaymentIntentMutation,
-    useFinalizeDownPaymentMutation
+    useFinalizeDownPaymentMutation,
+    useCreateFinalPaymentIntentMutation,
+    useAttachFinalPaymentMutation,
+    useFinalizeFinalPaymentMutation
 } = paymentApiSlice
