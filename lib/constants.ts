@@ -1,5 +1,5 @@
 export const WEEKDAYS = {
-    Monday: 1,
+    Monday:1,
     Tuesday: 2,
     Wednesday: 3,
     Thursday: 4,

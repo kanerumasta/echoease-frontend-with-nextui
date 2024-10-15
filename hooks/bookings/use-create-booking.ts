@@ -19,9 +19,6 @@ export default function useCreateBooking(artist:z.infer<typeof ArtistInSchema>) 
   });
 
   const onSubmit = (data: z.infer<typeof BookingSchema>) => {
-
-
-
                 const formattedDate  = `${data.eventDate.getFullYear()}-${data.eventDate.getMonth()+1}-${data.eventDate.getDate()}`
             const payload = {
                 "artist":artist.id.toString(),
@@ -38,9 +35,6 @@ export default function useCreateBooking(artist:z.infer<typeof ArtistInSchema>) 
             }
 
               createNewBooking(payload).unwrap()
-
-
-
   };
   useEffect(() => {
     if (bookingState.isSuccess) {

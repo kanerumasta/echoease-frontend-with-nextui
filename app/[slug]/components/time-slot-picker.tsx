@@ -90,7 +90,6 @@ const TimeSlotItem:React.FC<TimeSlotItemProps> = ({time_slot}) => {
         {!time_slot.is_booked ?
 
      <Button onClick={handleClick} variant={selectedTimeSlot?.start_time === time_slot.start_time ? 'solid' :'flat'} className="text-white min-w-[200px]" size="lg" radius="full"  color="primary">
-
         {formatTimeStringTo12Hour(time_slot.start_time)} - {formatTimeStringTo12Hour(time_slot.end_time)}
     </Button> :
     <Tooltip color="danger" content={"Already Booked"}>

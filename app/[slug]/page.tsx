@@ -1,22 +1,19 @@
 "use client";
 
+import EchoLoading from "@/components/echo-loading";
+import { UserRoles } from "@/config/constants";
 import useLoginRequired from "@/hooks/use-login-required";
 import { useFetchDetailArtistBySlugQuery } from "@/redux/features/artistApiSlice";
 import { useFetchCurrentUserQuery } from "@/redux/features/authApiSlice";
-import { Modal, useDisclosure } from "@nextui-org/modal";
-import { notFound, useParams, useRouter, useSearchParams } from "next/navigation";
-import Loading from "../auth/facebook/loading";
-import { Spacer } from "@nextui-org/spacer";
 import { Button } from "@nextui-org/button";
+import { Modal, useDisclosure } from "@nextui-org/modal";
+import { Spacer } from "@nextui-org/spacer";
+import { notFound, useParams, useRouter, useSearchParams } from "next/navigation";
+import { useState } from "react";
 import { BookingForm } from "./forms/booking-form";
 import AboutSection from "./sections/about";
 import { IntroductionSection } from "./sections/intro";
 import { PortfolioSection } from "./sections/portfolio";
-import EchoLoading from "@/components/echo-loading";
-import { createContext, ReactNode, useContext, useEffect, useState } from "react";
-import { ArtistInSchema } from "@/schemas/artist-schemas";
-import { z } from "zod";
-import { UserRoles } from "@/config/constants";
 
 export default function SlugPage() {
   const params = useParams<{ slug: string }>();

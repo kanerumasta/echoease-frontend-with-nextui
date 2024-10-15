@@ -36,7 +36,7 @@ export const AwaitingDownpayments = () => {
 
     const handlePayWithMethod = async (booking:z.infer<typeof BookInSchema>, method:"gcash"|"paymaya") => {
         const payload = {
-            payment_intent_id: data?.payment_intent_id,
+            payment_intent_id: data?.payment_intent_id,''
             payment_method: method,
             booking: booking.id,
             return_url: `${process.env.NEXT_PUBLIC_SITE}/pay/validate/down-payment`,

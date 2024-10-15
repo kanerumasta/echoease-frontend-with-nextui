@@ -58,7 +58,7 @@ const baseQueryWithReauth: BaseQueryFn<
 
 export const apiSlice = createApi({
   reducerPath: "api",
-  tagTypes: ['CurrentUser','oldNotifications','newNotifications','Bookings','Echoees','ConnectionRequests','PendingBookings','TimeSlots','Portfolio', 'Connections','RecommendedArtists','SentConnectionRequests','CurrentArtist','AwaitingDownpayments','ApprovedBookings','MyUnavailableDates', 'CompletedBookings','PendingPayments','UpcomingEvents'],
+  tagTypes: ['CurrentUser','oldNotifications','newNotifications','Bookings','Echoees','ConnectionRequests','PendingBookings','Portfolio', 'Connections','RecommendedArtists','SentConnectionRequests','CurrentArtist','AwaitingDownpayments','ApprovedBookings','MyUnavailableDates', 'CompletedBookings','PendingPayments','UpcomingEvents','ScheduledDays','CombinedAvailability'],
   baseQuery: baseQueryWithReauth,
   endpoints: (builder) => ({}),
 });
