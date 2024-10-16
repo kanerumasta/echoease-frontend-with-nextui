@@ -1,6 +1,6 @@
 'use client'
 import { useFetchDetailCurrentArtistQuery } from "@/redux/features/artistApiSlice";
-import { useCreateAvailabilityMutation, useCreateRecurringPatternMutation, useDeleteAvailabilityMutation, useDeleteRecurringPatternMutation, useEditAvailabilityTimeMutation, useEditRecurringPatternTimeMutation, useFetchArtistScheduleDaysQuery, useFetchCombinedAvailabilityQuery, useFetchMyUnavailableDatesQueryQuery } from "@/redux/features/scheduleApiSlice";
+import { useCreateAvailabilityMutation, useCreateRecurringPatternMutation, useDeleteAvailabilityMutation, useDeleteRecurringPatternMutation, useEditAvailabilityTimeMutation, useEditRecurringPatternTimeMutation, useFetchArtistScheduleDaysQuery, useFetchCombinedAvailabilityQuery } from "@/redux/features/scheduleApiSlice";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { z } from "zod";
 import { DatePicker } from "./components/custom-date-picker";
@@ -19,6 +19,8 @@ import { toast } from "react-toastify";
 import { formatTimeStringTo12Hour } from "@/utils/format-time";
 import { IoAdd, IoClose, IoSave } from "react-icons/io5";
 import { Spacer } from "@nextui-org/spacer";
+import { CustomDatePicker } from "@/app/[slug]/components/custom-datepicker";
+import ArtistCalendar from "./sections/calendar";
 
 export default function SchedulePage(){
     const { data: currentArtist, isLoading: isArtistLoading } = useFetchDetailCurrentArtistQuery();
@@ -59,6 +61,10 @@ export default function SchedulePage(){
                 <Spacer y={3}/>
                 {scheduledDays && currentArtist && <AddWeekDayOrRecurringAvailability artistId={currentArtist.id} scheduledDays={scheduledDays}/>}
                 </>
+            </Tab>
+            <Tab key="Calendar" title="Calendar">
+
+                <ArtistCalendar />
             </Tab>
         </Tabs>
 

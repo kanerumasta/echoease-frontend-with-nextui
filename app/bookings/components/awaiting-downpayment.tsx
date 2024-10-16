@@ -14,10 +14,14 @@ import { Table, TableBody, TableCell, TableColumn, TableHeader, TableRow } from 
 import { useState } from "react"
 import { Dropdown, DropdownItem, DropdownMenu, DropdownTrigger } from "@nextui-org/dropdown"
 import { HiDotsVertical } from "react-icons/hi"
+import { Pagination } from "@nextui-org/pagination"
+import { Chip } from "@nextui-org/chip"
+import { User } from "@nextui-org/user"
 
 
 export const AwaitingDownpayments = () => {
-    const {data:awaitingBookings = [], isLoading} = useFetchAwaitingDownpaymentBookingsQuery()
+
+    const {data:awaitingBookings=[], isLoading} = useFetchAwaitingDownpaymentBookingsQuery()
     const {data:currentUser} = useFetchCurrentUserQuery()
     const { isOpen, onOpen, onClose, onOpenChange } = useDisclosure()
     const [createDownPaymentIntent, {isLoading:creatingIntent,data}] = useCreateDownPaymentIntentMutation()
@@ -33,10 +37,11 @@ export const AwaitingDownpayments = () => {
         await createDownPaymentIntent(payload)
         onOpen()
     }
+    console.log(awaitingBookings)
 
     const handlePayWithMethod = async (booking:z.infer<typeof BookInSchema>, method:"gcash"|"paymaya") => {
         const payload = {
-            payment_intent_id: data?.payment_intent_id,''
+            payment_intent_id: data?.payment_intent_id,
             payment_method: method,
             booking: booking.id,
             return_url: `${process.env.NEXT_PUBLIC_SITE}/pay/validate/down-payment`,
@@ -44,7 +49,6 @@ export const AwaitingDownpayments = () => {
             name:currentUser?.fullname
         }
 
-        console.log(payload)
         const response = await attachDownPaymentIntent(payload)
 
         window.location.href = response.data.url
@@ -53,14 +57,15 @@ export const AwaitingDownpayments = () => {
 
 
     return <>
-            <div className="w-full p-4 mb-2 bg-white/5 rounded-lg">
+            <div className="w-full p-4 mb-2 rounded-lg">
                 <h1 className="text-center text-lg text-white/40 mb-4">Awaiting Down payments</h1>
-               <Table  classNames={{wrapper:'bg-transparent'}}>
+               <Table  classNames={{wrapper:'bg-transparent'}} >
                 <TableHeader>
                     <TableColumn>Event</TableColumn>
                     <TableColumn>Event Date</TableColumn>
                     <TableColumn>Event Location</TableColumn>
                     <TableColumn>Event Time</TableColumn>
+
                     <TableColumn>Echoee</TableColumn>
                     <TableColumn>Action</TableColumn>
                 </TableHeader>
@@ -69,15 +74,16 @@ export const AwaitingDownpayments = () => {
                         <TableRow key={item.id}>
                             <TableCell>{item.event_name}</TableCell>
                             <TableCell>{item.formatted_event_date}</TableCell>
-                            <TableCell>{item.location}</TableCell>
-                            <TableCell>{item.start_time} - {item.end_time}</TableCell>
+                            <TableCell className="text-wrap max-w-[200px]"><span className="capitalize text-xs text-white/50 ">{item.location}</span></TableCell>
+                            <TableCell>{item.formatted_start_time} - {item.formatted_end_time}</TableCell>
+
                             <TableCell>
-                                <CustomImage src={`${process.env.NEXT_PUBLIC_HOST}${item.artist.user.profile?.profile_image}`} className="rounded-full" width={"50px"} height={"50px"} /> {item.artist.user.fullname}
+                               <User avatarProps={{src:`${process.env.NEXT_PUBLIC_HOST}${item.artist.user.profile?.profile_image}`}} name={item.client.fullname} classNames={{name:'capitalize'}}/>
                             </TableCell>
                             <TableCell>
                             <Dropdown>
                                     <DropdownTrigger>
-                                            <Button isIconOnly>
+                                            <Button variant="light" isIconOnly>
                                             <HiDotsVertical />
                                             </Button>
                                         </DropdownTrigger>

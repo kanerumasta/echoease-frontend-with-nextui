@@ -8,15 +8,15 @@ const scheduleApiSlice = apiSlice.injectEndpoints({
         //WILL GET (date) as DATA
         createUnavailableDate: builder.mutation<any,any >({
             query: (data) => ({
-                url: `/artists/unavailable-dates`,
+                url: `/schedule/artist-unavailable-dates`,
                 method: 'POST',
                 body:data
             }),
             invalidatesTags:['MyUnavailableDates']
         }),
         deleteUnavailableDate: builder.mutation<any,number >({
-            query: (id) => ({
-                url: `/artists/unavailable-dates/${id}`,
+            query: (dateId) => ({
+                url: `/schedule/artist-unavailable-dates/delete/${dateId}`,
                 method: 'DELETE',
 
             }),
@@ -73,10 +73,7 @@ const scheduleApiSlice = apiSlice.injectEndpoints({
 
         //FETCHES
         fetchArtistUnavailableDates: builder.query<z.infer<typeof UnavailableDateSchema>[],number>({
-            query:(artist) => `/artists/${artist}/unavailable-dates`
-        }),
-        fetchMyUnavailableDatesQuery: builder.query<z.infer<typeof UnavailableDateSchema>[],void>({
-            query: (artist) => `/artists/unavailable-dates`,
+            query:(artist) => `/schedule/artist-unavailable-dates/${artist}`,
             providesTags:['MyUnavailableDates']
         }),
         fetchArtistAvailabilities:builder.query<z.infer<typeof TimeSlotSchema>[],{artist:number, date:string}>({
@@ -113,7 +110,6 @@ export const {
 
     //FETCHES
     useFetchArtistUnavailableDatesQuery,
-    useFetchMyUnavailableDatesQueryQuery, //FOR ARTIST
     useFetchArtistAvailabilitiesQuery,
     useFetchArtistWeekdaysAvailabilityQuery,
     useFetchArtistScheduleDaysQuery,

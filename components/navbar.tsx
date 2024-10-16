@@ -56,7 +56,7 @@ export const Navbar = () => {
   const { logout } = useLogout();
   const router = useRouter();
   const { data: newNotifications =[]} = useFetchNewNotificationsQuery();
-  const {data:pendingBookings = []} = useFetchPendingBookingsQuery()
+  const {data:pendingBookings} = useFetchPendingBookingsQuery()
   const currentPath = usePathname()
 
   const isActiveTab = useCallback((path:string)=>currentPath.includes(path),[currentPath])
@@ -268,9 +268,9 @@ export const Navbar = () => {
                   >
                     {isArtist ? 'Echoverse':'Profile'}
                   </DropdownItem>
-                <DropdownItem onPress={()=>router.push('/echoverse/connections')}>
-                    My Connections
-                  </DropdownItem>
+
+                  {isArtist ? <DropdownItem onPress={()=>router.push('/echoverse/connections')}> My Connections</DropdownItem> : <></>
+}
 
                 </DropdownSection>
                 <DropdownSection>

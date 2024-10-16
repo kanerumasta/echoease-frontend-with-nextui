@@ -6,7 +6,7 @@ import { Spinner } from "@nextui-org/spinner"
 import { Table, TableBody, TableCell, TableColumn, TableHeader, TableRow } from "@nextui-org/table"
 
 export default function UpcomingEvents(){
-    const {data:upcomingEventsData = [], isLoading} = useFetchUpcomingEventsQuery()
+    const {data:upcomingEventsData=[], isLoading} = useFetchUpcomingEventsQuery()
     const loadingState = isLoading ? 'loading' : 'idle'
 
     console.log(upcomingEventsData)

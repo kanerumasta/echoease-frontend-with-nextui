@@ -24,8 +24,8 @@ export const BookingCard = ({booking, children, modalClassname,modalHeader}:Prop
 
         </div>
         <div className="space-y-2 relative w-full">
-            <div className="h-2/4 text-center flex items-center">
-            <h1 className="text-2xl text-white w-full font-bold ">{booking.artist.user.fullname}</h1>
+            <div className=" flex w-full">
+            <h1 className="text-2xl text-white w-full font-bold capitalize">{booking.artist.user.fullname}</h1>
             </div>
             <div className="h-2/4 pb-3 text-white/40 gap-2r">
                 <p className="text-sm capitalize">{booking.event_name}</p>

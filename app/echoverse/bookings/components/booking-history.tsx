@@ -39,8 +39,8 @@ export const BookingHistory = () => {
                         <TableCell>{ item.event_name}</TableCell>
                         <TableCell>{ item.formatted_event_date}</TableCell>
                         <TableCell>{ item.formatted_start_time}</TableCell>
-                        <TableCell className="capitalize">{ item.artist.user.fullname}</TableCell>
-                        <TableCell><Chip classNames={{base:'border-none outline-none',content:'border-none outline-none'}} variant="dot" color={getColorByStatus(item.status)}>{ item.status}</Chip></TableCell>
+                        <TableCell>{ item.artist.user.fullname}</TableCell>
+                        <TableCell><Chip variant="flat" color={getColorByStatus(item.status)}>{ item.status}</Chip></TableCell>
                     </TableRow>
                 ))}
             </TableBody>

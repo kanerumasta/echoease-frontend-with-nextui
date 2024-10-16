@@ -25,18 +25,12 @@ export const BookingSchema = z
     rateAmount: z.string().optional().nullable(),
     time_slot:TimeSlotSchema.nullable(),
   })
-//   .refine((data) => {
-//     console.log('Comparing startTime and endTime:', data.endTime.compare(data.startTime));
-//     return data.startTime.compare(data.endTime) < 0;
-//   }, {
-//     message: "Start time must be earlier than end time.",
-//     path: ["startTime"],
-//   })
 
 
 export const BookInSchema = z.object({
   id: z.number(),
   event_date: z.string(),
+  booking_reference:z.string(),
   is_completed: z.boolean(),
   formatted_event_date: z.string(),
   formatted_end_time: z.string(),
@@ -52,7 +46,23 @@ export const BookInSchema = z.object({
   status: z.string(),
   artist: ArtistInSchema,
   client: UserSchema,
+  downpayment_amount:z.number(),
+  service_fee:z.number(),
 
 rate: RateSchema,
     location: z.string(),
 });
+
+
+export const PaginatedBookInSchema = z.object({
+    links:z.object({
+        next:z.string().nullable(),
+        previous:z.string().nullable()
+    }),
+    total_pages: z.number(),
+    current_page: z.number(),
+    has_next: z.boolean(),
+    has_previous: z.boolean(),
+    count: z.number(),
+    results: z.array(BookInSchema)
+})

@@ -8,7 +8,9 @@ import { BookInSchema } from "@/schemas/booking-schemas"
 import { Button } from "@nextui-org/button"
 import { Dropdown, DropdownItem, DropdownMenu, DropdownTrigger } from "@nextui-org/dropdown"
 import { Modal, ModalBody, ModalContent, ModalHeader, useDisclosure } from "@nextui-org/modal"
+import { Pagination } from "@nextui-org/pagination"
 import { Table, TableBody, TableCell, TableColumn, TableHeader, TableRow } from "@nextui-org/table"
+import { User } from "@nextui-org/user"
 import { useState } from "react"
 import { HiDotsVertical } from "react-icons/hi"
 import { z } from "zod"
@@ -55,9 +57,9 @@ export default function PendingPayments (){
 
     return (
         <>
-        <div className="p-4 rounded-lg bg-white/5">
+        <div className="p-4 rounded-lg">
             <h1 className="text-center mb-4 text-lg text-white/40">Pending Payments</h1>
-            <Table classNames={{wrapper:'bg-trasparent'}}>
+            <Table classNames={{wrapper:'bg-trasparent'}} >
                 <TableHeader
                 >
                     <TableColumn>Event</TableColumn>
@@ -71,12 +73,12 @@ export default function PendingPayments (){
                         <TableRow key={booking.id}>
                             <TableCell>{booking.event_name}</TableCell>
                             <TableCell>{booking.formatted_event_date}</TableCell>
-                            <TableCell>{booking.event_location}</TableCell>
-                            <TableCell>{booking.artist.user.fullname}</TableCell>
+                            <TableCell>{booking.location}</TableCell>
+                            <TableCell><User classNames={{name:'capitalize', description:'capitalize'}} name={booking.artist.user.fullname} description={booking.artist.user.role} avatarProps={{src:`${process.env.NEXT_PUBLIC_HOST}${booking.artist.user.profile?.profile_image}`}} /></TableCell>
                             <TableCell>
                                 <Dropdown>
                                     <DropdownTrigger>
-                                       <Button isIconOnly> <HiDotsVertical /></Button>
+                                       <Button variant="light" size="lg" isIconOnly> <HiDotsVertical /></Button>
                                     </DropdownTrigger>
                                     <DropdownMenu>
                                         <DropdownItem onClick={()=>handlePayNowClick(booking.id)}>Pay Now</DropdownItem>

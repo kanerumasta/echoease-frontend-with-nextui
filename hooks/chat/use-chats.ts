@@ -1,9 +1,9 @@
-"use client";
+// "use client";
 
-import { useFetchChatsQuery } from "@/redux/features/chatApiSlice";
+// import { useFetchChatsQuery } from "@/redux/features/chatApiSlice";
 
-export default function useChats() {
-    const {data, isLoading} = useFetchChatsQuery();
+// export default function useChats() {
+//     const {data, isLoading} = useFetchChatsQuery();
 
-    return  {data, isLoading} ;
-}
+//     return  {data, isLoading} ;
+// }

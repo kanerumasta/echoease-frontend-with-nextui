@@ -13,6 +13,12 @@ import PendingPayments from "@/app/bookings/components/pending-payments"
 import { AwaitingDownpayments } from "@/app/bookings/components/awaiting-downpayment"
 import { Spacer } from "@nextui-org/spacer"
 import { PendingBookings } from "./components/pending"
+import { Tab, Tabs } from "@nextui-org/tabs"
+import { BookingHistory } from "./components/booking-history"
+import { PendingBookingIcon } from "@/components/icons/pending-booking"
+import { ApprovedBookingIcon } from "@/components/icons/approved-booking"
+import { CompletedBookingIcon } from "@/components/icons/completed=booking"
+import { BookingHistoryIcon } from "@/components/icons/booking-history"
 
 export default function BookingsPage(){
 
@@ -28,8 +34,36 @@ export default function BookingsPage(){
         return notFound();
     }
     return <div className="space-y-2">
-        <PendingBookings />
-        <ApprovedBookings/>
-        <CompleteBookings />
+        <Tabs   variant="underlined" classNames={{}} aria-label="bookings table">
+            <Tab key="pending"  title={
+            <div className="flex items-center space-x-2">
+
+              <span>Pending</span>
+            </div>
+          }>
+                <PendingBookings />
+            </Tab>
+            <Tab key="approved" title={
+            <div className="flex items-center space-x-2">
+
+              <span>Approved</span>
+            </div>}>
+                <ApprovedBookings />
+            </Tab>
+            <Tab key="completed" title={
+            <div className="flex items-center space-x-2">
+
+              <span>Completed</span>
+            </div>}>
+                <CompleteBookings />
+            </Tab>
+            <Tab key="booking-history" title={
+            <div className="flex items-center space-x-2">
+
+              <span>History</span>
+            </div>}>
+                <BookingHistory />
+            </Tab>
+        </Tabs>
     </div>
 }

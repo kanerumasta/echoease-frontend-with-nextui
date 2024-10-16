@@ -1,14 +1,17 @@
 'use client'
 
 import { useFetchPendingBookingsQuery } from "@/redux/features/bookingApiSlice"
+import { Pagination } from "@nextui-org/pagination"
 import { Spinner } from "@nextui-org/spinner"
 import { Table, TableBody, TableCell, TableColumn, TableHeader, TableRow } from "@nextui-org/table"
+import { useState } from "react"
 
 export default function NewBookings(){
-    const {data:bookings = [], isLoading} = useFetchPendingBookingsQuery()
+
+    const {data:bookings=[], isLoading} = useFetchPendingBookingsQuery()
 
     return <div>
-       <Table  radius="sm" classNames={{td:"text-xs"}}>
+       <Table radius="sm" classNames={{td:"text-xs"}}>
         <TableHeader >
             <TableColumn>Event</TableColumn>
             <TableColumn>Date</TableColumn>

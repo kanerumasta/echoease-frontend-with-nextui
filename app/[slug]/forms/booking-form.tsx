@@ -19,6 +19,8 @@ import { FinalBookingStep } from "./final-step";
 import { Step1 } from "./step1";
 import { Step2 } from "./step2";
 import { Step3 } from "./step3";
+import { Stepper } from "./form-stepper-progress";
+import { Spacer } from "@nextui-org/spacer";
 
 export const BookingForm: React.FC<BookingFormProps> = ({ artist, currentUser }) => {
   const [currentStep, setCurrentStep] = useState(0);
@@ -26,6 +28,7 @@ export const BookingForm: React.FC<BookingFormProps> = ({ artist, currentUser })
   const { data: rates } = useFetchArtistRatesQuery(artist.id.toString());
   const { form, bookingState, onSubmit } = useCreateBooking(artist);
   const formRef = useRef<HTMLFormElement | null>(null);
+  const totalSteps = 4
 
   const steps = [
     {
@@ -82,6 +85,8 @@ export const BookingForm: React.FC<BookingFormProps> = ({ artist, currentUser })
               </p>
             </ModalHeader>
             <ModalBody>
+                <Stepper currentStep={currentStep} totalSteps={totalSteps}/>
+                <Spacer y={6}/>
               <FormProvider {...form}>
                 <form
                   ref={formRef}

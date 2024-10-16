@@ -2,6 +2,7 @@
 
 import { useCreateUnavailableDateMutation } from "@/redux/features/scheduleApiSlice"
 import { Button } from "@nextui-org/button"
+import { IoClose } from "react-icons/io5"
 
 type Props = {
     date: Date
@@ -18,6 +19,6 @@ export const SetDateUnavailable = ({ date }: Props) => {
         createUnavailableDate(payload)
     }
     return <>
-        <Button onPress={handleCreate} isLoading={isLoading}>Set Date Unavailable</Button>
+        <Button variant="light" color="danger" radius="full" size="lg" onPress={handleCreate} isLoading={isLoading}>Set Unavailable</Button>
     </>
 }

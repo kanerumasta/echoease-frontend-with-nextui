@@ -6,6 +6,7 @@ import { Time,parseTime } from "@internationalized/date"
 import { Button } from "@nextui-org/button"
 import { TimeInput, TimeInputValue } from "@nextui-org/date-input"
 import { useDisclosure } from "@nextui-org/modal"
+import { Spinner } from "@nextui-org/spinner"
 import { Tooltip } from "@nextui-org/tooltip"
 import { Dispatch, SetStateAction, useEffect, useState } from "react"
 import { useFormContext } from "react-hook-form"
@@ -24,7 +25,7 @@ export const TimeSlotPicker:React.FC<Props> = ({artist, date}) => {
     const selectedTimeSlot = watch("time_slot")
     const dateString = `${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()}`
 
-    const {data:time_slots=[]} = useFetchArtistAvailabilitiesQuery({artist:artist, date:dateString})
+    const {data:time_slots=[], isLoading} = useFetchArtistAvailabilitiesQuery({artist:artist, date:dateString})
 
         // Helper function to convert "HH:mm:ss" string to Time object
     const convertToTime = (timeString: string): Time => {
@@ -59,6 +60,7 @@ export const TimeSlotPicker:React.FC<Props> = ({artist, date}) => {
     return <>
     <div className="p-4 rounded-lg ">
         <h1 className="mb-4 text-center text-xl">Available Time Slot</h1>
+        {isLoading && <Spinner label="Loading..."/>}
          <div className="5 flex flex-wrap mb-8 justify-center gap-4">
 
             {time_slots.map((timeSlot, index)=>(

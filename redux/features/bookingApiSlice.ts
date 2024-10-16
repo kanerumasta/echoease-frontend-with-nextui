@@ -1,4 +1,4 @@
-import { BookInSchema } from "@/schemas/booking-schemas";
+import { BookInSchema, PaginatedBookInSchema } from "@/schemas/booking-schemas";
 import { apiSlice } from "../services/apiSlice";
 import { z } from "zod";
 import { ArtistInSchema } from "@/schemas/artist-schemas";
@@ -33,8 +33,8 @@ const DetailBookingInSchema = z.object({
 
 const bookingApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
-    fetchMyBookings: builder.query<z.infer<typeof BookInSchema>[], void>({
-        query: () => "/bookings",
+    fetchMyBookings: builder.query<z.infer<typeof PaginatedBookInSchema>, number>({
+        query: (page) => `/bookings?page=${page}`,
         providesTags: ["Bookings"]
       }),
 
@@ -49,7 +49,7 @@ const bookingApiSlice = apiSlice.injectEndpoints({
     }),
 
     fetchPendingBookings: builder.query<z.infer<typeof BookInSchema>[], void>({
-        query: () => "/bookings?status=pending",
+        query: () => `/bookings?status=pending`,
         providesTags:['PendingBookings'],
       }),
     fetchBookingDetail: builder.query<z.infer<typeof BookInSchema>, string>({
@@ -57,23 +57,23 @@ const bookingApiSlice = apiSlice.injectEndpoints({
         providesTags: (result, error, id) => [{ type: 'Bookings', id }],
     }),
     fetchApprovedBookings:builder.query<z.infer<typeof BookInSchema>[], void>({
-        query:() => '/bookings?status=approved',
+        query:() => `/bookings?status=approved`,
        providesTags: (result, error, arg, meta) =>
            ['ApprovedBookings']
        ,
     }),
     fetchCompletedBookings:builder.query<z.infer<typeof BookInSchema>[], void>({
-        query:() => '/bookings?status=completed',
+        query:() => `/bookings?status=completed`,
        providesTags: (result, error, arg, meta) =>
            ['CompletedBookings']
        ,
     }),
     fetchAwaitingDownpaymentBookings:builder.query<z.infer<typeof BookInSchema>[], void>({
-        query:() => '/bookings?status=awaiting_downpayment',
+        query:() => `/bookings?status=awaiting_downpayment`,
         providesTags:['AwaitingDownpayments']
     }),
     fetchPendingPayments :builder.query<z.infer<typeof BookInSchema>[], void>({
-        query:() => '/bookings/pending-payments',
+        query:() => `/bookings/pending-payments`,
         providesTags:['PendingPayments']
     }),
     fetchUpcomingEvents:builder.query<z.infer<typeof BookInSchema>[], void>({

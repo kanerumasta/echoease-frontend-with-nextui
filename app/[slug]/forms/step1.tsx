@@ -16,12 +16,12 @@ import { TimeSlotPicker } from "../components/time-slot-picker";
 export const Step1 = () => {
     const {artist} = useBookingContext()
     const {data:unavailableDates = []}  = useFetchArtistUnavailableDatesQuery(artist.id)
-    const [selectedDate, setSelectedDate] = useState<Date>(new Date())
+    const [selectedDate, setSelectedDate] = useState<Date|null>(null)
     const form = useFormContext<z.infer<typeof BookingSchema>>();
 
 
     useEffect(()=>{
-        form.setValue('eventDate', selectedDate)
+        selectedDate && form.setValue('eventDate', selectedDate)
     },[artist, selectedDate])
 
     return (
@@ -37,7 +37,7 @@ export const Step1 = () => {
         />
 
         <CustomDatePicker unavailableDates={unavailableDates} selectedDate={selectedDate} setSelectedDate={setSelectedDate}/>
-        <TimeSlotPicker date={selectedDate} artist={artist.id} />
+       {selectedDate &&  <TimeSlotPicker date={selectedDate} artist={artist.id} />}
         </Fragment>
   );
 };

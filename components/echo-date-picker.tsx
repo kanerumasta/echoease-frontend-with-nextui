@@ -8,8 +8,8 @@ import { FaChevronLeft, FaChevronRight } from "react-icons/fa"
 import { z } from "zod"
 
 type DatePickerProps = {
-  dateSelected: Date,
-  setDateSelected: Dispatch<SetStateAction<Date>>,
+  dateSelected: Date |null,
+  setDateSelected: Dispatch<SetStateAction<Date|null>>,
   unavailableDates: z.infer<typeof UnavailableDateSchema>[],
   onDatePick?: () => void,
   artistId: number

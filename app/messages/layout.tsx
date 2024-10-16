@@ -6,7 +6,6 @@ import { ChatSchema } from "@/schemas/chat-schemas";
 import { Input } from "@nextui-org/input";
 import { Spacer } from "@nextui-org/spacer";
 import { z } from "zod";
-import { filterConversationParticipants } from "./util-func";
 import { UserSchema } from "@/schemas/user-schemas";
 import { Avatar } from "@nextui-org/avatar";
 import { useFetchCurrentUserQuery } from "@/redux/features/authApiSlice";
@@ -14,46 +13,46 @@ import MainLayout from "@/components/main-layout";
 import useLoginRequired from "@/hooks/use-login-required";
 import EchoLoading from "@/components/echo-loading";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
-const SearchInput = () => {
+const SearchInput = ({ onSearch }: { onSearch: (value: string) => void }) => {
   return (
     <div className="pr-2">
-      <Input size="lg" startContent={<SearchIcon />} placeholder="Search in messages.." />
+      <Input
+      onClear={()=>onSearch("")}
+      isClearable
+        size="lg"
+        startContent={<SearchIcon />}
+        placeholder="Search in messages.."
+        onChange={(e) => onSearch(e.target.value)}
+      />
     </div>
   );
 };
 
 const MessagesList = ({
   conversations,
-  currentUser,
 }: {
   conversations: z.infer<typeof ChatSchema>[] | [];
-  currentUser: z.infer<typeof UserSchema>;
 }) => {
   const router = useRouter();
 
   return (
     <ul className="">
-      {conversations?.map((conv) => {
-        const filteredConversation = filterConversationParticipants(conv, currentUser.email);
-        return (
-          <li
-            onClick={() => router.push(`/messages/${conv.code}`)}
-            className="flex cursor-pointer hover:bg-black/10 transition duration-300 ease-out dark:hover:bg-white/10 p-2 items-center space-x-2 capitalize"
-            key={filteredConversation.code}
-          >
-            <Avatar
-              src={`${process.env.NEXT_PUBLIC_HOST}${filteredConversation.participants[0]?.profile?.profile_image}`}
-            />
-            <p>
-              {filteredConversation.participants.map(
-                (p) => `${p.first_name} ${p.last_name}`
-              )}
-            </p>
-          </li>
-        );
-      })}
+      {conversations.map((conv) => (
+        <li
+          onClick={() => router.push(`/messages/${conv.code}`)}
+          className="flex cursor-pointer hover:bg-black/10 transition duration-300 ease-out dark:hover:bg-white/10 p-2 items-center space-x-2 capitalize"
+          key={conv.code}
+        >
+          <Avatar
+            src={`${process.env.NEXT_PUBLIC_HOST}${conv.partner?.profile?.profile_image}`}
+          />
+          <p>
+            {conv.partner.fullname}
+          </p>
+        </li>
+      ))}
     </ul>
   );
 };
@@ -65,12 +64,17 @@ export default function MessagesLayout({
 }) {
   useLoginRequired("/messages");
   const { data: conversations = [], isLoading: isConversationsLoading } = useFetchChatsQuery();
-
   const { data: currentUser, isLoading: iscurrentUserLoading } = useFetchCurrentUserQuery();
+  const [searchQuery, setSearchQuery] = useState("");
 
   if (isConversationsLoading) {
     return <EchoLoading />;
   }
+
+  // Filter conversations based on search query
+  const filteredConversations = conversations.filter((conv) =>
+    conv.partner.fullname.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   return (
     <MainLayout>
@@ -79,18 +83,18 @@ export default function MessagesLayout({
           <h1 className="text-2xl font-semibold">Messages</h1>
           {/* SEARCH */}
           <Spacer y={6} />
-          <SearchInput />
+          <SearchInput onSearch={setSearchQuery} />
           <Spacer y={4} />
           <p className="p-1 dark:text-white/20 text-black/20 text-xs">
-            {conversations.length} conversations
+            {filteredConversations.length} conversations
           </p>
           <div className="max-h-[460px] overflow-y-scroll scrollbar-hide">
-            {conversations && currentUser && (
-              <MessagesList conversations={conversations} currentUser={currentUser} />
+            {filteredConversations.length > 0 && currentUser && (
+              <MessagesList conversations={filteredConversations} />
             )}
           </div>
         </div>
-        {conversations.length > 0 ? (
+        {filteredConversations.length > 0 ? (
           children
         ) : (
           <div className="min-h-[70vh] rounded-lg bg-black/50 w-full flex items-center justify-center ">

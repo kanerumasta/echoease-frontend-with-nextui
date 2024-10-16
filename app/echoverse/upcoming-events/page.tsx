@@ -5,10 +5,10 @@ import { BookInSchema } from "@/schemas/booking-schemas"
 import { z } from "zod"
 
 export default function UpcomingEventsPage() {
-    const {data:approvedBookings = [], isLoading} = useFetchUpcomingEventsQuery()
+    const {data:approvedBookings, isLoading} = useFetchUpcomingEventsQuery()
     return (
         <div className="w-full flex gap-3 overflow-x-scroll">
-            {approvedBookings.map((booking) => (
+            {approvedBookings?.map((booking) => (
                 <EventCard booking={booking}/>
             ))}
         </div>

@@ -8,6 +8,7 @@ import { FaChevronLeft, FaChevronRight } from "react-icons/fa"
 import { HiDotsVertical } from "react-icons/hi"
 import { z } from "zod"
 import { SetDateAvailable } from "./set-date-available"
+import { SetDateUnavailable } from "./set-date-unavailable"
 
 export const DatePicker = ({ dateSelected, setDateSelected, unavailableDates, onDatePick }: { dateSelected: Date, setDateSelected: Dispatch<SetStateAction<Date>>, unavailableDates: z.infer<typeof UnavailableDateSchema>[], onDatePick?: () => void }) => {
 
@@ -125,7 +126,7 @@ return <div className="">
             ))}
         </div>
         {/* days */}
-        <div className="grid grid-cols-7 gap-4 justify-end">
+        <div className="grid grid-cols-7  justify-end">
             {Array.from(Array(firstDayOfMonth).keys()).map((_, index) => (
                 <span className="text-3xl p-2" key={`empty=${index}`} />
             ))}
@@ -134,9 +135,9 @@ return <div className="">
                     const clickedDate = new Date(currentYear, currentMonth, day+1);
                     return <div
                         className={cn(
-                            "text-4xl text-green-500 p-4 cursor-pointer text-center",
+                            "text-4xl transition-all duration-100 flex items-center justify-center rounded-full h-[100px] w-[100px] relative cursor-pointer text-center",
                             {
-                                "bg-blue-500 rounded-lg shadow-blue-900  shadow-md": (day + 1) === dateSelected?.getDate() && dateSelected?.getMonth() === currentMonth,
+                                "bg-blue-500 shadow-blue-900  shadow-md": (day + 1) === dateSelected?.getDate() && dateSelected?.getMonth() === currentMonth,
                                 "text-green-500": currentDate.getMonth() === currentMonth && (day + 1) === currentDate.getDate(),
                                 'text-white/10': isPastDate(day + 1, currentDate),
                                 'text-red-500': isDateUnavailable(day + 1)
@@ -151,15 +152,23 @@ return <div className="">
                         key={day + 1}
                     >
                         {day + 1}
-                        {isDateUnavailable(day + 1) &&
-                                // <Button onClick={()=>findUDid(clickedDate)}>try</Button>
-                            <SetDateAvailable id={findUDid(clickedDate)} />
 
-                        }
+
                     </div>
                 })
             }
+
         </div>
     </div>
+    <div className="mt-4 w-full flex justify-end">
+                                    {isDateUnavailable(dateSelected.getDate()) &&
+                            <SetDateAvailable id={findUDid(dateSelected)} />
+                        }
+                                {!isDateUnavailable(dateSelected.getDate()) &&
+
+                            <SetDateUnavailable date={dateSelected}/>
+
+                        }
+                        </div>
 </div>
 }

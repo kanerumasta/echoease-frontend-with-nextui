@@ -1,15 +1,19 @@
 'use client'
 
 import { useFetchAwaitingDownpaymentBookingsQuery, useFetchPendingBookingsQuery } from "@/redux/features/bookingApiSlice"
+import { Pagination } from "@nextui-org/pagination"
 import { Spinner } from "@nextui-org/spinner"
 import { Table, TableBody, TableCell, TableColumn, TableHeader, TableRow } from "@nextui-org/table"
+import { useState } from "react"
 
 export const ApprovedBookings = () => {
-    const { data: bookings = [], isLoading } = useFetchAwaitingDownpaymentBookingsQuery()
+
+    const { data: bookings=[], isLoading } = useFetchAwaitingDownpaymentBookingsQuery()
     const loadingState = isLoading ? 'loading' :'idle'
     return <div className="p-4 rounded-md bg-white/5">
         <h1 className="mb-4 text-white/40 text-center text-lg">Waiting For Down payments</h1>
-    <Table classNames={{wrapper:'bg-transparent',tr:"hover:cursor-pointer hover:bg-white/5"}} >
+    <Table
+      classNames={{wrapper:'bg-transparent',tr:"hover:cursor-pointer hover:bg-white/5"}} >
         <TableHeader>
             <TableColumn>Booking Reference</TableColumn>
             <TableColumn>Event</TableColumn>

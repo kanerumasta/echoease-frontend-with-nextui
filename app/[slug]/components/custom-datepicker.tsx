@@ -15,8 +15,8 @@ import { useBookingContext } from "../forms/booking-provider"
 import { useFetchArtistWeekdaysAvailabilityQuery } from "@/redux/features/scheduleApiSlice"
 
 type Props = {
-    selectedDate:Date,
-    setSelectedDate:Dispatch<SetStateAction<Date>>,
+    selectedDate:Date|null,
+    setSelectedDate:Dispatch<SetStateAction<Date|null>>,
     unavailableDates: z.infer<typeof UnavailableDateSchema>[]
 }
 
@@ -28,7 +28,7 @@ export const CustomDatePicker = ({selectedDate, setSelectedDate, unavailableDate
     const {isOpen, onClose, onOpen, onOpenChange} = useDisclosure()
     return   <div className={cn("p-3 w-full flex gap-2 items-center justify-between border-2 border-white/20 rounded-lg",{"border-3 border-red-500":!!form.formState.errors.eventDate})}>
 
-            <Chip size="lg" variant="bordered" className="text-white" color="secondary">{selectedDate.toDateString()}</Chip>
+            {selectedDate?.toDateString()}
         <Button startContent={<IoCalendar />} radius="sm" onPress={onOpen}>Pick the event date</Button>
 
         <Modal classNames={{base:'max-w-[500px] max-w-[500px]'}} isOpen={isOpen} onOpenChange={onOpenChange}>

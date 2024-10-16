@@ -11,9 +11,12 @@ import { toast } from "react-toastify"
 import { z } from "zod"
 import { useConfirmBookingMutation, useFetchPendingBookingsQuery } from "@/redux/features/bookingApiSlice"
 import { useRejectBookingMutation } from "@/redux/features/bookingApiSlice"
+import { Pagination } from "@nextui-org/pagination"
+import { User } from "@nextui-org/user"
 
 export const PendingBookings = () => {
-    const { data: pendingBookings = [], isLoading } = useFetchPendingBookingsQuery()
+
+    const { data: pendingBookings=[], isLoading } = useFetchPendingBookingsQuery()
     const [clickedBooking, setClickedBooking] = useState<z.infer<typeof BookInSchema>|null>(null)
     const loadingState = isLoading ? 'loading' :'idle'
     const {isOpen, onOpen, onOpenChange, onClose} = useDisclosure()
@@ -52,24 +55,25 @@ export const PendingBookings = () => {
 
     return <div className="p-4 rounded-lg bg-white/5 ">
         <h1 className="text-center mb-4 text-white/40 text-lg">Pending Bookings</h1>
-    <Table classNames={{wrapper:'bg-transparent min-h-[250px]',tr:"hover:cursor-pointer hover:bg-white/5"}} >
-        <TableHeader>
-            <TableColumn>Booking Reference</TableColumn>
+    <Table classNames={{wrapper:'bg-transparent min-h-[250px]', td:'text-center', th:'text-center bg-white/5'}} >
+        <TableHeader className="bg-transparent text-white/50">
+            <TableColumn>Echoer</TableColumn>
             <TableColumn>Event</TableColumn>
             <TableColumn>Date</TableColumn>
             <TableColumn>Time</TableColumn>
-            <TableColumn>Status</TableColumn>
-            <TableColumn>Echoer</TableColumn>
+            <TableColumn>Reference</TableColumn>
         </TableHeader>
         <TableBody loadingContent={<Spinner />} emptyContent={'No bookings yet'} loadingState={loadingState} items={pendingBookings}>
             {(item)=>(
-                <TableRow onClick={()=>handleRowClick(item)} className="hover:cursor-pointer" key={item.id}>
-                    <TableCell>{item.id}</TableCell>
-                    <TableCell>{item.event_name}</TableCell>
+                <TableRow onClick={()=>handleRowClick(item)} className="hover:cursor-pointer text-center my-2 bg-slate-100/5 h-[100px] hover:bg-white/10" key={item.id}>
+                    <TableCell className="capitalize" >
+                        <User name={item.client.fullname} avatarProps={{src:`${process.env.NEXT_PUBLIC_HOST}${item.client.profile?.profile_image}`}}/>
+                    </TableCell>
+                    <TableCell className="capitalize">{item.event_name}</TableCell>
                     <TableCell>{item.formatted_event_date}</TableCell>
-                    <TableCell>{item.formatted_start_time}</TableCell>
-                    <TableCell><Chip color="success" variant="flat">{item.status}</Chip></TableCell>
-                    <TableCell className="capitalize" >{item.client.fullname}</TableCell>
+                    <TableCell className="text-white/50 text-xs ">{item.formatted_start_time} - {item.formatted_end_time}</TableCell>
+
+                    <TableCell>{item.booking_reference}</TableCell>
                 </TableRow>
             )}
         </TableBody>

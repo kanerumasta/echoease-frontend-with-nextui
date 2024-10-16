@@ -1,27 +1,37 @@
 "use client";
 
-import CustomError from "@/components/custom-error";
 import DisputeIcon from "@/components/icons/dispute";
+import { UserRoles } from "@/config/constants";
+import { useCreateClientDispute } from "@/hooks/disputes";
 import { useFetchCurrentUserQuery } from "@/redux/features/authApiSlice";
 import { useFetchBookingDetailQuery } from "@/redux/features/bookingApiSlice";
 import { Button } from "@nextui-org/button";
 import { Input, Textarea } from "@nextui-org/input";
 import {
-  Modal,
-  ModalBody,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  useDisclosure,
+    Modal,
+    ModalBody,
+    ModalContent,
+    ModalFooter,
+    ModalHeader,
+    useDisclosure,
 } from "@nextui-org/modal";
 import { Select, SelectItem } from "@nextui-org/select";
-import { Spinner } from "@nextui-org/spinner";
 import { notFound, useParams } from "next/navigation";
-import { Fragment, useEffect, useRef } from "react";
+import { Fragment, useRef } from "react";
 import { DisputeReasonOptions } from "./utils";
-import { useCreateClientDispute } from "@/hooks/disputes";
-import { toast } from "react-toastify";
-import { UserRoles } from "@/config/constants";
+import CustomImage from "@/components/image";
+import { BookingEchoee } from "./components/booking-echoee";
+import { Heading } from "./components/heading";
+import { BookingDetail } from "./components/booking-detail";
+import { Spacer } from "@nextui-org/spacer";
+import { BookingSummary } from "./components/booking-summary";
+import BookingProgress from "@/components/booking-status-progress";
+import PaymentInfo from "./components/payment-info";
+import BasicBookingInfo from "./components/basic-details";
+import ArtistDetails from "./components/artist-details";
+import ClientDetails from "./components/client-details";
+import DownpaymentInfo from "./components/downpayment-info";
+
 export default function BookingDetailPage() {
   const params = useParams<{ id: string }>();
   const { isOpen, onClose, onOpen, onOpenChange } = useDisclosure();
@@ -59,16 +69,36 @@ export default function BookingDetailPage() {
       disputeFormRef.current.requestSubmit();
     }
   };
+  if(isBookingError){
+    return notFound()
+  }
 
   return (
     <div>
       {bookingDetail && (
-        <Fragment>
-          <p>{bookingDetail.event_name}</p>
-          <p>{bookingDetail.event_location}</p>
-          <p>{bookingDetail.formatted_event_date}</p>
-          <p>{bookingDetail.formatted_start_time}</p>
-          {bookingDetail.status === "approved" && (
+          <Fragment>
+            <Heading booking={bookingDetail}/>
+            <Spacer  y={4}/>
+            <div className="w-full flex justify-center">
+            <BookingProgress status={bookingDetail.status}/>
+            </div>
+            <div className="flex gap-3">
+            <div className="w-full">
+                <div className="flex gap-2">
+                <BasicBookingInfo booking={bookingDetail}/>
+                <ArtistDetails booking={bookingDetail} />
+                </div>
+                <ClientDetails booking={bookingDetail}/>
+            </div>
+            {bookingDetail.status === 'awaiting_downpayment' &&
+                <DownpaymentInfo booking={bookingDetail}/>
+            }
+            {bookingDetail.status === 'completed' || bookingDetail.status === 'approved' &&
+    <PaymentInfo booking={bookingDetail} />
+}
+                {/* <BookingSummary booking={bookingDetail}/> */}
+            </div>
+            {bookingDetail.status === "approved" && (
             <div>
               {!bookingDetail.is_completed && (
                 <Button
@@ -80,18 +110,20 @@ export default function BookingDetailPage() {
                   Pay Now
                 </Button>
               )}
-              <Button
+
+            </div>
+          )}
+
+          {bookingDetail.is_completed &&  <Button
                 radius="sm"
                 variant="faded"
                 color="danger"
                 size="lg"
-                endContent={<DisputeIcon />}
+                startContent={<DisputeIcon />}
                 onPress={onOpen}
               >
-                Create a Dispute
-              </Button>
-            </div>
-          )}
+                Report a Dispute
+              </Button>}
           {bookingDetail.status === "pending" &&
             bookingDetail.artist.user.id === curUser?.id && (
               <Button color="secondary">Confirm</Button>
