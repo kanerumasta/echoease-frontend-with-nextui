@@ -269,9 +269,6 @@ export const Navbar = () => {
                     {isArtist ? 'Echoverse':'Profile'}
                   </DropdownItem>
 
-                  {isArtist ? <DropdownItem onPress={()=>router.push('/echoverse/connections')}> My Connections</DropdownItem> : <></>
-}
-
                 </DropdownSection>
                 <DropdownSection>
                   <DropdownItem
