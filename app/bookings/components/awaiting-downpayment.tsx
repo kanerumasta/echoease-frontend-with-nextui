@@ -17,6 +17,7 @@ import { HiDotsVertical } from "react-icons/hi"
 import { Pagination } from "@nextui-org/pagination"
 import { Chip } from "@nextui-org/chip"
 import { User } from "@nextui-org/user"
+import { useRouter } from "next/navigation"
 
 
 export const AwaitingDownpayments = () => {
@@ -28,7 +29,7 @@ export const AwaitingDownpayments = () => {
     const [attachDownPaymentIntent, {isLoading:attachingIntent}] = useAttachDownPaymentIntentMutation()
 
     const [clickedBooking, setClickedBooking] = useState<z.infer<typeof BookInSchema>|null>(null)
-
+    const router = useRouter()
     const handlePayNowClick = async (booking:z.infer<typeof BookInSchema>) => {
         const payload = {
             "booking":booking.id
@@ -37,7 +38,6 @@ export const AwaitingDownpayments = () => {
         await createDownPaymentIntent(payload)
         onOpen()
     }
-    console.log(awaitingBookings)
 
     const handlePayWithMethod = async (booking:z.infer<typeof BookInSchema>, method:"gcash"|"paymaya") => {
         const payload = {
@@ -59,7 +59,7 @@ export const AwaitingDownpayments = () => {
     return <>
             <div className="w-full p-4 mb-2 rounded-lg">
                 <h1 className="text-center text-lg text-white/40 mb-4">Awaiting Down payments</h1>
-               <Table  classNames={{wrapper:'bg-transparent'}} >
+               <Table onRowAction={(e)=>router.push(`/bookings/${e}`)}  classNames={{wrapper:'bg-transparent'}} >
                 <TableHeader>
                     <TableColumn>Event</TableColumn>
                     <TableColumn>Event Date</TableColumn>

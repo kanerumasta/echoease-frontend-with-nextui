@@ -5,13 +5,15 @@ import { Chip } from "@nextui-org/chip"
 import { Table, TableBody, TableCell, TableColumn, TableHeader, TableRow } from "@nextui-org/table"
 import { useState } from "react"
 import {Pagination} from "@nextui-org/pagination"
+import { useRouter } from "next/navigation"
 
 
 export const BookingHistory = () => {
     const [page, setPage] = useState(1)
     const {data:bookingHistory, isLoading} = useFetchMyBookingsQuery(page)
+    const router = useRouter()
     return <>
-        <Table aria-label="bookings table" bottomContent={
+        <Table onRowAction={(e)=>router.push(`/bookings/${e}`)} aria-label="bookings table" bottomContent={
           bookingHistory?.total_pages && bookingHistory.total_pages  > 1 ? <div className="flex w-full justify-center">
             <Pagination
               isCompact

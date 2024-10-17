@@ -11,6 +11,7 @@ import { Modal, ModalBody, ModalContent, ModalHeader, useDisclosure } from "@nex
 import { Pagination } from "@nextui-org/pagination"
 import { Table, TableBody, TableCell, TableColumn, TableHeader, TableRow } from "@nextui-org/table"
 import { User } from "@nextui-org/user"
+import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { HiDotsVertical } from "react-icons/hi"
 import { z } from "zod"
@@ -23,6 +24,7 @@ export default function PendingPayments (){
     const [createFinalPaymentIntent,{data:intentData}] = useCreateFinalPaymentIntentMutation()
     const [attachFinalPayment] = useAttachFinalPaymentMutation()
     const {data:currentUser} = useFetchCurrentUserQuery()
+    const router = useRouter()
 
 
     const handlePayNowClick = async (bookingId:number) => {
@@ -59,7 +61,7 @@ export default function PendingPayments (){
         <>
         <div className="p-4 rounded-lg">
             <h1 className="text-center mb-4 text-lg text-white/40">Pending Payments</h1>
-            <Table classNames={{wrapper:'bg-trasparent'}} >
+            <Table onRowAction={(e)=>router.push(`/bookings/${e}`)} classNames={{wrapper:'bg-trasparent'}} >
                 <TableHeader
                 >
                     <TableColumn>Event</TableColumn>

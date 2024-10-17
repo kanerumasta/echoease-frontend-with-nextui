@@ -98,7 +98,7 @@ export default function BookingDetailPage() {
 }
                 {/* <BookingSummary booking={bookingDetail}/> */}
             </div>
-            {bookingDetail.status === "approved" && (
+            {/* {bookingDetail.status === "approved" && (
             <div>
               {!bookingDetail.is_completed && (
                 <Button
@@ -112,7 +112,7 @@ export default function BookingDetailPage() {
               )}
 
             </div>
-          )}
+          )} */}
 
           {bookingDetail.is_completed &&  <Button
                 radius="sm"
