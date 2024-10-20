@@ -31,14 +31,14 @@ export default function TransactionPage(){
                 </TableColumn>
                 <TableColumn>Booking Reference</TableColumn>
                 <TableColumn>Transaction</TableColumn>
-                <TableColumn>Date</TableColumn>
+                <TableColumn>Transaction DateTime</TableColumn>
                 <TableColumn>Amount</TableColumn>
             </TableHeader>
             <TableBody isLoading={loadingTransactions} loadingState={loadingState} items={transactions?.results ?? []} loadingContent={<Spinner />} emptyContent={<span>No Transactions Yet.</span>}>
                 {(item)=>(
                     <TableRow key={item.id}>
                         <TableCell>{item.transaction_reference}</TableCell>
-                        <TableCell>{item.booking}</TableCell>
+                        <TableCell>{item.booking.booking_reference}</TableCell>
                         <TableCell>{item.transaction}</TableCell>
                         <TableCell className="text-xs">{item.formatted_created_at}</TableCell>
                         <TableCell>&#8369;{item.amount}</TableCell>

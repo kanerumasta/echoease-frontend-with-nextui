@@ -33,16 +33,24 @@ export const BookingForm: React.FC<BookingFormProps> = ({ artist, currentUser })
   const steps = [
     {
       id: "step1",
+      label:"Set The Stage",
       fields: ["eventName", "eventDate", "endTime", "startTime"],
     },
     {
       id: "step2",
+      label:"Pin The Location",
       fields: ["municipality", "barangay", "street", "landmark"],
     },
     {
       id: "step3",
+      label:"Choose your Experience",
       fields: ["rate"],
     },
+    {
+        id:"lastStep",
+        label:"Review and Confirm",
+        fields: [],
+    }
   ];
 
   const handleNext = async () => {
@@ -78,15 +86,17 @@ export const BookingForm: React.FC<BookingFormProps> = ({ artist, currentUser })
           <Fragment>
             <ModalHeader>
               <p>
-                You are booking{" "}
+               Secure
                 <span className="font-bold capitalize text-blue-400">
-                  {`${artist?.user.first_name} ${artist?.user.last_name}`}
+                  {` ${artist?.user.first_name} ${artist?.user.last_name} `}
                 </span>
+                 for your show!
               </p>
             </ModalHeader>
             <ModalBody>
                 <Stepper currentStep={currentStep} totalSteps={totalSteps}/>
                 <Spacer y={6}/>
+                <p className=" text-lg text-right text-white/50">{steps[currentStep].label}</p>
               <FormProvider {...form}>
                 <form
                   ref={formRef}
@@ -105,22 +115,22 @@ export const BookingForm: React.FC<BookingFormProps> = ({ artist, currentUser })
             <ModalFooter>
               {currentStep > 0 && (
                 <Button onClick={() => setCurrentStep((prev) => --prev)}>
-                  Cancel
+                  Previous
                 </Button>
               )}
 
-              {currentStep <= 2 && (
-                <Button color="primary" onClick={handleNext}>
-                  Next
+              {currentStep < steps.length - 1 && (
+                <Button color="primary" className="capitalize" onClick={handleNext}>
+                 Next{`${steps[currentStep + 1]?.label ? `: ${steps[currentStep + 1].label}` : ''}`}
                 </Button>
               )}
-              {currentStep > 2 && (
+              {currentStep === steps.length - 1 && (
                 <Button
                   onClick={handleSubmitClick}
                   isDisabled={bookingState.isLoading}
                   color="primary"
                 >
-                  Submit
+                  Seal the Deal!
                 </Button>
               )}
             </ModalFooter>

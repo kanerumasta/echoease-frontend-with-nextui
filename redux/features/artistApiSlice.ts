@@ -1,4 +1,4 @@
-import { z } from "zod";
+    import { z } from "zod";
 import { apiSlice } from "../services/apiSlice";
 import {
   AcceptedIDsSchema,
@@ -10,6 +10,7 @@ import {
   RateSchema,
   RecommendedArtistsConnectionsSchema,
 } from "@/schemas/artist-schemas";
+import { UserSchema } from "@/schemas/user-schemas";
 
 const artistApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
@@ -60,6 +61,7 @@ const artistApiSlice = apiSlice.injectEndpoints({
         url: "/artists/follow",
         body: data,
       }),
+      invalidatesTags:['followers']
     }),
     unfollowArtist: builder.mutation<any, any>({
       query: (data) => ({
@@ -67,6 +69,7 @@ const artistApiSlice = apiSlice.injectEndpoints({
         url: "/artists/unfollow",
         body: data,
       }),
+      invalidatesTags:['followers']
     }),
     createNewPortfolioItem: builder.mutation<any, any>({
       query: (data) => ({
@@ -203,6 +206,10 @@ const artistApiSlice = apiSlice.injectEndpoints({
             }
         }),
         invalidatesTags:['ConnectionRequests']
+    }),
+    fetchFollowers:builder.query<z.infer<typeof UserSchema>[], number>({
+        query:(artistId) => `/artists/${artistId}/followers`,
+        providesTags:['followers']
     })
 
   }),
@@ -221,6 +228,7 @@ export const {
     useFetchReceivedConnectionRequestsQuery,
     useFetchSentConnectionRequestsQuery,
     useFetchRecommendedArtistConnectionsQuery,
+    useFetchFollowersQuery,
 
   useCreateArtistApplicationMutation,
   useFollowArtistMutation,

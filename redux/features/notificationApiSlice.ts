@@ -1,18 +1,7 @@
 import { z } from "zod";
 import { apiSlice } from "../services/apiSlice";
-import { NotificationInSchema } from "@/schemas/notification-schemas";
-// {
-//     "id": 3,
-//     "notification_type": "new_booking",
-//     "title": "New Booking Inquiry!",
-//     "description": "You have a new booking inquiry for an event on 2024-09-30 from boot chuuk",
-//     "is_read": false,
-//     "created_at": "2024-09-23T02:36:34.810685Z",
-//     "user": 5,
-//     "booking": 19,
-//     "message": null,
-//     "follower": null
-//   },
+import { NotificationInSchema, PaginatedNotificationSchema } from "@/schemas/notification-schemas";
+
 
 const notificationSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
@@ -24,6 +13,7 @@ const notificationSlice = apiSlice.injectEndpoints({
       providesTags:['newNotifications']
 
     }),
+
     countNewNotifications: builder.query<{ notifications_count: number }, void>(
       {
         query: () => "/notifications?new=True&&count=True",
@@ -31,7 +21,7 @@ const notificationSlice = apiSlice.injectEndpoints({
     ),
 
     fetchOldNotifications: builder.query<
-      z.infer<typeof NotificationInSchema>[],
+      z.infer<typeof PaginatedNotificationSchema>,
       number
     >({
       query: (page) => `/notifications?old=True&page=${page}`,
@@ -52,6 +42,21 @@ const notificationSlice = apiSlice.injectEndpoints({
       }),
       invalidatesTags:['oldNotifications','newNotifications']
     }),
+    markAllRead:builder.mutation<any, void>({
+        query:()=>({
+            url:`/notifications/mark-all-as-read`,
+            method:'POST'
+        }),
+        invalidatesTags:['oldNotifications','newNotifications']
+    }),
+    clearAll:builder.mutation<any, void>({
+        query:()=>({
+            url:`/notifications/clear-all-old-notifications`,
+            method:'POST'
+        }),
+        invalidatesTags:['oldNotifications']
+    })
+
   }),
 });
 
@@ -61,4 +66,7 @@ export const {
   useFetchOldNotificationsQuery,
   useReadNotificationMutation,
   useDeleteNotificationMutation,
+  useMarkAllReadMutation,
+  useClearAllMutation
+
 } = notificationSlice;

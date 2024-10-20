@@ -38,6 +38,7 @@ export default function Step1(){
         </div>
         <Spacer y={8}/>
 
+
         <Textarea
           {...form.register("bio")}
           variant="faded"
@@ -47,6 +48,7 @@ export default function Step1(){
           errorMessage={form.formState.errors.bio?.message}
           placeholder="Type your artist description here..."
         />
+         <Input {...form.register('stage_name')} radius="sm" label="Stage Name" variant="faded" placeholder="You may add a stage name here(optional)..."/>
 
         <Skeleton isLoaded={!!genres}>
         {genres && (

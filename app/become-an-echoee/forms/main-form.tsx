@@ -51,7 +51,7 @@ export default function MainForm() {
       const formData = new FormData();
       formData.append("bio", data.bio)
       const cleanedGenres = data.genres.filter((gen)=>gen !== '')
-        
+
         cleanedGenres.forEach((gen) => {
           formData.append("genres", gen);
         });
@@ -76,6 +76,9 @@ export default function MainForm() {
       }
       {
         data.twitter && formData.append("twitter", data.twitter);
+      }
+      {
+        data.stage_name && formData.append("stage_name", data.stage_name);
       }
 
       const artistApplication = await createArtistApplication(formData).unwrap();

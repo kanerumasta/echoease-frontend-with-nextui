@@ -151,8 +151,8 @@ export const Navbar = () => {
 //   ) : (
     <Link
       className={cn(
-        "text-white p-2 rounded-md",
-        isActiveTab('/bookings') && "bg-blue-500"
+        "text-white/50 p-2 rounded-md",
+        isActiveTab('/bookings') && "bg-blue-500 text-white"
       )}
       href={'/bookings'}
     >
@@ -171,7 +171,7 @@ export const Navbar = () => {
         justify="end"
       >
         {
-            !(user?.role === 'artist') && (
+            !(user?.role === 'artist') && !(user?.is_roled) && (
                 <NavbarItem>
                 <Link className="text-white" href={"/become-an-echoee"}>
                   Become an echoee
@@ -241,7 +241,7 @@ export const Navbar = () => {
                 <User
                   className="capitalize text-white hover:cursor-pointer"
                   name={`${user.first_name} ${user.last_name}`}
-                  description={isArtist ? 'Echoee' :'Echoer'}
+                  description={isArtist ? 'Echoee' :''}
                   avatarProps={{
                     fallback: `${user.first_name[0]} ${user.last_name[0]}`,
                     src: `${process.env.NEXT_PUBLIC_HOST}${user.profile?.profile_image}`,

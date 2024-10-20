@@ -9,9 +9,11 @@ import { FaPlus } from "react-icons/fa";
 import { IoMdCloudUpload } from "react-icons/io";
 import { MdAdd } from "react-icons/md";
 import { TiDelete } from "react-icons/ti";
+import { toast } from "react-toastify";
 import { z } from "zod";
 
 export default function Step2() {
+    const MAX_FILE_SIZE = 150 * 1024 * 1024
     const form = useFormContext<z.infer<typeof ArtistApplicationSchema>>();
   const dropZoneRef = useRef<HTMLDivElement | null>(null);
   const sampleVideosInputRef = useRef<HTMLInputElement | null>(null);
@@ -40,13 +42,15 @@ export default function Step2() {
     e.stopPropagation();
     if (dropZoneRef.current) {
       dropZoneRef.current.classList.remove("bg-blue-100");
-    }
+}
     if (e.dataTransfer.files) {
       const newFiles = Array.from(e.dataTransfer.files);
+
+
       const filteredFiles = [
-        ...selectedFiles,
-        ...newFiles.filter((file) => !isDuplicateFile(file, selectedFiles)),
-      ];
+          ...selectedFiles,
+          ...newFiles.filter((file) => !isDuplicateFile(file, selectedFiles)),
+        ];
       form.setValue("sampleVideos", filteredFiles);
     }
   };
@@ -57,6 +61,11 @@ export default function Step2() {
         existingFile.name === file.name && existingFile.size === file.size
     );
   };
+  const calculateSelectedFilesFileSize = () => {
+    const sizeArr = selectedFiles.map((file)=>file.size)
+    const sum = sizeArr.reduce((acc, curVal)=>acc + curVal, 0);
+    return Math.ceil(sum / 1024 /1024)
+  }
   return (
     <Fragment>
         <div>
@@ -72,7 +81,9 @@ export default function Step2() {
         style={{ display: "none" }}
         onChange={(e) => {
           if (e.target.files) {
+
             if (selectedFiles.length < 1) {
+
               form.setValue("sampleVideos", Array.from(e.target.files));
             } else {
               const newSelectedFiles = [
@@ -81,6 +92,8 @@ export default function Step2() {
                   (file) => !isDuplicateFile(file, selectedFiles)
                 ),
               ];
+
+
 
               form.setValue("sampleVideos", newSelectedFiles);
             }
@@ -92,8 +105,10 @@ export default function Step2() {
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
-        className="border-2 w-full border-dashed p-8 border-blue-300 rounded-lg"
+        className="relative border-2 w-full border-dashed p-8 border-blue-300 rounded-lg"
       >
+
+         {selectedFiles.length > 0 && <p className="absolute top-2 right-2 text-xs text-white/50">File Size: {calculateSelectedFilesFileSize()}MB</p>}
         {(!selectedFiles || selectedFiles?.length <= 0) && (
           <div
             onClick={() => {
@@ -146,6 +161,11 @@ export default function Step2() {
           )}
         </div>
           {form.formState.errors.sampleVideos &&  <p className="text-danger-500">{form.formState.errors.sampleVideos.message}</p>}
+      </div>
+      <div className="text-xs text-white/50">
+      <p>Please upload up to 3 videos.</p>
+      <p>The maximum file size allowed is 150 MB.</p>
+      <p>Accepted file format is .mp4</p>
       </div>
     </Fragment>
   );

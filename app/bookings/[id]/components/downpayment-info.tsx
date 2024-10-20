@@ -42,7 +42,7 @@ const DownpaymentInfo: React.FC<DownpaymentInfoProps> = ({ booking }) => {
 
     }
   return (
-    <div className="min-w-[400px] bg-white shadow-lg rounded-lg p-6 my-4">
+    <div className="min-w-[400px] bg-white shadow-lg rounded-lg p-6">
       {/* Booking Reference */}
       <div className="mb-4">
         <h3 className="text-lg font-semibold text-gray-700">Booking Reference</h3>

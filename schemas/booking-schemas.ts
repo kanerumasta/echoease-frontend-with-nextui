@@ -48,6 +48,9 @@ export const BookInSchema = z.object({
   client: UserSchema,
   downpayment_amount:z.number(),
   service_fee:z.number(),
+  is_reviewed:z.boolean(),
+  decline_reason :z.string(),
+cancel_reason:z.string(),
 
 rate: RateSchema,
     location: z.string(),

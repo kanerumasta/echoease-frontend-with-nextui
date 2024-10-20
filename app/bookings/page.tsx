@@ -42,7 +42,7 @@ export default function BookingPage() {
                 </div>}
 
          <div className="w-full">
-            <Tabs variant="underlined" classNames={{}}>
+            <Tabs color="primary" classNames={{}}>
                 <Tab key={"awaiting"} title="Awaiting Downpayments">
 
                     <AwaitingDownpayments />

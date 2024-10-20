@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { UserSchema } from "./user-schemas";
+const MAX_TOTAL_SIZE = 150 * 1024 * 1024
 
 export const GenreOptionSchema = z.object({
   label: z.string(),
@@ -38,7 +39,12 @@ export const ArtistApplicationSchema = z.object({
       required_error: "At least 2 videos are required.",
     })
     .min(2, "Add at least 2 videos.")
-    .max(3, "You can only upload up to 3 videos."),
+    .max(3, "You can only upload up to 3 videos.").refine(files => {
+        const totalSize = files.reduce((sum, file) => sum + file.size, 0);
+        return totalSize <= MAX_TOTAL_SIZE;
+      }, {
+        message: `Total file size must be less than or equal to ${MAX_TOTAL_SIZE / 1024 / 1024} MB.`,
+      }),
 
   genres: z.array(z.string()).min(1, "Pick at least 1 genre."),
   idol: z.string().nullable().optional(),
@@ -50,6 +56,7 @@ export const ArtistApplicationSchema = z.object({
   twitter: z.string().nullable().optional(),
   fb_link: z.string().nullable().optional(),
   bio: z.string(),
+  stage_name:z.string().nullable().optional(),
   rates: z.array(
     z.object({
       artist_application: z.string().nullable().optional(),

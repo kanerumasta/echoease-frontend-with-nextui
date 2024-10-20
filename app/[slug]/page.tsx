@@ -76,7 +76,7 @@ export default function SlugPage() {
         {artist && <PortfolioSection artist={artist}/>}
         {currentUser && currentUser.role !== UserRoles.artist && (
           <Button onClick={handleBookPress} color="primary" className="fixed top-6 right-6 overflow-visible rounded-full hover:-translate-y-1 px-12 shadow-xl bg-blue-500/70 animate-bounce after:content-[''] after:absolute after:rounded-full after:inset-0 after:bg-blue-500/80 after:z-[-1] after:transition after:!duration-500 hover:after:scale-150 hover:after:opacity-0">
-            Book Me
+            Let's Wow Your Crowd!
           </Button>
         )}
         {currentUser &&

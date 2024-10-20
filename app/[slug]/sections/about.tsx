@@ -33,6 +33,10 @@ import { useSpring, animated } from "@react-spring/web";
 import { UserRoles } from "@/config/constants";
 import { useEffect } from "react";
 import { toast } from "react-toastify";
+import { Ratings } from "../components/rating";
+import { useFetchArtistRatingQuery } from "@/redux/features/reviewsApiSlice";
+import { Popover, PopoverContent, PopoverTrigger } from "@nextui-org/popover";
+import { Followers } from "../components/followers";
 
 
 export default function AboutSection({artist}:{artist:z.infer<typeof ArtistInSchema>}) {
@@ -40,6 +44,7 @@ export default function AboutSection({artist}:{artist:z.infer<typeof ArtistInSch
   const params = useParams<{ slug: string }>();
   const { refetch } = useFetchDetailArtistBySlugQuery(params.slug);
   const {data:connectionRequests, refetch:refetchConnectionRequests}  = useFetchConnectionRequestsQuery()
+  const {data:ratingsData} = useFetchArtistRatingQuery(artist.id)
 
   const { refetch: refetchChats } = useFetchChatsQuery();
   const { data: currentUser, isLoading } = useFetchCurrentUserQuery();
@@ -118,6 +123,8 @@ export default function AboutSection({artist}:{artist:z.infer<typeof ArtistInSch
     }
   },[successConnectingArtist, errorConnectingArtist])
 
+
+
   return (
     <div className="flex gap-4 duration-1000 animate-appearance-in min-h-screen w-full">
       {/* Image Profile */}
@@ -135,8 +142,18 @@ export default function AboutSection({artist}:{artist:z.infer<typeof ArtistInSch
           <p className="text-blue-400 font-bold">About Me</p>
           <p className="capitalize lg:text-5xl md:text-3xl text-2xl font-bold">{`${artist.user.fullname}`}</p>
 
+          {ratingsData && ratingsData.rating__avg && <Ratings rating={ratingsData.rating__avg}/>}
+          <Spacer y={4}/>
+
           {artist?.followers?.length > 0 && (
-            <Chip size="sm">{`${artist.followers?.length} Follower${artist.followers.length === 1 ? "" : "s"}`}</Chip>
+            <Popover placement="bottom-start">
+                <PopoverTrigger >
+                <Chip className="hover:cursor-pointer" size="sm">{`${artist.followers?.length} Follower${artist.followers.length === 1 ? "" : "s"}`}</Chip>
+                </PopoverTrigger>
+                <PopoverContent>
+                    <Followers artist={artist}/>
+                </PopoverContent>
+            </Popover>
           )}
           <Spacer y={4} />
 

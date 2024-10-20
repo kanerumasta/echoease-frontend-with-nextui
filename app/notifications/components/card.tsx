@@ -1,6 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/utils";
+import { useFetchCurrentUserQuery } from "@/redux/features/authApiSlice";
 import { useDeleteNotificationMutation } from "@/redux/features/notificationApiSlice";
 import { NotificationInSchema } from "@/schemas/notification-schemas";
 import { useRouter } from "next/navigation";
@@ -20,6 +21,7 @@ export default function NotificationCard({
 }) {
   const hoverRef = useRef<HTMLDivElement | null>(null);
   const [deleteMutation] = useDeleteNotificationMutation();
+  const {data:currentUser} = useFetchCurrentUserQuery()
   const [isHovered, setIsHovered] = useState(false);
   const router = useRouter();
 
@@ -52,13 +54,25 @@ export default function NotificationCard({
     }
   };
 
+  const handleRedirect = () => {
+    if(currentUser){
+        if (currentUser.role === "artist") {
+           notif.booking?.id ? router.push(`/echoverse/bookings/${notif.booking?.id}`): router.push(`/echoverse/bookings`)
+        }else{
+            router.push(`/bookings/${notif.booking?.id}`)
+        }
+    }
+  }
+
+
+
 
   return (
     <div
       ref={hoverRef}
-
+        onClick={handleRedirect}
       key={notif.id}
-      className="shadow-md flex items-center justify-between shadow-blue-200/10 my-2 hover:cursor-pointer text-white/75 rounded-md p-4 bg-white/10"
+      className="shadow-md  flex items-center justify-between shadow-blue-200/10 my-2 hover:cursor-pointer text-white/75 rounded-md p-4 bg-white/10"
     >
       <div>
         <p className={cn({ "font-bold text-white": isNew })}>{notif.title}</p>

@@ -11,7 +11,7 @@ interface ArtistDetailsProps {
 
 const ArtistDetails: React.FC<ArtistDetailsProps> = ({ booking }) => {
   return (
-    <div className="p-4 relative bg-white/5 shadow-md w-full rounded-lg mt-4">
+    <div className="p-4 relative bg-white/5 shadow-md w-full rounded-lg">
       <h2 className="text-xl font-bold mb-4">Echoee Details</h2>
 
       <div className="mb-2">

@@ -157,6 +157,8 @@ type FilePickerProps = {
 }
 const FilesPicker = ({selectedFiles, setSelectedFiles}:FilePickerProps) => {
     const inputRef = useRef<HTMLInputElement|null>(null)
+    const MAX_FILE_SIZE = 100 * 1024 * 1024
+
 
     const handleFileChange = (e:ChangeEvent<HTMLInputElement>) => {
         if(e.target.files){
@@ -164,13 +166,24 @@ const FilesPicker = ({selectedFiles, setSelectedFiles}:FilePickerProps) => {
             const currentImages = selectedFiles.filter((file)=>!file.name.endsWith('.mp4'))
             const currentVideos = selectedFiles.filter((file)=>file.name.endsWith('.mp4'))
 
-            const newSelectedVideos = newFiles.filter((file)=>file.name.endsWith('.mp4'))
-            const newSelectedImages = newFiles.filter((file)=>!file.name.endsWith('.mp4'))
+            const validFiles = newFiles.filter(
+                (file) => {
+                    if(file.size > MAX_FILE_SIZE){
+                        toast.error("Some files exceeds 100MB file size limit.")
+                        return false
+                    }
+                    return true
 
+                }
+            )
+
+            const newSelectedVideos = validFiles.filter((file)=>file.name.endsWith('.mp4'))
+            const newSelectedImages = validFiles.filter((file)=>!file.name.endsWith('.mp4'))
             // Combine images, filter out duplicates (based on file name)
             const combinedImages = [...currentImages, ...newSelectedImages].filter(
                 (image, index, self) => index === self.findIndex((i) => i.name === image.name)
             )
+
             // Combine videos, filter out duplicates (based on file name)
             const combinedVideos = [...currentVideos, ...newSelectedVideos].filter(
                 (video, index, self) => index === self.findIndex((v) => v.name === video.name)
@@ -185,6 +198,7 @@ const FilesPicker = ({selectedFiles, setSelectedFiles}:FilePickerProps) => {
                 toast.error("You can only add up to 5 images for a portfolio")
                 return
             }
+            const size =
             setSelectedFiles([ ...combinedImages,...combinedVideos])
 
             if (inputRef.current) {

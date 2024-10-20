@@ -21,7 +21,7 @@ export const Step3 = () => {
 
   return (
     <Fragment>
-      <h1 className="text-center">Choose a Rate</h1>
+      <h1 className="text-center capitalize">Choose From {artist.user.first_name}'s Available Package</h1>
       <div className="flex  w-full justify-evenly">
         {rates?.map((r) => (
             <div

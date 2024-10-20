@@ -88,13 +88,25 @@ const bookingApiSlice = apiSlice.injectEndpoints({
         }),
         invalidatesTags: ['Bookings','PendingBookings','AwaitingDownpayments']
     }),
-    rejectBooking:builder.mutation<any,string>({
-        query:(id)=>({
+    rejectBooking:builder.mutation<any,{bookingId:number, reason:string}>({
+        query:(data)=>({
             method:'PATCH',
-            url:`/bookings/${id}/reject`
+            url:`/bookings/${data.bookingId}/reject`,
+            body:{
+                reason:data.reason
+            }
         }),
         invalidatesTags:['Bookings','PendingBookings']
     }),
+    cancelBooking:builder.mutation<any, {bookingId: number, reason : string}>({
+        query:(data) => ({
+            url:`/bookings/${data.bookingId}/cancel`,
+            method:'PATCH',
+            body:{
+                cancel_reason : data.reason
+            }
+        })
+    })
 
   }),
 });
@@ -103,6 +115,7 @@ export const {
   useCreateNewBookingMutation,
   useFetchMyBookingsQuery,
   useConfirmBookingMutation,
+  useCancelBookingMutation,
   useRejectBookingMutation,
   useFetchBookingDetailQuery,
   useFetchPendingBookingsQuery,
