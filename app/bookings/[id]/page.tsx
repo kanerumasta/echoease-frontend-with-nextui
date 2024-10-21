@@ -1,41 +1,23 @@
 "use client";
 
-import DisputeIcon from "@/components/icons/dispute";
+import BookingProgress from "@/components/booking-status-progress";
 import { UserRoles } from "@/config/constants";
-import { useCreateClientDispute } from "@/hooks/disputes";
 import { useFetchCurrentUserQuery } from "@/redux/features/authApiSlice";
 import { useFetchBookingDetailQuery } from "@/redux/features/bookingApiSlice";
-import { Button } from "@nextui-org/button";
-import { Input, Textarea } from "@nextui-org/input";
-import {
-    Modal,
-    ModalBody,
-    ModalContent,
-    ModalFooter,
-    ModalHeader,
-    useDisclosure,
-} from "@nextui-org/modal";
-import { Select, SelectItem } from "@nextui-org/select";
-import { notFound, useParams } from "next/navigation";
-import { Dispatch, Fragment, SetStateAction, useEffect, useRef } from "react";
-import { DisputeReasonOptions } from "./utils";
-import CustomImage from "@/components/image";
-import { BookingEchoee } from "./components/booking-echoee";
-import { Heading } from "./components/heading";
-import { BookingDetail } from "./components/booking-detail";
-import { Spacer } from "@nextui-org/spacer";
-import { BookingSummary } from "./components/booking-summary";
-import BookingProgress from "@/components/booking-status-progress";
-import PaymentInfo from "./components/payment-info";
-import BasicBookingInfo from "./components/basic-details";
-import ArtistDetails from "./components/artist-details";
-import ClientDetails from "./components/client-details";
-import DownpaymentInfo from "./components/downpayment-info";
-import { MdUpload } from "react-icons/md";
-import { CreateDispute } from "./components/create-dispute";
-import { PostReview } from "./components/post-review";
-import { CancelBooking } from "./components/cancel-booking";
 import { useFetchNewNotificationsQuery } from "@/redux/features/notificationApiSlice";
+import { Spacer } from "@nextui-org/spacer";
+import { notFound, useParams } from "next/navigation";
+import { Fragment, useEffect } from "react";
+import ArtistDetails from "./components/artist-details";
+import BasicBookingInfo from "./components/basic-details";
+import { CancelBooking } from "./components/cancel-booking";
+import ClientDetails from "./components/client-details";
+import { CreateDispute } from "./components/create-dispute";
+import DownpaymentInfo from "./components/downpayment-info";
+import { Heading } from "./components/heading";
+import PaymentInfo from "./components/payment-info";
+import { PostReview } from "./components/post-review";
+import { DownloadBookingPDF } from "./components/download-booking-pdf";
 
 export default function BookingDetailPage() {
   const params = useParams<{ id: string }>();
@@ -87,9 +69,10 @@ export default function BookingDetailPage() {
 
         <Spacer y={4}/>
             <div className="flex gap-3">
-          {bookingDetail.is_completed && curUser &&  <CreateDispute booking={bookingDetail} clientId={curUser.id}/> }
+          {bookingDetail.is_event_due && curUser &&  <CreateDispute booking={bookingDetail} clientId={curUser.id}/> }
           {bookingDetail.is_completed && !bookingDetail.is_reviewed && curUser &&  <PostReview bookingId={bookingDetail.id} /> }
           {!bookingDetail.is_completed && !(bookingDetail.status === 'cancelled') && <CancelBooking booking={bookingDetail} /> }
+          <DownloadBookingPDF bookingId={bookingDetail.id}/>
           </div>
 
           {bookingDetail.status === 'rejected' && bookingDetail.decline_reason &&

@@ -39,7 +39,7 @@ export const BookingForm: React.FC<BookingFormProps> = ({ artist, currentUser })
     {
       id: "step2",
       label:"Pin The Location",
-      fields: ["municipality", "barangay", "street", "landmark"],
+      fields: ["municipality", "barangay", "street", "landmark","venue"],
     },
     {
       id: "step3",

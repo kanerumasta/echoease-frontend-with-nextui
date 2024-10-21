@@ -19,6 +19,7 @@ export const BookingSchema = z
     barangay: z.string().min(1, "Event location is required."),
     street: z.string().min(1, "Event location is required."),
     landmark: z.string().min(1, "Event location is required."),
+    venue:z.string().min(1, "Event venue is a required field."),
     artist: z.string().optional().nullable(),
     rate: z.string(),
     rateName: z.string().optional().nullable(),
@@ -51,7 +52,7 @@ export const BookInSchema = z.object({
   is_reviewed:z.boolean(),
   decline_reason :z.string(),
 cancel_reason:z.string(),
-
+is_event_due:z.boolean(),
 rate: RateSchema,
     location: z.string(),
 });

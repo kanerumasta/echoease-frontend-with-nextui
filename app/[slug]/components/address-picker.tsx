@@ -4,13 +4,14 @@ import { useState, useEffect } from "react";
 import { useFormContext } from "react-hook-form";
 import useFetchAddresses from "@/hooks/utils/use-fetch-addresses";
 import { z } from "zod";
+import { BookingSchema } from "@/schemas/booking-schemas";
 
 interface AddressPickerProps {
   provinceCode: string;
 }
 
 export const AddressPicker = ({ provinceCode }: AddressPickerProps) => {
-  const form = useFormContext();
+  const form = useFormContext<z.infer<typeof BookingSchema>>();
   const {
     barangays = [],
     brgyLoading,
@@ -47,8 +48,10 @@ export const AddressPicker = ({ provinceCode }: AddressPickerProps) => {
         placeholder={form.watch("municipality")}
         isLoading={municipalityLoading}
         isInvalid={!!form.formState.errors.municipality}
+        errorMessage={form.formState.errors.municipality?.message}
         onSelectionChange={(key) => {
           setSelectedMunicipalityCode(key);
+          form.setValue('barangay','')
           form.setValue("municipality", getMunicipalityName(key as string));
         }}
       >
@@ -69,6 +72,7 @@ export const AddressPicker = ({ provinceCode }: AddressPickerProps) => {
         isLoading={brgyLoading}
         value={form.watch("barangay")}
         isInvalid={!!form.formState.errors.barangay}
+        errorMessage={form.formState.errors.barangay?.message}
         onSelectionChange={(v) => v && form.setValue("barangay", v.toString())}
       >
         {barangays.map((barangay) => (
@@ -80,6 +84,7 @@ export const AddressPicker = ({ provinceCode }: AddressPickerProps) => {
 
       <Input
         isInvalid={!!form.formState.errors.street}
+        errorMessage={form.formState.errors.street?.message}
         size="lg"
         variant="bordered"
         {...form.register("street")}
@@ -89,10 +94,20 @@ export const AddressPicker = ({ provinceCode }: AddressPickerProps) => {
 
       <Input
         isInvalid={!!form.formState.errors.landmark}
+        errorMessage={form.formState.errors.landmark?.message}
         size="lg"
         variant="bordered"
         {...form.register("landmark")}
         label="Landmark"
+        radius="sm"
+      />
+      <Input
+        isInvalid={!!form.formState.errors.venue}
+        errorMessage={form.formState.errors.venue?.message}
+        size="lg"
+        variant="bordered"
+        {...form.register("venue")}
+        label="Event Venue"
         radius="sm"
       />
     </div>

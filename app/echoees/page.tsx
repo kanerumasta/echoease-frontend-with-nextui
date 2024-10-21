@@ -5,6 +5,7 @@ import EchoeeCard from "./components/echoee-card";
 import EchoeeGroup from "./components/echoee-group";
 import { Skeleton } from "@nextui-org/skeleton";
 import { Spacer } from "@nextui-org/spacer";
+import { SearchInput } from "./components/search-input";
 
 export default function EchoeesPage() {
   const { data, isLoading } = useFetchListArtistsQuery();
@@ -17,7 +18,10 @@ export default function EchoeesPage() {
     <CustomSkeleton />
    </div>
   }
-  return <div>{data && <EchoeeGroup echoeeList={data} />}</div>;
+  return <div>
+        <SearchInput />
+        <h1 className="mb-4 text-2xl font-bold">Top Echoees</h1>
+    {data && <EchoeeGroup echoeeList={data} />}</div>;
 }
 
 const CustomSkeleton = () => {

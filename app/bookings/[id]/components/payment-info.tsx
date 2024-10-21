@@ -105,7 +105,7 @@ const PaymentInfo: React.FC<PaymentInfoProps> = ({ booking }) => {
         <p className="text-gray-600">{new Date(booking.created_at).toLocaleDateString()}</p>
       </div>
 
-      <Button isLoading={loadingIntent} onPress={handlePayNowClick} size='lg' className='' color='primary' radius='sm' fullWidth>Pay Final Payment Now</Button>
+      {booking.is_event_due && <Button isLoading={loadingIntent} onPress={handlePayNowClick} size='lg' className='' color='primary' radius='sm' fullWidth>Pay Final Payment Now</Button>}
       <Modal classNames={ {base:'bg-white text-black',header:'bg-blue-500 text-white',closeButton:'text-white hover:bg-white/30'}} isOpen={isOpen} onOpenChange={onOpenChange}>
             <ModalContent>
                 <ModalHeader>Pay Downpayment</ModalHeader>

@@ -14,18 +14,25 @@ export default function EchoeeCard({
 }) {
   const router = useRouter();
   return (
-    <AnimatedSide className="max-w-[250px] min-w-[250px] min-h-[300px] p-2 bg-gradient-to-br from-blue-500/60 to-purple-400/60 rounded-md">
+    <AnimatedSide  className="max-w-[250px] min-w-[250px] min-h-[300px] p-2 bg-gradient-to-br from-blue-500/60 to-purple-400/60 rounded-md">
+        <div className=" overflow-hidden rounded-md cursor-pointer" onClick={() => router.push(`/${echoee.slug}`)}>
+        <div className="overflow-hidden rounded-md">
       <CustomImage
+      className="hover:scale-110 duration-500 transition-all"
         width="100%"
         height="220px"
         src={`${process.env.NEXT_PUBLIC_HOST}${echoee.user.profile?.profile_image}`}
       />
-      <div className="capitalize py-2 text-black font-bold text-xl">
+      </div>
+      <div className="capitalize py-2 text-white/70 font-bold text-xl">
         <p>{echoee.user.fullname}</p>
-        <p></p>
-        <Button onClick={() => router.push(`/${echoee.slug}`)} radius="sm">
-          View Portoflio
-        </Button>
+       {echoee.followers.length > 0 &&  <p className="text-xs">{echoee.followers.length} {echoee.followers.length > 1 ?"Followers" : "Follower"}</p>}
+       {echoee.genres?.map((gen)=>(
+        <span className="text-xs text-white/50 mr-1">#{gen.name}</span>
+       ))}
+
+
+      </div>
       </div>
     </AnimatedSide>
   );
