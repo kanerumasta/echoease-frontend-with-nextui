@@ -2,24 +2,19 @@
 
 import { useActivationMutation } from "@/redux/features/authApiSlice";
 import { useEffect, useRef } from "react";
-
-import { useRouter } from "next/navigation";
+import { useRouter, useParams } from "next/navigation";
 import { toast } from "react-toastify";
 
-interface Props {
-    params: {
-        uid: string;
-        token: string;
-    };
-}
-
-export default function Page({ params }: Props) {
+export default function Page() {
     const router = useRouter();
+    const params = useParams();  // Use useParams to fetch dynamic params
+    const { uid, token } = params as { uid: string; token: string };
     const [activation] = useActivationMutation();
     const refRan = useRef(false);
+
     useEffect(() => {
         if (!refRan.current) {
-            activation(params)
+            activation({ uid, token })
                 .unwrap()
                 .then(() => {
                     toast.success("Account activation successful!");
@@ -33,6 +28,7 @@ export default function Page({ params }: Props) {
         return () => {
             refRan.current = true;
         };
-    }, [params, activation, router]);
+    }, [uid, token, activation, router]);
+
     return <div>Activating your account....</div>;
 }

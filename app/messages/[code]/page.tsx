@@ -66,12 +66,14 @@ export default function MessagePage() {
       behavior: "smooth",
     });
   };
+  console.log(convDetail)
 
   return (
     <div className="w-full flex flex-col bg-black/50 rounded-lg overflow-hidden">
       <div className="min-h-14 bg-white/10 flex items-center px-2">
-      <User name={convDetail?.partner.fullname} description={convDetail?.partner.role} avatarProps={{src:`${process.env.NEXT_PUBLIC_HOST}${convDetail?.partner.profile?.profile_image}`}}/>
+     {convDetail && <User name={convDetail?.partner.fullname} description={convDetail?.partner.role} avatarProps={{src:`${process.env.NEXT_PUBLIC_HOST}${convDetail?.partner.profile?.profile_image}`}}/>}
       </div>
+
 
       <div
         ref={scrollRef}

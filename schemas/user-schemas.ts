@@ -82,4 +82,6 @@ export const RolePickingSchema = z.object({
   business_permit: z.instanceof(File).nullable().optional(),
   government_id: z.instanceof(File),
   government_id_type: z.string(),
+  businessName:z.string().nullable().optional(),
+  businessImage: z.instanceof(File).nullable().optional(),
 });

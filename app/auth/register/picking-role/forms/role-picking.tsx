@@ -24,11 +24,13 @@ export default function RolePickingForm({
             className={cn(
               "min-w-[150px] min-h-[150px] max-w-[150px] max-h-[150px] mx-4 flex items-center justify-center bg-slate-400 hover:cursor-pointer capitalize rounded-md",
               {
-                "bg-blue-300": rolePicked === role,
+                "bg-blue-500": rolePicked === role,
               }
             )}
           >
+            <p className="text-center">
             {`I am a${role === "event organizer" ? "n" : ""} ${role}`}
+            </p>
           </div>
         ))}
       </div>

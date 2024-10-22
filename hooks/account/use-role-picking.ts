@@ -33,6 +33,10 @@ export default function useRolePicking() {
         formData.append(`doc_image${index + 1}`, d);
       });
 
+      data.businessName && formData.append("business_name", data.businessName);
+      data.businessImage &&
+      formData.append("business_image", data.businessImage);
+
     //bar owner
     data.business_permit &&
       formData.append("business_permit", data.business_permit);

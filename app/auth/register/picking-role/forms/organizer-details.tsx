@@ -1,5 +1,6 @@
 //if user is even organizer show this form
 
+import { ImagePicker } from "@/components/image-picker";
 import { MultipleImagePicker } from "@/components/multiple-image-picker";
 import { Input } from "@nextui-org/input";
 import { Spacer } from "@nextui-org/spacer";
@@ -10,6 +11,10 @@ type Props = {
   setImages: Dispatch<SetStateAction<File[] | null>>;
   productionPage: string | null;
   setProductionPage: Dispatch<SetStateAction<string | null>>;
+  businessName: string | null;
+  setBusinessName: Dispatch<SetStateAction<string | null>>;
+  businessImage: File | null;
+  setBusinessImage: Dispatch<SetStateAction<File | null>>;
 };
 
 export default function OrganizerForm({
@@ -17,28 +22,47 @@ export default function OrganizerForm({
   setImages,
   productionPage,
   setProductionPage,
+  businessImage,
+  businessName,
+  setBusinessImage,
+  setBusinessName
 }: Props) {
   return (
     <div className=" space-y-2">
+        <h1 className="text-2xl text-white/50 mb-4">Event Organizer</h1>
+
       <Input
         radius="sm"
         size="lg"
         value={productionPage ? productionPage : ""}
         onValueChange={setProductionPage}
-        label="Do you have an facebook page for your events?"
-        placeholder="You can paste it here."
+        label="Facebook Page Link (optional)"
+        placeholder="Paste your facebook page link."
       />
-      <Spacer y={8} />
-      <p className="text-sm text-white/40">
-        You can add images of past events, testimonies and other proof of being
-        an event organizer.
+      <Spacer y={4} />
+      <Input
+        radius="sm"
+        size="lg"
+        label="Facebook Page Name (optional) "
+        value={businessName ?? ''}
+        onValueChange={setBusinessName}/>
+        <div className="flex gap-3">
+            <div>
+        <p className="mb-2 text-white/50">Business Image or Logo</p>
+        <ImagePicker width={200} height={200} imagePicked={businessImage} setImagePicked={setBusinessImage}/>
+        </div>
+      <div>
+      <p className="mb-2 text-white/50">
+        Past Events or Testimonies
       </p>
-      <div className="w-full flex items-center justify-center">
+
         <MultipleImagePicker
-          width={400}
+          width={300}
+          height={200}
           imagesPicked={images}
           setImagePicked={setImages}
         />
+        </div>
       </div>
     </div>
   );

@@ -4,6 +4,7 @@ import { AcceptedIdsPicker } from "@/components/accepted-id-picker";
 import { ImagePicker } from "@/components/image-picker";
 import { useFetchAcceptedIdsQuery } from "@/redux/features/artistApiSlice";
 import { RolePickingSchema } from "@/schemas/user-schemas";
+import { Spacer } from "@nextui-org/spacer";
 import { Dispatch, SetStateAction } from "react";
 import { useFormContext } from "react-hook-form";
 import { z } from "zod";
@@ -34,6 +35,7 @@ export default function GeneralDocumentsForm({
           setPicked={setGovernmentIdType}
           picked={governmentIdType}
         />
+        <Spacer y={4}/>
 
       <ImagePicker
         isDisabled={!governmentIdType}

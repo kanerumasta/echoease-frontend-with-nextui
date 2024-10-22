@@ -51,7 +51,7 @@ export const Step3 = () => {
                     "text-white": selectedRateId === r.id.toString(),
                 })}
                 >
-                P{r.amount}
+                P{Math.round(r.amount)}
                 </p>
           </div>
         ))}

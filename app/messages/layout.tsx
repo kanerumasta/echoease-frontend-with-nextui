@@ -73,7 +73,7 @@ export default function MessagesLayout({
 
   // Filter conversations based on search query
   const filteredConversations = conversations.filter((conv) =>
-    conv.partner.fullname.toLowerCase().includes(searchQuery.toLowerCase())
+    conv && conv.partner && conv.partner.fullname.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   return (
