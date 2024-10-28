@@ -1,11 +1,12 @@
 "use client";
-import { useResetPasswordConfirmMutation } from "@/redux/features/authApiSlice";
-import { passwordSchema } from "@/schemas/auth-schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useParams, useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import { z } from "zod";
+
+import { passwordSchema } from "@/schemas/auth-schemas";
+import { useResetPasswordConfirmMutation } from "@/redux/features/authApiSlice";
 
 const ResetPasswordSchema = z
   .object({
@@ -18,7 +19,7 @@ const ResetPasswordSchema = z
     (values) => {
       return values.new_password === values.re_new_password;
     },
-    { message: "Passwords do not match", path: ["re_new_password"] }
+    { message: "Passwords do not match", path: ["re_new_password"] },
   );
 
 export default function useConfirmPasswordReset() {
@@ -56,7 +57,7 @@ export default function useConfirmPasswordReset() {
       } else {
         toast.error("Invalid Data");
       }
-    }
+    },
   );
 
   return {

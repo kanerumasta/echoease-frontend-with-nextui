@@ -1,7 +1,7 @@
 import * as React from "react";
+import { Image } from "@nextui-org/image";
 
 import { IconSvgProps } from "@/types";
-import { Image } from "@nextui-org/image";
 
 export const Logo = () => <Image className="w-[30px]" src="/favicon.ico" />;
 

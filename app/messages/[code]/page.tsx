@@ -1,41 +1,70 @@
 "use client";
-import { cn } from "@/lib/utils";
-import { useFetchCurrentUserQuery } from "@/redux/features/authApiSlice";
-import { useFetchChatByCodeQuery, useFetchConversationDetailQuery } from "@/redux/features/chatApiSlice";
-import { ChatSchema, MessageSchema } from "@/schemas/chat-schemas";
-import { UserSchema } from "@/schemas/user-schemas";
 import { Avatar } from "@nextui-org/avatar";
 import { Input } from "@nextui-org/input";
 import { Spinner } from "@nextui-org/spinner";
 import { useParams } from "next/navigation";
 import { MdSend } from "react-icons/md";
 import { z } from "zod";
-import { Dispatch, Fragment, SetStateAction, useEffect, useRef, useState } from "react";
+import {
+  Dispatch,
+  Fragment,
+  SetStateAction,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { Spacer } from "@nextui-org/spacer";
-import { useChatWebSocket } from "../useChatWebsocket";
 import { Button } from "@nextui-org/button";
 import { User } from "@nextui-org/user";
+
+import { UserSchema } from "@/schemas/user-schemas";
+import { MessageSchema } from "@/schemas/chat-schemas";
+import {
+  useFetchChatByCodeQuery,
+  useFetchChatsQuery,
+  useFetchConversationDetailQuery,
+  useFetchUnreadMessagesCountQuery,
+  useMarkConversationReadMutation,
+} from "@/redux/features/chatApiSlice";
+import { useFetchCurrentUserQuery } from "@/redux/features/authApiSlice";
+import { cn } from "@/lib/utils";
+
+import { useChatWebSocket } from "../useChatWebsocket";
+
+import { DeleteConversation } from "./components/delete-conversation";
 
 export default function MessagePage() {
   const [messages, setMessages] = useState<z.infer<typeof MessageSchema>[]>([]);
   const [page, setPage] = useState(1);
   const { data: currentUser } = useFetchCurrentUserQuery();
+  const { refetch: refetchChats } = useFetchChatsQuery();
+  const { refetch: refetchCount } = useFetchUnreadMessagesCountQuery();
   const params = useParams<{ code: string }>();
   const scrollRef = useRef<HTMLDivElement | null>(null);
 
-  const { data: conversation, isLoading: isConversationLoading } = useFetchChatByCodeQuery({
-    code: params.code,
-    page: page,
-  });
-  const {data:convDetail} = useFetchConversationDetailQuery(params.code)
+  const { data: conversation, isLoading: isConversationLoading } =
+    useFetchChatByCodeQuery({
+      code: params.code,
+      page: page,
+    });
+  const { data: convDetail } = useFetchConversationDetailQuery(params.code);
+  const [markConversationRead] = useMarkConversationReadMutation();
 
   const websocketURL = `${process.env.NEXT_PUBLIC_CHAT_WEBSOCKET}/${params.code}`;
-  const { newMessage, setNewMessage, sendMessage } = useChatWebSocket(websocketURL, setMessages);
+  const { newMessage, setNewMessage, sendMessage } = useChatWebSocket(
+    params.code,
+    websocketURL,
+    setMessages,
+  );
 
   useEffect(() => {
     if (conversation) {
       // Prepend new messages but maintain order
-      setMessages((prevMessages) => [...conversation.messages, ...prevMessages]);
+      setMessages((prevMessages) => [
+        ...conversation.messages,
+        ...prevMessages,
+      ]);
+      refetchChats();
       scrollToTop();
     }
   }, [conversation]);
@@ -46,6 +75,15 @@ export default function MessagePage() {
       scrollToTop();
     }
   }, [page, conversation]);
+  useEffect(() => {
+    const markRead = async () => {
+      await markConversationRead(params.code);
+      refetchCount();
+      refetchChats();
+    };
+
+    markRead();
+  }, []);
 
   // Scroll to bottom when sending a message
   const handleSendMessage = () => {
@@ -66,14 +104,19 @@ export default function MessagePage() {
       behavior: "smooth",
     });
   };
-  console.log(convDetail)
 
   return (
     <div className="w-full flex flex-col bg-black/50 rounded-lg overflow-hidden">
-      <div className="min-h-14 bg-white/10 flex items-center px-2">
-     {convDetail && <User name={convDetail?.partner.fullname} description={convDetail?.partner.role} avatarProps={{src:`${process.env.NEXT_PUBLIC_HOST}${convDetail?.partner.profile?.profile_image}`}}/>}
+      <div className="min-h-14 bg-white/10 flex items-center px-2 justify-between">
+        {convDetail && (
+          <User
+            avatarProps={{ src: convDetail?.partner.profile?.profile_image }}
+            description={convDetail?.partner.role}
+            name={convDetail?.partner.fullname}
+          />
+        )}
+        {convDetail && <DeleteConversation conversation={convDetail} />}
       </div>
-
 
       <div
         ref={scrollRef}
@@ -83,18 +126,36 @@ export default function MessagePage() {
       >
         {isConversationLoading && <Spinner color="primary" />}
         <div className="w-full flex justify-center py-3">
-        <Button isDisabled={!conversation?.has_next} variant="light" onPress={() => conversation?.has_next && setPage((prev) => prev + 1)}>
-          {conversation?.has_next ? "Load Previous Messages" : "No more previous messages"}
-        </Button>
+          <Button
+            isDisabled={!conversation?.has_next}
+            variant="light"
+            onPress={() =>
+              conversation?.has_next && setPage((prev) => prev + 1)
+            }
+          >
+            {conversation?.has_next
+              ? "Load Previous Messages"
+              : "No more previous messages"}
+          </Button>
         </div>
-        {currentUser && <Body messages={messages} currentUser={currentUser} />}
+        {currentUser && <Body currentUser={currentUser} messages={messages} />}
       </div>
-      <SendInput value={newMessage} onChange={setNewMessage} onHandleSend={handleSendMessage} />
+      <SendInput
+        value={newMessage}
+        onChange={setNewMessage}
+        onHandleSend={handleSendMessage}
+      />
     </div>
   );
 }
 
-const Body = ({ messages, currentUser }: { messages: z.infer<typeof MessageSchema>[]; currentUser: z.infer<typeof UserSchema> }) => {
+const Body = ({
+  messages,
+  currentUser,
+}: {
+  messages: z.infer<typeof MessageSchema>[];
+  currentUser: z.infer<typeof UserSchema>;
+}) => {
   const scrollRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -119,7 +180,9 @@ const Body = ({ messages, currentUser }: { messages: z.infer<typeof MessageSchem
         >
           {msg.author === currentUser.email ? (
             <Fragment>
-              <p className="bg-blue-700 max-w-[40%] p-2 rounded-md">{msg.content}</p>
+              <p className="bg-blue-700 max-w-[40%] p-2 rounded-md">
+                {msg.content}
+              </p>
               <Spacer x={2} />
               <Avatar />
             </Fragment>
@@ -127,33 +190,43 @@ const Body = ({ messages, currentUser }: { messages: z.infer<typeof MessageSchem
             <Fragment>
               <Avatar />
               <Spacer x={2} />
-              <p className="dark:bg-white/30 bg-black/50 max-w-[40%] p-2 rounded-md">{msg.content}</p>
+              <p className="dark:bg-white/30 bg-black/50 max-w-[40%] p-2 rounded-md">
+                {msg.content}
+              </p>
             </Fragment>
           )}
         </div>
       ))}
-      <div className="h-14"></div>
+      <div className="h-14" />
     </div>
   );
 };
 
-const SendInput = ({ value, onChange, onHandleSend }: { value: string; onChange: Dispatch<SetStateAction<string>>; onHandleSend: any }) => {
+const SendInput = ({
+  value,
+  onChange,
+  onHandleSend,
+}: {
+  value: string;
+  onChange: Dispatch<SetStateAction<string>>;
+  onHandleSend: any;
+}) => {
   return (
     <Input
-      size="lg"
-      value={value}
-      onChange={(e) => onChange(e.target.value)}
-      radius="none"
       className="self-end"
-      placeholder="Type your message here..."
       endContent={
         <MdSend
           className="cursor-pointer"
-          size={30}
           color="#2f9fe1"
+          size={30}
           onClick={onHandleSend}
         />
       }
+      placeholder="Type your message here..."
+      radius="none"
+      size="lg"
+      value={value}
+      onChange={(e) => onChange(e.target.value)}
     />
   );
 };

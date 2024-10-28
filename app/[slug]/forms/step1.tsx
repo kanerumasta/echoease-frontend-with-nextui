@@ -1,43 +1,50 @@
 "use client";
 
-
-import { BookingSchema } from "@/schemas/booking-schemas";
-
-import { useFetchArtistUnavailableDatesQuery } from "@/redux/features/scheduleApiSlice";
 import { Input } from "@nextui-org/input";
 import { Fragment, useEffect, useState } from "react";
 import { useFormContext } from "react-hook-form";
 import { z } from "zod";
-import { useBookingContext } from "./booking-provider";
-import { AddressPicker } from "../components/address-picker";
+
+import { useFetchArtistUnavailableDatesQuery } from "@/redux/features/scheduleApiSlice";
+import { BookingSchema } from "@/schemas/booking-schemas";
+
 import { CustomDatePicker } from "../components/custom-datepicker";
 import { TimeSlotPicker } from "../components/time-slot-picker";
 
+import { useBookingContext } from "./booking-provider";
+
 export const Step1 = () => {
-    const {artist} = useBookingContext()
-    const {data:unavailableDates = []}  = useFetchArtistUnavailableDatesQuery(artist.id)
-    const [selectedDate, setSelectedDate] = useState<Date|null>(null)
-    const form = useFormContext<z.infer<typeof BookingSchema>>();
+  const { artist } = useBookingContext();
+  const { data: unavailableDates = [] } = useFetchArtistUnavailableDatesQuery(
+    artist.id,
+  );
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const form = useFormContext<z.infer<typeof BookingSchema>>();
 
+  useEffect(() => {
+    selectedDate && form.setValue("eventDate", selectedDate);
+  }, [artist, selectedDate]);
 
-    useEffect(()=>{
-        selectedDate && form.setValue('eventDate', selectedDate)
-    },[artist, selectedDate])
+  return (
+    <Fragment>
+      <Input
+        radius="sm"
+        size="lg"
+        variant="bordered"
+        {...form.register("eventName")}
+        isInvalid={!!form.formState.errors.eventName}
+        label="What's the event?"
+        placeholder="E.g Birthday"
+      />
 
-    return (
-        <Fragment>
-        <Input
-            size="lg"
-            variant="bordered"
-            radius="sm"
-            {...form.register("eventName")}
-            label="What's the event?"
-            placeholder="E.g Birthday"
-            isInvalid={!!form.formState.errors.eventName}
-        />
-
-        <CustomDatePicker unavailableDates={unavailableDates} selectedDate={selectedDate} setSelectedDate={setSelectedDate}/>
-       {selectedDate &&  <TimeSlotPicker date={selectedDate} artist={artist.id} />}
-        </Fragment>
+      <CustomDatePicker
+        selectedDate={selectedDate}
+        setSelectedDate={setSelectedDate}
+        unavailableDates={unavailableDates}
+      />
+      {selectedDate && (
+        <TimeSlotPicker artist={artist.id} date={selectedDate} />
+      )}
+    </Fragment>
   );
 };

@@ -13,12 +13,12 @@ export default function SocialButton({
 }: SocialButtonProps) {
   return (
     <button
-      type="button"
       className={`p-3 rounded-md w-full border-2 border-gray-300/50 border-solid  flex items-center justify-center ${color}`}
+      type="button"
       onClick={() => callBack()}
     >
       {icon}
-      <div className="mx-1"></div>
+      <div className="mx-1" />
       {text}
     </button>
   );

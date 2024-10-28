@@ -1,12 +1,12 @@
-'use client';
+"use client";
 
-import LoginForm from '@/components/forms/auth/login-form';
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams } from "next/navigation";
 
+import LoginForm from "@/components/forms/auth/login-form";
 
 const ClientSearchParamsHandler = () => {
   const searchParams = useSearchParams();
-  const redirect = searchParams.get('redirect') || '/';
+  const redirect = searchParams.get("redirect") || "/";
 
   return <LoginForm redirect={redirect} />;
 };

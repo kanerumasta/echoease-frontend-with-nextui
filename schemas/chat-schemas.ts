@@ -1,19 +1,20 @@
 import { z } from "zod";
+
 import { UserSchema } from "./user-schemas";
 
 export const ChatSchema = z.object({
-    code: z.string(),
-    user: UserSchema,
-    partner: UserSchema,
-  });
+  code: z.string(),
+  user: UserSchema,
+  partner: UserSchema,
+  unread_messages_count: z.number(),
+});
 
-  export const MessageSchema = z.object({
-    id: z.string(),
-    author: z.string().email(),
-    content: z.string(),
-    created_at: z.string(),
-
-  });
+export const MessageSchema = z.object({
+  id: z.string(),
+  author: z.string().email(),
+  content: z.string(),
+  created_at: z.string(),
+});
 //   "code": "e0deb1e6-282e-4637-9e1b-2720f207092f",
 //   "messages": [
 //     {
@@ -29,10 +30,10 @@ export const ChatSchema = z.object({
 //   "total_pages": 2
 
 export const ChatDetailSchema = z.object({
-    code : z.string(),
-    messages: z.array(MessageSchema),
-    has_next: z.boolean(),
-    has_previous: z.boolean(),
-    current_page: z.number(),
-    total_pages: z.number(),
-  });
+  code: z.string(),
+  messages: z.array(MessageSchema),
+  has_next: z.boolean(),
+  has_previous: z.boolean(),
+  current_page: z.number(),
+  total_pages: z.number(),
+});

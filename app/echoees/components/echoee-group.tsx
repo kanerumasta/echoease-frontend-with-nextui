@@ -1,13 +1,16 @@
-import { ArtistInSchema } from "@/schemas/artist-schemas";
 import { z } from "zod";
-import EchoeeCard from "./echoee-card";
 import { useRef, useState } from "react";
+
+import { ArtistInSchema } from "@/schemas/artist-schemas";
+
+import EchoeeCard from "./echoee-card";
 
 type Props = {
   echoeeList: z.infer<typeof ArtistInSchema>[];
+  title: string;
 };
 
-export default function EchoeeGroup({ echoeeList }: Props) {
+export default function EchoeeGroup({ echoeeList, title }: Props) {
   const scrollRef = useRef<HTMLDivElement | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [startX, setStartX] = useState(0);
@@ -30,26 +33,29 @@ export default function EchoeeGroup({ echoeeList }: Props) {
     e.preventDefault();
     const x = e.pageX - scrollRef.current.offsetLeft;
     const walk = (x - startX) * 2; // The number controls scroll speed
+
     scrollRef.current.scrollLeft = scrollLeft - walk;
   };
-  return (
-    <div
-      ref={scrollRef}
-      onMouseDown={handleMouseDown}
-      onMouseLeave={handleMouseLeaveOrUp}
-      onMouseUp={handleMouseLeaveOrUp}
-      onMouseMove={handleMouseMove}
-      style={{
-        cursor: isDragging ? "grabbing" : "grab",
-      }}
-      className="w-full flex gap-2 overflow-x-scroll scrollbar-hide"
-    >
-      {echoeeList.map((echoee) => (
-        <>
-          <EchoeeCard key={echoee.id} echoee={echoee} />
 
-        </>
-      ))}
-    </div>
+  return (
+    <>
+      <h1 className="mb-4 mt-12 text-2xl font-bold">{title}</h1>
+      <div
+        ref={scrollRef}
+        className="w-full  flex gap-2 overflow-x-scroll scrollbar-hide"
+        style={{
+          cursor: isDragging ? "grabbing" : "grab",
+        }}
+        onMouseDown={handleMouseDown}
+        onMouseLeave={handleMouseLeaveOrUp}
+        onMouseMove={handleMouseMove}
+        onMouseUp={handleMouseLeaveOrUp}
+      >
+        {echoeeList.map((echoee) => (
+            <EchoeeCard key={echoee.id} echoee={echoee} />
+        ))}
+
+      </div>
+    </>
   );
 }

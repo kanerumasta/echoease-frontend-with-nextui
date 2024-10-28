@@ -1,6 +1,8 @@
 import React from "react";
 
-export const PhoneIcon = (props: React.JSX.IntrinsicAttributes & React.SVGProps<SVGSVGElement>) => (
+export const PhoneIcon = (
+  props: React.JSX.IntrinsicAttributes & React.SVGProps<SVGSVGElement>,
+) => (
   <svg
     aria-hidden="true"
     fill="none"

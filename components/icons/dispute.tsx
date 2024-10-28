@@ -1,6 +1,8 @@
 import React from "react";
 
-export const DisputeIcon = (props: React.JSX.IntrinsicAttributes & React.SVGProps<SVGSVGElement>) => (
+export const DisputeIcon = (
+  props: React.JSX.IntrinsicAttributes & React.SVGProps<SVGSVGElement>,
+) => (
   <svg
     aria-hidden="true"
     fill="none"
@@ -11,15 +13,12 @@ export const DisputeIcon = (props: React.JSX.IntrinsicAttributes & React.SVGProp
     width="1em"
     {...props}
   >
-    <path
-      d="M12 2L1 21h22L12 2z"
-      fill="currentColor"
-    />
+    <path d="M12 2L1 21h22L12 2z" fill="currentColor" />
     <path
       d="M12 9.5a1 1 0 0 1 1 1v3a1 1 0 1 1-2 0v-3a1 1 0 0 1 1-1z"
       fill="white"
     />
-    <circle cx="12" cy="16" r="1" fill="white" />
+    <circle cx="12" cy="16" fill="white" r="1" />
   </svg>
 );
 

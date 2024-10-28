@@ -1,15 +1,37 @@
-'use client'
+"use client";
 
-import { Autocomplete, AutocompleteItem } from "@nextui-org/autocomplete"
-import { Input } from "@nextui-org/input"
-import { IoSearch } from "react-icons/io5"
-import { TiThLargeOutline } from "react-icons/ti";
+import { Input } from "@nextui-org/input";
+import { Dispatch, SetStateAction, useState } from "react";
+import { IoSearch } from "react-icons/io5";
 
-export const SearchInput = () => {
-    return <div className="mb-8 flex gap-2 justify-end">
-        <Input classNames={{base:' w-full lg:w-1/4'}} placeholder="Search"  radius="full" endContent={<IoSearch />} size="lg"/>
-        <Autocomplete startContent={<TiThLargeOutline size={30}/>} placeholder="Genres" size="lg"  classNames={{base:'w-[200px]'}}>
-            <AutocompleteItem key="sdf"></AutocompleteItem>
-        </Autocomplete>
+export const SearchInput = ({
+  setSearchFilter,
+}: {
+  setSearchFilter: Dispatch<SetStateAction<string>>;
+}) => {
+  const [localSearchFilter, setLocalSearchFilter] = useState("");
+
+  return (
+    <div className="min-w-[400px] flex justify-center h-[50px] items-center  gap-2">
+      <Input
+        fullWidth
+        isClearable
+        classNames={{ base: " w-full" }}
+        placeholder="Search Echoee"
+        radius="full"
+        size="lg"
+        value={localSearchFilter}
+        onChange={(e) => e.target.value === "" && setSearchFilter("")}
+        onClear={() => setSearchFilter("")}
+        onValueChange={setLocalSearchFilter}
+      />
+      {localSearchFilter && (
+        <IoSearch
+          className="hover:text-blue-400 cursor-pointer"
+          size={25}
+          onClick={() => setSearchFilter(localSearchFilter)}
+        />
+      )}
     </div>
-}
+  );
+};

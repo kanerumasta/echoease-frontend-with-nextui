@@ -1,8 +1,9 @@
 "use client";
 
-import { useFetchCurrentUserQuery } from "@/redux/features/authApiSlice";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+
+import { useFetchCurrentUserQuery } from "@/redux/features/authApiSlice";
 
 export default function useLoginRequired(redirect: string) {
   const router = useRouter();

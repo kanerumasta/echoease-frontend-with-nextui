@@ -1,5 +1,6 @@
-import ConfirmPasswordResetForm from "@/components/forms/auth/confirm-reset";
 import { Spacer } from "@nextui-org/spacer";
+
+import ConfirmPasswordResetForm from "@/components/forms/auth/confirm-reset";
 
 export default function Page() {
   return (

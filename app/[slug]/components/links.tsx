@@ -1,12 +1,8 @@
-import { ArtistInSchema } from "@/schemas/artist-schemas";
-import {
-  FaFacebook,
-  FaInstagram,
-  FaSpotify,
-  FaTwitter,
-  FaYoutube,
-} from "react-icons/fa";
+import { FaFacebook, FaInstagram, FaSpotify, FaYoutube } from "react-icons/fa";
+import { BsTwitterX } from "react-icons/bs";
 import { z } from "zod";
+
+import { ArtistInSchema } from "@/schemas/artist-schemas";
 
 export const Links = ({
   artist,
@@ -14,7 +10,7 @@ export const Links = ({
   artist: z.infer<typeof ArtistInSchema>;
 }) => {
   return (
-    <div className="flex gap-2 justify-end">
+    <div className="flex  gap-2 absolute bottom-4 right-4 justify-end">
       {artist.fb_link && (
         <a href={artist.fb_link}>
           <FaFacebook opacity={0.6} size={24} />
@@ -28,7 +24,7 @@ export const Links = ({
       {artist.twitter && (
         <a href={artist.twitter}>
           {" "}
-          <FaTwitter opacity={0.6} size={24} />
+          <BsTwitterX opacity={0.6} size={24} />
         </a>
       )}
       {artist.spotify && (

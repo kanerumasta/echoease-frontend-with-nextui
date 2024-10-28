@@ -1,21 +1,21 @@
 "use client";
 
-
-import { useRolePicking } from "@/hooks/account";
 import { useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useRef, useState } from "react";
 import { FormProvider } from "react-hook-form";
 import { toast } from "react-toastify";
+import { Spacer } from "@nextui-org/spacer";
+import { Button } from "@nextui-org/button";
+import { Dispatch, Ref, RefObject, SetStateAction } from "react";
+
+import { useRolePicking } from "@/hooks/account";
+
 import {
   BarOwnerForm,
   EventOrganizerForm,
   GeneralDocumentsForm,
   RolePickingForm,
 } from "./forms";
-import { Spacer } from "@nextui-org/spacer";
-import { Button } from "@nextui-org/button";
-import { Dispatch, Ref, RefObject, SetStateAction } from "react";
-
 
 export default function PickingRolePage() {
   return (
@@ -33,17 +33,14 @@ const MainForm = () => {
   const [rolePicked, setRolePicked] = useState<string>("regular");
   const [businessPermit, setBusinessPermit] = useState<File | null>(null);
   const [govId, setGovId] = useState<File | null>(null);
-  const [govIdType, setGovIdType] = useState<number |null>(null);
+  const [govIdType, setGovIdType] = useState<number | null>(null);
   const [organizerImages, setOrganizerImages] = useState<File[] | null>(null);
   const [productionPage, setProductionPage] = useState<string | null>(null);
-  const [businessName, setBusinessName] = useState<string|null>(null);
+  const [businessName, setBusinessName] = useState<string | null>(null);
   const [businessImage, setBusinessImage] = useState<File | null>(null);
   const searchParams = useSearchParams();
   const redirect = searchParams.get("redirect") || "/";
-  const open = searchParams.get('open') || '0'
-
   const formRef = useRef<HTMLFormElement | null>(null);
-
   const formSteps = ["role", "organizer or bar", "general"];
 
   useEffect(() => {
@@ -53,6 +50,8 @@ const MainForm = () => {
     govIdType && form.setValue("government_id_type", govIdType.toString());
     organizerImages && form.setValue("organizer_images", organizerImages);
     productionPage && form.setValue("production_page", productionPage);
+    businessImage && form.setValue("businessImage", businessImage);
+    businessName && form.setValue("businessName", businessName);
   }, [
     rolePicked,
     businessPermit,
@@ -60,6 +59,8 @@ const MainForm = () => {
     govIdType,
     organizerImages,
     productionPage,
+    businessImage,
+    businessName,
   ]);
 
   useEffect(() => {
@@ -84,46 +85,46 @@ const MainForm = () => {
             {currentStep === 0 && (
               <RolePickingForm
                 rolePicked={rolePicked}
-                setRolePicked={setRolePicked}
                 roles={["regular", "event organizer", "bar owner"]}
+                setRolePicked={setRolePicked}
               />
             )}
             {currentStep === 1 && rolePicked === "event organizer" && (
               <EventOrganizerForm
-              businessImage={businessImage}
-              setBusinessImage={setBusinessImage}
-              businessName={businessName}
-              setBusinessName={setBusinessName}
-                productionPage={productionPage}
-                setProductionPage={setProductionPage}
+                businessImage={businessImage}
+                businessName={businessName}
                 images={organizerImages}
+                productionPage={productionPage}
+                setBusinessImage={setBusinessImage}
+                setBusinessName={setBusinessName}
                 setImages={setOrganizerImages}
+                setProductionPage={setProductionPage}
               />
             )}
             {currentStep === 1 && rolePicked === "bar owner" && (
               <BarOwnerForm
-              businessName={businessName}
-              setBusinessName={setBusinessName}
-              businessImage={businessImage}
-              setBusinessImage={setBusinessImage}
+                businessImage={businessImage}
+                businessName={businessName}
                 businessPermit={businessPermit}
+                setBusinessImage={setBusinessImage}
+                setBusinessName={setBusinessName}
                 setBusinessPermit={setBusinessPermit}
               />
             )}
             {currentStep === 1 && rolePicked === "regular" && (
               <GeneralDocumentsForm
-                setGovernmentId={setGovId}
                 governmentId={govId}
                 governmentIdType={govIdType}
+                setGovernmentId={setGovId}
                 setGovernmentIdType={setGovIdType}
               />
             )}
 
             {currentStep === 2 && rolePicked !== "regular" && (
               <GeneralDocumentsForm
-                setGovernmentId={setGovId}
                 governmentId={govId}
                 governmentIdType={govIdType}
+                setGovernmentId={setGovId}
                 setGovernmentIdType={setGovIdType}
               />
             )}
@@ -131,21 +132,20 @@ const MainForm = () => {
 
           {/* Stepper */}
         </FormProvider>
-        <Spacer y={12}/>
+        <Spacer y={12} />
         <FormStepper
-        govId={govId}
-          isSubmitting={isLoading}
-          formRef={formRef}
-          steps={formSteps}
-          currentStep={currentStep}
-          setCurrentStep={setCurrentStep}
           className=" absolute bottom-2 right-2 flex gap-4"
+          currentStep={currentStep}
+          formRef={formRef}
+          govId={govId}
+          isSubmitting={isLoading}
+          setCurrentStep={setCurrentStep}
+          steps={formSteps}
         />
       </div>
     </Suspense>
   );
 };
-
 
 type Props = {
   currentStep: number;
@@ -174,9 +174,10 @@ const FormStepper = ({
     setCurrentStep((prevStep) => prevStep - 1);
   };
   const triggersubmit = () => {
-    if(!govId){
-        toast.error("Please upload government id");
-        return false;
+    if (!govId) {
+      toast.error("Please upload government id");
+
+      return false;
     }
     if (formRef && (formRef as RefObject<HTMLFormElement>).current) {
       (formRef as RefObject<HTMLFormElement>).current?.requestSubmit();
@@ -186,25 +187,25 @@ const FormStepper = ({
   return (
     <div className={className}>
       <Button
-        isDisabled={currentStep <= 0}
-        onPress={handleBack}
         color="default"
+        isDisabled={currentStep <= 0}
         radius="sm"
+        onPress={handleBack}
       >
         Previous
       </Button>
       {currentStep < steps.length - 1 && (
-        <Button onPress={handleNext} color="primary" radius="sm">
+        <Button color="primary" radius="sm" onPress={handleNext}>
           Next
         </Button>
       )}
       {currentStep === steps.length - 1 && (
         <Button
-          isLoading={isSubmitting}
-          isDisabled={isSubmitting}
-          onPress={triggersubmit}
           color="primary"
+          isDisabled={isSubmitting}
+          isLoading={isSubmitting}
           radius="sm"
+          onPress={triggersubmit}
         >
           Submit
         </Button>

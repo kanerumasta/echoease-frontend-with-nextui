@@ -3,16 +3,11 @@ import type {
   FetchArgs,
   FetchBaseQueryError,
 } from "@reduxjs/toolkit/query";
+
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { Mutex } from "async-mutex";
-import {
-  finishInitialLoad,
-  logout,
-  setAuth,
-  setLoading,
-  setRedirectToLogin,
-} from "../features/authSlice";
 
+import { logout, setAuth, setLoading } from "../features/authSlice";
 
 const mutex = new Mutex();
 const baseQuery = fetchBaseQuery({
@@ -27,9 +22,11 @@ const baseQueryWithReauth: BaseQueryFn<
   api.dispatch(setLoading());
   await mutex.waitForUnlock();
   let result = await baseQuery(args, api, extraOptions);
+
   if (result.error && result.error.status === 401) {
     if (!mutex.isLocked()) {
       const release = await mutex.acquire();
+
       try {
         const refreshResult = await baseQuery(
           {
@@ -37,8 +34,9 @@ const baseQueryWithReauth: BaseQueryFn<
             method: "POST",
           },
           api,
-          extraOptions
+          extraOptions,
         );
+
         if (refreshResult.data) {
           api.dispatch(setAuth());
           result = await baseQuery(args, api, extraOptions);
@@ -53,12 +51,37 @@ const baseQueryWithReauth: BaseQueryFn<
       result = await baseQuery(args, api, extraOptions);
     }
   }
+
   return result;
 };
 
 export const apiSlice = createApi({
   reducerPath: "api",
-  tagTypes: ['CurrentUser','oldNotifications','newNotifications','Bookings','Echoees','ConnectionRequests','PendingBookings','Portfolio', 'Connections','RecommendedArtists','SentConnectionRequests','CurrentArtist','AwaitingDownpayments','ApprovedBookings','MyUnavailableDates', 'CompletedBookings','PendingPayments','UpcomingEvents','ScheduledDays','CombinedAvailability', 'Transactions','followers'],
+  tagTypes: [
+    "CurrentUser",
+    "oldNotifications",
+    "newNotifications",
+    "Bookings",
+    "Echoees",
+    "ConnectionRequests",
+    "PendingBookings",
+    "Portfolio",
+    "Connections",
+    "RecommendedArtists",
+    "SentConnectionRequests",
+    "CurrentArtist",
+    "AwaitingDownpayments",
+    "ApprovedBookings",
+    "MyUnavailableDates",
+    "CompletedBookings",
+    "PendingPayments",
+    "UpcomingEvents",
+    "ScheduledDays",
+    "CombinedAvailability",
+    "Transactions",
+    "followers",
+    "BlockedChats",
+  ],
   baseQuery: baseQueryWithReauth,
   endpoints: (builder) => ({}),
 });

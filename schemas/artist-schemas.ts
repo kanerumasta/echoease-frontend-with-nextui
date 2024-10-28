@@ -1,6 +1,7 @@
 import { z } from "zod";
+
 import { UserSchema } from "./user-schemas";
-const MAX_TOTAL_SIZE = 150 * 1024 * 1024
+const MAX_TOTAL_SIZE = 150 * 1024 * 1024;
 
 export const GenreOptionSchema = z.object({
   label: z.string(),
@@ -8,14 +9,13 @@ export const GenreOptionSchema = z.object({
   disable: z.boolean().optional(),
 });
 export const RateSchema = z.object({
-    id: z.number(),
-    amount: z.number(),
-    name: z.string(),
-    artist_application: z.number(),
-    artist: z.number(),
-    description:z.string().nullable(),
-  });
-
+  id: z.number(),
+  amount: z.number(),
+  name: z.string(),
+  artist_application: z.number(),
+  artist: z.number(),
+  description: z.string().nullable(),
+});
 
 export const GenreSchema = z.object({
   id: z.number().min(1),
@@ -39,12 +39,17 @@ export const ArtistApplicationSchema = z.object({
       required_error: "At least 2 videos are required.",
     })
     .min(2, "Add at least 2 videos.")
-    .max(3, "You can only upload up to 3 videos.").refine(files => {
+    .max(3, "You can only upload up to 3 videos.")
+    .refine(
+      (files) => {
         const totalSize = files.reduce((sum, file) => sum + file.size, 0);
+
         return totalSize <= MAX_TOTAL_SIZE;
-      }, {
+      },
+      {
         message: `Total file size must be less than or equal to ${MAX_TOTAL_SIZE / 1024 / 1024} MB.`,
-      }),
+      },
+    ),
 
   genres: z.array(z.string()).min(1, "Pick at least 1 genre."),
   idol: z.string().nullable().optional(),
@@ -56,14 +61,16 @@ export const ArtistApplicationSchema = z.object({
   twitter: z.string().nullable().optional(),
   fb_link: z.string().nullable().optional(),
   bio: z.string(),
-  stage_name:z.string().nullable().optional(),
-  rates: z.array(
-    z.object({
-      artist_application: z.string().nullable().optional(),
-      name: z.string(),
-      amount: z.string(),
-    })
-  ).min(1, 'You must add at least one artist rate.'),
+  stage_name: z.string().nullable().optional(),
+  rates: z
+    .array(
+      z.object({
+        artist_application: z.string().nullable().optional(),
+        name: z.string(),
+        amount: z.string(),
+      }),
+    )
+    .min(1, "You must add at least one artist rate."),
 });
 
 export const ArtistInSchema = z.object({
@@ -75,8 +82,6 @@ export const ArtistInSchema = z.object({
   instagram: z.string().nullable(),
   twitter: z.string().nullable(),
   status: z.string().nullable(),
-  date_approved: z.string().nullable(),
-  time_approved: z.string().nullable(),
   spotify: z.string().nullable(),
   youtube: z.string().nullable(),
   idol: z.string().nullable(),
@@ -87,8 +92,12 @@ export const ArtistInSchema = z.object({
   genres: z.array(z.object({ id: z.number(), name: z.string() })).nullable(),
   followers: z.array(z.number()),
   portfolio: z.number(),
-  connections : z.array(z.number()),
-  rates : z.array(RateSchema)
+  connections: z.array(z.number()),
+  rates: z.array(RateSchema),
+  stage_name: z.string().nullable(),
+  is_new: z.boolean(),
+  created_at: z.string(),
+  updated_at: z.string(),
 });
 
 export const CreatePortfolioItemSchema = z
@@ -113,25 +122,26 @@ export const CreatePortfolioItemSchema = z
       if (!data.images && !data.videos) {
         return false;
       }
+
       return true;
     },
-    { message: "Attach at least an image or a video.", path: ["images"] }
+    { message: "Attach at least an image or a video.", path: ["images"] },
   );
 
 export const MediaSchema = z.object({
-    id:z.number(),
-    media_type:z.string(),
-    file: z.string(),
-    portfolio_item : z.number()
-})
+  id: z.number(),
+  media_type: z.string(),
+  file: z.string(),
+  portfolio_item: z.number(),
+});
 
 export const InPortfolioItemSchema = z.object({
   id: z.number(),
   title: z.string(),
   description: z.string(),
   group: z.string(),
-  medias : z.array(MediaSchema),
-  portfolio:z.number()
+  medias: z.array(MediaSchema),
+  portfolio: z.number(),
 });
 
 export const InPortfolioSchema = z.object({
@@ -140,25 +150,22 @@ export const InPortfolioSchema = z.object({
   artist: z.number(),
 });
 
-
-
 export const ConnectionRequestSchema = z.object({
-id:z.number(),
-timestamp:z.string(),
-status : z.string(),
-sender : ArtistInSchema,
-receiver : ArtistInSchema
-})
+  id: z.number(),
+  timestamp: z.string(),
+  status: z.string(),
+  sender: ArtistInSchema,
+  receiver: ArtistInSchema,
+});
 
 export const MyConnectionsSchema = z.object({
-    connections : z.array(ArtistInSchema)
-})
+  connections: z.array(ArtistInSchema),
+});
 
-
-  export const RecommendedArtistsConnectionsSchema = z.object({
-    id:z.number(),
-    user:UserSchema,
-    slug:z.string(),
-    genres:z.array(GenreSchema),
-    mutual:z.array(ArtistInSchema)
-  })
+export const RecommendedArtistsConnectionsSchema = z.object({
+  id: z.number(),
+  user: UserSchema,
+  slug: z.string(),
+  genres: z.array(GenreSchema),
+  mutual: z.array(ArtistInSchema),
+});

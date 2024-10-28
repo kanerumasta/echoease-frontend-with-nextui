@@ -2,12 +2,12 @@
 
 import * as React from "react";
 import { NextUIProvider } from "@nextui-org/system";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { ThemeProvider as NextThemesProvider } from "next-themes";
 import { ThemeProviderProps } from "next-themes/dist/types";
 import { Bounce, toast, ToastContainer } from "react-toastify";
 import StoreProvider from "@/redux/provider";
-
+import { IoCalendarNumber, IoLogoWechat } from "react-icons/io5";
 export interface ProvidersProps {
   children: React.ReactNode;
   themeProps?: ThemeProviderProps;
@@ -17,6 +17,7 @@ import "react-toastify/dist/ReactToastify.css";
 import "../styles/globals.css";
 import { useFetchNewNotificationsQuery } from "@/redux/features/notificationApiSlice";
 import { useFetchApprovedBookingsQuery, useFetchAwaitingDownpaymentBookingsQuery, useFetchPendingBookingsQuery } from "@/redux/features/bookingApiSlice";
+import { useFetchChatsQuery, useFetchUnreadMessagesCountQuery } from "@/redux/features/chatApiSlice";
 
 interface ToastProviderProps {
   children: React.ReactNode;
@@ -26,7 +27,7 @@ function ToastProvider({ children }: ToastProviderProps) {
   return (
     <>
       {children}
-      <ToastContainer transition={Bounce} position="top-right" autoClose={3000} />
+      <ToastContainer transition={Bounce} pauseOnHover={false} position="top-right" autoClose={3000} />
     </>
   );
 }
@@ -59,7 +60,12 @@ const WebsocketProvider: React.FC<WebSocketProviderProps> = ({ children }) => {
     const{refetch:refetchPendingBookings} = useFetchPendingBookingsQuery()
     const {refetch:refetchAwaitingDownpayments} = useFetchAwaitingDownpaymentBookingsQuery()
     const {refetch:refetchApprovedBookings} = useFetchApprovedBookingsQuery()
+    const {refetch:refetchUnreadMessagesCount} = useFetchUnreadMessagesCountQuery()
     const [socket, setSocket] = React.useState<WebSocket | null>(null);
+    const {refetch:refetchConversationList} = useFetchChatsQuery()
+
+
+
 
     React.useEffect(() => {
         const socketUrl = 'ws://localhost:8000/ws/notification/';
@@ -71,9 +77,33 @@ const WebsocketProvider: React.FC<WebSocketProviderProps> = ({ children }) => {
 
         newSocket.onmessage = (event) => {
             refetchNewNotif();
-            const data = JSON.parse(event.data);
+            const pathName = window.location.pathname
 
-            toast.success(data.message);
+            const data = JSON.parse(event.data);
+            console.log(data)
+            if(data.notification_type === 'message' && !pathName.includes('/messages/')){
+                refetchUnreadMessagesCount()
+            }
+            if(data.notification_type === 'message'){
+
+                refetchConversationList()
+            toast.success(data.message,{
+                icon:<IoLogoWechat className="text-blue-500" size={45}/>,
+                closeButton:false,
+                pauseOnHover:true,
+                autoClose:3000,
+                hideProgressBar:true
+            });
+        }else if(data.notification_type === 'application'){
+            toast(data.message)
+        }
+        else{
+            toast(data.message,{
+                icon:<IoCalendarNumber size={45}/>,
+                pauseOnHover:false,
+                autoClose:3000,
+            })
+        }
         };
 
         setSocket(newSocket);

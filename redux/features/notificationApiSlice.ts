@@ -1,7 +1,11 @@
 import { z } from "zod";
-import { apiSlice } from "../services/apiSlice";
-import { NotificationInSchema, PaginatedNotificationSchema } from "@/schemas/notification-schemas";
 
+import {
+  NotificationInSchema,
+  PaginatedNotificationSchema,
+} from "@/schemas/notification-schemas";
+
+import { apiSlice } from "../services/apiSlice";
 
 const notificationSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
@@ -10,14 +14,13 @@ const notificationSlice = apiSlice.injectEndpoints({
       void
     >({
       query: () => "/notifications?new=True",
-      providesTags:['newNotifications']
-
+      providesTags: ["newNotifications"],
     }),
 
     countNewNotifications: builder.query<{ notifications_count: number }, void>(
       {
         query: () => "/notifications?new=True&&count=True",
-      }
+      },
     ),
 
     fetchOldNotifications: builder.query<
@@ -25,7 +28,7 @@ const notificationSlice = apiSlice.injectEndpoints({
       number
     >({
       query: (page) => `/notifications?old=True&page=${page}`,
-      providesTags:['oldNotifications']
+      providesTags: ["oldNotifications"],
     }),
     readNotification: builder.mutation<any, string>({
       query: (id) => ({
@@ -33,30 +36,29 @@ const notificationSlice = apiSlice.injectEndpoints({
 
         url: `/notifications/${id}/read`,
       }),
-      invalidatesTags:['oldNotifications','newNotifications']
+      invalidatesTags: ["oldNotifications", "newNotifications"],
     }),
     deleteNotification: builder.mutation<any, number>({
       query: (id) => ({
         method: "DELETE",
         url: `/notifications/${id}/delete`,
       }),
-      invalidatesTags:['oldNotifications','newNotifications']
+      invalidatesTags: ["oldNotifications", "newNotifications"],
     }),
-    markAllRead:builder.mutation<any, void>({
-        query:()=>({
-            url:`/notifications/mark-all-as-read`,
-            method:'POST'
-        }),
-        invalidatesTags:['oldNotifications','newNotifications']
+    markAllRead: builder.mutation<any, void>({
+      query: () => ({
+        url: `/notifications/mark-all-as-read`,
+        method: "POST",
+      }),
+      invalidatesTags: ["oldNotifications", "newNotifications"],
     }),
-    clearAll:builder.mutation<any, void>({
-        query:()=>({
-            url:`/notifications/clear-all-old-notifications`,
-            method:'POST'
-        }),
-        invalidatesTags:['oldNotifications']
-    })
-
+    clearAll: builder.mutation<any, void>({
+      query: () => ({
+        url: `/notifications/clear-all-old-notifications`,
+        method: "POST",
+      }),
+      invalidatesTags: ["oldNotifications"],
+    }),
   }),
 });
 
@@ -67,6 +69,5 @@ export const {
   useReadNotificationMutation,
   useDeleteNotificationMutation,
   useMarkAllReadMutation,
-  useClearAllMutation
-
+  useClearAllMutation,
 } = notificationSlice;

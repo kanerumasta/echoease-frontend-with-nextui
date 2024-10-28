@@ -1,8 +1,9 @@
 import { z } from "zod";
-import { apiSlice } from "../services/apiSlice";
+
 import { UserSchema } from "@/schemas/user-schemas";
 import { ResetPasswordConfirmSchema } from "@/schemas/auth-schemas";
 
+import { apiSlice } from "../services/apiSlice";
 
 interface User {
   first_name: string;
@@ -25,7 +26,7 @@ const authApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     fetchCurrentUser: builder.query<z.infer<typeof UserSchema>, void>({
       query: () => "/whoami",
-      providesTags:['CurrentUser']
+      providesTags: ["CurrentUser"],
     }),
     loginUser: builder.mutation({
       query: ({ email, password }) => ({
@@ -37,7 +38,7 @@ const authApiSlice = apiSlice.injectEndpoints({
         },
         body: { email, password },
       }),
-      invalidatesTags:['CurrentUser']
+      invalidatesTags: ["CurrentUser"],
     }),
     registerNewUser: builder.mutation({
       query: ({ first_name, last_name, email, password, re_password }) => ({
@@ -98,7 +99,7 @@ const authApiSlice = apiSlice.injectEndpoints({
     socialAuthenticate: builder.mutation<CreateUserResponse, SocialAuthArgs>({
       query: ({ provider, state, code }) => ({
         url: `/o/${provider}/?state=${encodeURIComponent(
-          state
+          state,
         )}&code=${encodeURIComponent(code)}`,
         method: "POST",
         headers: {
@@ -106,9 +107,7 @@ const authApiSlice = apiSlice.injectEndpoints({
           "Content-Type": "x-www-form-urlencoded",
         },
       }),
-
     }),
-
   }),
 });
 
@@ -122,6 +121,5 @@ export const {
   useVerifyUserMutation,
   useResetPasswordConfirmMutation,
   useResetPasswordMutation,
-  useResendActivationMutation
-
+  useResendActivationMutation,
 } = authApiSlice;

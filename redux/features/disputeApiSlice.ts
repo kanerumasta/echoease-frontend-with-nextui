@@ -16,20 +16,20 @@ const disputeApiSlice = apiSlice.injectEndpoints({
         body: data,
       }),
     }),
-    createDispute:builder.mutation({
-        query:(data)=>({
-            url:'/disputes/',
-            method:'POST',
-            body:data
-        })
+    createDispute: builder.mutation({
+      query: (data) => ({
+        url: "/disputes/",
+        method: "POST",
+        body: data,
+      }),
     }),
-    addDisputeEvidence:builder.mutation({
-        query:(data)=>({
-            url:'/disputes/evidences',
-            method:'POST',
-            body:data
-        })
-    })
+    addDisputeEvidence: builder.mutation({
+      query: (data) => ({
+        url: "/disputes/evidences",
+        method: "POST",
+        body: data,
+      }),
+    }),
   }),
 });
 

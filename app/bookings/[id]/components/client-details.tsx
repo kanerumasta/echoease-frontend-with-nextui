@@ -1,6 +1,7 @@
-import React from 'react';
-import { z } from 'zod';
-import { BookInSchema } from '@/schemas/booking-schemas';
+import React from "react";
+import { z } from "zod";
+
+import { BookInSchema } from "@/schemas/booking-schemas";
 
 interface ClientDetailsProps {
   booking: z.infer<typeof BookInSchema>;
@@ -23,7 +24,7 @@ const ClientDetails: React.FC<ClientDetailsProps> = ({ booking }) => {
 
       <div className="mb-2">
         <p className="text-gray-700">Client Role:</p>
-        <p className="font-medium">{booking.client.role || 'Individual'}</p>
+        <p className="font-medium">{booking.client.role || "Individual"}</p>
       </div>
     </div>
   );

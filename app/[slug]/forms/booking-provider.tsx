@@ -1,23 +1,22 @@
-import { ArtistInSchema } from "@/schemas/artist-schemas";
-import { UserSchema } from "@/schemas/user-schemas";
 import React, { createContext, useContext, ReactNode } from "react";
 import { z } from "zod";
 
-
-
+import { ArtistInSchema } from "@/schemas/artist-schemas";
+import { UserSchema } from "@/schemas/user-schemas";
 
 const BookingContext = createContext<BookingContextProps | null>(null);
 
 export const useBookingContext = () => {
-    const context = useContext(BookingContext);
-    if (!context) {
-      throw new Error("useBookingContext must be used within a BookingProvider");
-    }
-    return context;
-  };
+  const context = useContext(BookingContext);
 
+  if (!context) {
+    throw new Error("useBookingContext must be used within a BookingProvider");
+  }
 
-export const BookingProvider:React.FC<BookingProviderProps> = ({
+  return context;
+};
+
+export const BookingProvider: React.FC<BookingProviderProps> = ({
   artist,
   currentUser,
   children,
@@ -29,15 +28,13 @@ export const BookingProvider:React.FC<BookingProviderProps> = ({
   );
 };
 
-
-
 type BookingProviderProps = {
-    artist: z.infer<typeof ArtistInSchema>;
-    currentUser:z.infer<typeof UserSchema>;
-    children: ReactNode;
-  }
+  artist: z.infer<typeof ArtistInSchema>;
+  currentUser: z.infer<typeof UserSchema>;
+  children: ReactNode;
+};
 
 interface BookingContextProps {
-    artist: z.infer<typeof ArtistInSchema>;
-    currentUser:z.infer<typeof UserSchema>;
-  }
+  artist: z.infer<typeof ArtistInSchema>;
+  currentUser: z.infer<typeof UserSchema>;
+}

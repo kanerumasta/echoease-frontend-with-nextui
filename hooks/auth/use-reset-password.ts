@@ -1,10 +1,11 @@
 "use client";
 
-import { useResetPasswordMutation } from "@/redux/features/authApiSlice";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import { z } from "zod";
+
+import { useResetPasswordMutation } from "@/redux/features/authApiSlice";
 
 const ResetPasswordSchema = z.object({
   email: z
@@ -22,8 +23,10 @@ export default function useResetPassword() {
   const onSubmit = form.handleSubmit(
     (data: z.infer<typeof ResetPasswordSchema>) => {
       const validatedData = ResetPasswordSchema.safeParse(data);
+
       if (!validatedData.success) {
         toast.error("Email is not valid");
+
         return;
       }
       resetPassword(validatedData.data.email)
@@ -32,7 +35,7 @@ export default function useResetPassword() {
           toast.success("Please check your email to reset your password");
         })
         .catch(() => toast.error("Cant reset password as of now.."));
-    }
+    },
   );
 
   return {

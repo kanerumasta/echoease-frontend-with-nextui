@@ -14,19 +14,6 @@ import {
   Navbar as NextUINavbar,
 } from "@nextui-org/navbar";
 import NextLink from "next/link";
-
-import {
-  DiscordIcon,
-  GithubIcon,
-  Logo,
-  SearchIcon,
-  TwitterIcon,
-} from "@/components/icons";
-import { siteConfig } from "@/config/site";
-import { useLogout } from "@/hooks/auth";
-import { useFetchCurrentUserQuery } from "@/redux/features/authApiSlice";
-import { useCountNewNotificationsQuery, useFetchNewNotificationsQuery } from "@/redux/features/notificationApiSlice";
-import { useIsCurrentUserAnArtist } from "@/utils/check-is-artist";
 import { Badge } from "@nextui-org/badge";
 import {
   Dropdown,
@@ -47,27 +34,43 @@ import { User } from "@nextui-org/user";
 import { usePathname, useRouter } from "next/navigation";
 import { Fragment, useCallback } from "react";
 import { IoNotifications } from "react-icons/io5";
+
+import { useIsCurrentUserAnArtist } from "@/utils/check-is-artist";
+import { useFetchNewNotificationsQuery } from "@/redux/features/notificationApiSlice";
+import { useFetchCurrentUserQuery } from "@/redux/features/authApiSlice";
+import { useLogout } from "@/hooks/auth";
+import { siteConfig } from "@/config/site";
+import {
+  DiscordIcon,
+  GithubIcon,
+  Logo,
+  SearchIcon,
+  TwitterIcon,
+} from "@/components/icons";
 import { cn } from "@/lib/utils";
 import { useFetchPendingBookingsQuery } from "@/redux/features/bookingApiSlice";
+import { useFetchUnreadMessagesCountQuery } from "@/redux/features/chatApiSlice";
 
 export const Navbar = () => {
   const { data: user, isLoading, isError } = useFetchCurrentUserQuery();
   const { isOpen, onClose, onOpen } = useDisclosure();
   const { logout } = useLogout();
   const router = useRouter();
-  const { data: newNotifications =[]} = useFetchNewNotificationsQuery();
-  const {data:pendingBookings} = useFetchPendingBookingsQuery()
-  const currentPath = usePathname()
+  const { data: newNotifications = [] } = useFetchNewNotificationsQuery();
+  const { data: pendingBookings } = useFetchPendingBookingsQuery();
+  const currentPath = usePathname();
+  const { data: unreadMessages } = useFetchUnreadMessagesCountQuery();
 
-  const isActiveTab = useCallback((path:string)=>currentPath.includes(path),[currentPath])
-
+  const isActiveTab = useCallback(
+    (path: string) => currentPath.includes(path),
+    [currentPath],
+  );
 
   const { isArtist, isLoading: checkUserAnArtistLoading } =
     useIsCurrentUserAnArtist();
 
   const searchInput = (
     <Input
-      radius="full"
       aria-label="Search"
       classNames={{
         inputWrapper: "bg-default-100",
@@ -80,6 +83,7 @@ export const Navbar = () => {
       }
       labelPlacement="outside"
       placeholder="Search..."
+      radius="full"
       startContent={
         <SearchIcon className="text-base text-default-400 pointer-events-none flex-shrink-0" />
       }
@@ -101,67 +105,69 @@ export const Navbar = () => {
           </NextLink>
         </NavbarBrand>
         <ul className="hidden lg:flex gap-4 justify-start ml-2">
-
-        {!isArtist &&
-           <NavbarItem >
-           <Link className={cn("text-white/50 p-2 rounded-md",{"bg-blue-500 text-white":isActiveTab('/echoees')})} href={'/echoees'}>
-                 Echoees
-           </Link>
-         </NavbarItem>
-        }
-
-        {isArtist &&
-            <NavbarItem >
-              <Link className={cn("text-white/50 p-2 rounded-md",{"bg-blue-500 text-white":isActiveTab('/echoverse')})} href={'/echoverse'}>
-                    Echoverse
-              </Link>
-            </NavbarItem>
-        }
-            <NavbarItem >
-              <Link className={cn("text-white/50 p-2 rounded-md",{"bg-blue-500 text-white":isActiveTab('/messages')})} href={'/messages'}>
-                    Messages
-              </Link>
-            </NavbarItem>
-
+          {!isArtist && (
             <NavbarItem>
-  {!isArtist && (
-    // pendingBookings.length > 0 ? (
-    //   <Badge color="danger" content={pendingBookings.length}>
-    //     <Link
-    //       className={cn(
-    //         "text-white/50 p-2 rounded-md",
-    //         isActiveTab('/echoverse/bookings') && "text-white bg-blue-500"
-    //       )}
-    //       href={'/echoverse/bookings'}
-    //     >
-    //       Bookings
-    //     </Link>
-    //   </Badge>
-    // ) : (
-//       <Link
-//         className={cn(
-//           "text-white p-2 rounded-md",
-//           isActiveTab('/echoverse/bookings') && "bg-blue-500"
-//         )}
-//         href={'/echoverse/bookings'}
-//       >
-//         Bookings
-//       </Link>
-//     )
-//   ) : (
-    <Link
-      className={cn(
-        "text-white/50 p-2 rounded-md",
-        isActiveTab('/bookings') && "bg-blue-500 text-white"
-      )}
-      href={'/bookings'}
-    >
-      Bookings
-    </Link>
-  )}
-</NavbarItem>
+              <Link
+                className={cn("text-white/50 p-2 rounded-md", {
+                  "bg-blue-500 text-white": isActiveTab("/echoees"),
+                })}
+                href={"/echoees"}
+              >
+                Echoees
+              </Link>
+            </NavbarItem>
+          )}
+
+          {isArtist && (
+            <NavbarItem>
+              <Link
+                className={cn("text-white/50 p-2 rounded-md", {
+                  "bg-blue-500 text-white": isActiveTab("/echoverse"),
+                })}
+                href={"/echoverse"}
+              >
+                Echoverse
+              </Link>
+            </NavbarItem>
+          )}
+          {user && (
+            <>
+            <NavbarItem>
+              <Badge
+                color="danger"
+                content={unreadMessages?.unread_messages_count ?? 0}
+                isInvisible={
+                  !unreadMessages || unreadMessages?.unread_messages_count <= 0
+                }
+              >
+                <Link
+                  className={cn("text-white/50 p-2 rounded-md", {
+                    "bg-blue-500 text-white": isActiveTab("/messages"),
+                  })}
+                  href={"/messages"}
+                >
+                  Messages
+                </Link>
+              </Badge>
+            </NavbarItem>
 
 
+
+          <NavbarItem>
+            {!isArtist && (
+              <Link
+                className={cn(
+                  "text-white/50 p-2 rounded-md",
+                  isActiveTab("/bookings") && "bg-blue-500 text-white",
+                )}
+                href={"/bookings"}
+              >
+                Bookings
+              </Link>
+            )}
+          </NavbarItem>
+          </>
+          )}
 
         </ul>
       </NavbarContent>
@@ -170,15 +176,13 @@ export const Navbar = () => {
         className="hidden sm:flex basis-1/5 sm:basis-full"
         justify="end"
       >
-        {
-            !(user?.role === 'artist') && !(user?.is_roled) && (
-                <NavbarItem>
-                <Link className="text-white" href={"/become-an-echoee"}>
-                  Become an echoee
-                </Link>
-              </NavbarItem>
-            )
-        }
+        {!(user?.role === "artist") && !user?.is_roled && (
+          <NavbarItem>
+            <Link className="text-white" href={"/become-an-echoee"}>
+              Become an echoee
+            </Link>
+          </NavbarItem>
+        )}
 
         <NavbarItem className="hidden sm:flex gap-2">
           <Link isExternal aria-label="Twitter" href={siteConfig.links.twitter}>
@@ -216,21 +220,26 @@ export const Navbar = () => {
         )}
         {user && (
           <NavbarItem>
-            {newNotifications.length > 0 ?
-            <Badge color="danger" content={newNotifications.length.toString()}>
+            {newNotifications.length > 0 ? (
+              <Badge
+                color="danger"
+                content={newNotifications.length.toString()}
+              >
+                <IoNotifications
+                  className="hover:cursor-pointer"
+                  color="white"
+                  size={24}
+                  onClick={() => router.push("/notifications")}
+                />
+              </Badge>
+            ) : (
               <IoNotifications
                 className="hover:cursor-pointer"
-                onClick={() => router.push("/notifications")}
                 color="white"
                 size={24}
-              />
-            </Badge> :  <IoNotifications
-                className="hover:cursor-pointer"
                 onClick={() => router.push("/notifications")}
-                color="white"
-                size={24}
               />
-}
+            )}
           </NavbarItem>
         )}
 
@@ -239,16 +248,16 @@ export const Navbar = () => {
             <Dropdown>
               <DropdownTrigger>
                 <User
-                  className="capitalize text-white hover:cursor-pointer"
-                  name={`${user.first_name} ${user.last_name}`}
-                  description={isArtist ? 'Echoee' :''}
                   avatarProps={{
                     fallback: `${user.first_name[0]} ${user.last_name[0]}`,
-                    src: `${process.env.NEXT_PUBLIC_HOST}${user.profile?.profile_image}`,
+                    src: user.profile?.profile_image,
                   }}
+                  className="capitalize text-white hover:cursor-pointer"
+                  description={isArtist ? "Echoee" : ""}
+                  name={`${user.first_name} ${user.last_name}`}
                 />
               </DropdownTrigger>
-              <DropdownMenu variant="faded" aria-label="menu">
+              <DropdownMenu aria-label="menu" variant="faded">
                 <DropdownItem>
                   <div>
                     <p className="text-xs dark:text-white/50 text-black/50">
@@ -257,25 +266,24 @@ export const Navbar = () => {
                     <p className="font-bold">{user.email}</p>
                   </div>
                 </DropdownItem>
-                <DropdownSection className="font-bold" showDivider>
+                <DropdownSection showDivider className="font-bold">
                   <DropdownItem
+                    key={"profile"}
                     onPress={() => {
                       isArtist
                         ? router.push("/echoverse")
                         : router.push("/profile");
                     }}
-                    key={"profile"}
                   >
-                    {isArtist ? 'Echoverse':'Profile'}
+                    {isArtist ? "Echoverse" : "Profile"}
                   </DropdownItem>
-
                 </DropdownSection>
                 <DropdownSection>
                   <DropdownItem
-                    onClick={onOpen}
                     key={"logout"}
                     className="text-danger"
                     color="danger"
+                    onClick={onOpen}
                   >
                     Logout
                   </DropdownItem>
@@ -330,8 +338,8 @@ export const Navbar = () => {
               Cancel
             </Button>
             <Button
-              radius="sm"
               color="danger"
+              radius="sm"
               variant="faded"
               onPress={() => logout()}
             >

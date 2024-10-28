@@ -56,6 +56,9 @@ export const UserSchema = z.object({
   profile: ProfileSchema.optional(),
   fullname: z.string(),
   is_roled: z.boolean(),
+  has_echoee_application: z.boolean(),
+  business_name: z.string().nullable(),
+  business_image: z.string().nullable(),
 });
 
 // class Document(models.Model):
@@ -82,6 +85,6 @@ export const RolePickingSchema = z.object({
   business_permit: z.instanceof(File).nullable().optional(),
   government_id: z.instanceof(File),
   government_id_type: z.string(),
-  businessName:z.string().nullable().optional(),
+  businessName: z.string().nullable().optional(),
   businessImage: z.instanceof(File).nullable().optional(),
 });

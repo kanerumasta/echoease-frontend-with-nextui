@@ -1,9 +1,9 @@
-import React from 'react';
+import React from "react";
+import Link from "next/link";
+import { z } from "zod";
 
-import Link from 'next/link';
-import { z } from 'zod';
-import { BookInSchema } from '@/schemas/booking-schemas';
-import CustomImage from '@/components/image';
+import { BookInSchema } from "@/schemas/booking-schemas";
+import CustomImage from "@/components/image";
 
 interface ArtistDetailsProps {
   booking: z.infer<typeof BookInSchema>;
@@ -21,8 +21,17 @@ const ArtistDetails: React.FC<ArtistDetailsProps> = ({ booking }) => {
 
       <div className="mb-2">
         <p className="text-gray-700">Echoee Profile:</p>
-        <Link href={`/${booking.artist.slug}`} className="text-blue-500 absolute top-2 right-2 underline">
-          <CustomImage width='150px' height='150px' src={`${process.env.NEXT_PUBLIC_HOST}${booking.artist.user.profile?.profile_image}`} />
+        <Link
+          className="text-blue-500 absolute top-2 right-2 underline"
+          href={`/${booking.artist.slug}`}
+        >
+          {booking.artist.user.profile && (
+            <CustomImage
+              height="150px"
+              src={booking.artist.user.profile?.profile_image}
+              width="150px"
+            />
+          )}
         </Link>
       </div>
 

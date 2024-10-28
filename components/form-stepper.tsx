@@ -34,25 +34,25 @@ export const FormStepper = ({
   return (
     <div className={className}>
       <Button
-        isDisabled={currentStep <= 0}
-        onPress={handleBack}
         color="default"
+        isDisabled={currentStep <= 0}
         radius="sm"
+        onPress={handleBack}
       >
         Previous
       </Button>
       {currentStep < steps.length - 1 && (
-        <Button onPress={handleNext} color="primary" radius="sm">
+        <Button color="primary" radius="sm" onPress={handleNext}>
           Next
         </Button>
       )}
       {currentStep === steps.length - 1 && (
         <Button
-          isLoading={isSubmitting}
-          isDisabled={isSubmitting}
-          onPress={triggersubmit}
           color="primary"
+          isDisabled={isSubmitting}
+          isLoading={isSubmitting}
           radius="sm"
+          onPress={triggersubmit}
         >
           Submit
         </Button>

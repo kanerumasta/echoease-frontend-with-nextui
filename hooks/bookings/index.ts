@@ -1,1 +1,1 @@
-export {default as useCreateBooking} from './use-create-booking'
+export { default as useCreateBooking } from "./use-create-booking";

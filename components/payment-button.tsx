@@ -1,10 +1,11 @@
-
-'use client'
+"use client";
 import { z } from "zod";
-import CustomImage from "./image";
-import { UserSchema } from "@/schemas/user-schemas";
 import { useState } from "react";
 import { Spinner } from "@nextui-org/spinner";
+
+import { UserSchema } from "@/schemas/user-schemas";
+
+import CustomImage from "./image";
 
 type PaymentButtonProps = {
   onPayHandler: (payload: any) => Promise<any>;
@@ -38,6 +39,7 @@ export const PaymentButton: React.FC<PaymentButtonProps> = ({
       };
 
       const response = await onPayHandler(payload);
+
       window.location.href = response.data.url;
     } catch (error) {
       console.error("Payment error:", error);
@@ -48,10 +50,14 @@ export const PaymentButton: React.FC<PaymentButtonProps> = ({
 
   return (
     <div
-      onClick={handlePayWithMethod}
       className="border-3 hover:cursor-pointer hover:bg-blue-500/20 border-blue-500/50 h-[100px] w-[150px] flex items-center justify-center rounded-xl"
+      onClick={handlePayWithMethod}
     >
-      {loadingAttach ? <Spinner /> : <CustomImage width="100px" height="60px" src={src} />}
+      {loadingAttach ? (
+        <Spinner />
+      ) : (
+        <CustomImage height="60px" src={src} width="100px" />
+      )}
     </div>
   );
 };

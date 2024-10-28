@@ -1,6 +1,7 @@
-import { cn } from "@/lib/utils";
 import { Spacer } from "@nextui-org/spacer";
 import { Dispatch, SetStateAction } from "react";
+
+import { cn } from "@/lib/utils";
 
 type Props = {
   rolePicked: string;
@@ -20,16 +21,17 @@ export default function RolePickingForm({
       <div className="flex ">
         {roles.map((role) => (
           <div
-            onClick={() => setRolePicked(role)}
+            key={role}
             className={cn(
               "min-w-[150px] min-h-[150px] max-w-[150px] max-h-[150px] mx-4 flex items-center justify-center bg-slate-400 hover:cursor-pointer capitalize rounded-md",
               {
                 "bg-blue-500": rolePicked === role,
-              }
+              },
             )}
+            onClick={() => setRolePicked(role)}
           >
             <p className="text-center">
-            {`I am a${role === "event organizer" ? "n" : ""} ${role}`}
+              {`I am a${role === "event organizer" ? "n" : ""} ${role}`}
             </p>
           </div>
         ))}

@@ -1,18 +1,36 @@
-import CustomImage from "@/components/image";
-import { UserSchema } from "@/schemas/user-schemas";
-import { Modal, ModalBody, ModalContent, useDisclosure } from "@nextui-org/modal";
-import { z } from "zod";
+import {
+  Modal,
+  ModalBody,
+  ModalContent,
+  useDisclosure,
+} from "@nextui-org/modal";
 
-export const ProfileImage = ({imageSrc}:{imageSrc:string}) =>{
-    const {isOpen , onOpen, onClose, onOpenChange} = useDisclosure()
-    return<>
-        <CustomImage onPress={onOpen} width="200px" height="200px" className="rounded-full" src={imageSrc}/>
-        <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
-            <ModalContent>
-                <ModalBody>
-                <CustomImage width="500px" height="500px" className="rounded-md" src={imageSrc}/>
-                </ModalBody>
-            </ModalContent>
-        </Modal>
+import CustomImage from "@/components/image";
+
+export const ProfileImage = ({ imageSrc }: { imageSrc: string }) => {
+  const { isOpen, onOpen, onClose, onOpenChange } = useDisclosure();
+
+  return (
+    <>
+      <CustomImage
+        className="rounded-full"
+        height="200px"
+        src={imageSrc}
+        width="200px"
+        onPress={onOpen}
+      />
+      <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
+        <ModalContent>
+          <ModalBody>
+            <CustomImage
+              className="rounded-md"
+              height="500px"
+              src={imageSrc}
+              width="500px"
+            />
+          </ModalBody>
+        </ModalContent>
+      </Modal>
     </>
-}
+  );
+};

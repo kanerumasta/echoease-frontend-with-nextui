@@ -7,16 +7,18 @@ import { Spinner } from "@nextui-org/spinner";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { z } from "zod";
+import { MdPayment } from "react-icons/md";
+import { FaCalendarPlus } from "react-icons/fa";
 
 import { DeleteIcon } from "@/components/icons/delete";
 import { title } from "@/components/primitives";
 import { useFetchCurrentUserQuery } from "@/redux/features/authApiSlice";
 import {
-    useClearAllMutation,
-    useDeleteNotificationMutation,
-    useFetchNewNotificationsQuery,
-    useFetchOldNotificationsQuery,
-    useMarkAllReadMutation,
+  useClearAllMutation,
+  useDeleteNotificationMutation,
+  useFetchNewNotificationsQuery,
+  useFetchOldNotificationsQuery,
+  useMarkAllReadMutation,
 } from "@/redux/features/notificationApiSlice";
 import { NotificationInSchema } from "@/schemas/notification-schemas";
 
@@ -27,18 +29,21 @@ export default function NotificationPage() {
   >([]);
   const router = useRouter();
 
-
-
-  const { data: newNotifications } = useFetchNewNotificationsQuery(undefined, {refetchOnMountOrArgChange:true});
-  const { data: oldNotifications, isLoading } = useFetchOldNotificationsQuery(page,{refetchOnMountOrArgChange:true});
+  const { data: newNotifications } = useFetchNewNotificationsQuery(undefined, {
+    refetchOnMountOrArgChange: true,
+  });
+  const { data: oldNotifications, isLoading } = useFetchOldNotificationsQuery(
+    page,
+    { refetchOnMountOrArgChange: true },
+  );
   const { data: currentUser } = useFetchCurrentUserQuery();
-  const [deleteNotification] = useDeleteNotificationMutation()
-  const [markAllRead] = useMarkAllReadMutation()
-  const [clearAll] = useClearAllMutation()
+  const [deleteNotification] = useDeleteNotificationMutation();
+  const [markAllRead] = useMarkAllReadMutation();
+  const [clearAll] = useClearAllMutation();
 
   useEffect(() => {
-    if(page === 1){
-        setCombinedOldNotifications([])
+    if (page === 1) {
+      setCombinedOldNotifications([]);
     }
     if (oldNotifications) {
       setCombinedOldNotifications((prev) => [
@@ -48,47 +53,57 @@ export default function NotificationPage() {
     }
   }, [oldNotifications]);
 
-  const handleNotificationClick = (notification: z.infer<typeof NotificationInSchema>) => {
+  const handleNotificationClick = (
+    notification: z.infer<typeof NotificationInSchema>,
+  ) => {
     if (currentUser && notification.booking) {
-      const bookingPath = currentUser.role === "artist"
-        ? `/echoverse/bookings/${notification.booking.id}`
-        : `/bookings/${notification.booking.id}`;
+      const bookingPath =
+        currentUser.role === "artist"
+          ? `/echoverse/bookings/${notification.booking.id}`
+          : `/bookings/${notification.booking.id}`;
+
       router.push(bookingPath);
     }
   };
 
   const handleDelete = async (id: number) => {
-      const response = await deleteNotification(id);
-      setPage(1)
+    const response = await deleteNotification(id);
+
+    setPage(1);
   };
 
   const handleMarkAllRead = () => {
-    markAllRead()
-  }
+    markAllRead();
+  };
 
   const handleClearAll = () => {
-    clearAll()
-  }
+    clearAll();
+  };
 
   return (
-    <div className="w-full md:w-[70%] lg:w-[50%] mx-auto">
+    <div className="w-full md:w-[70%]  lg:w-[50%] mx-auto">
       <h1 className={title()}>Notifications</h1>
       <Spacer y={8} />
 
       {/* Unread Notifications */}
       {newNotifications && newNotifications?.length > 0 && (
         <div className="flex items-center justify-between">
-          <Badge content={newNotifications?.length} color="danger">
+          <Badge color="danger" content={newNotifications?.length}>
             <h1 className="capitalize p-2 font-semibold text-2xl">Unread</h1>
           </Badge>
-          <p onClick={handleMarkAllRead} className="text-sm cursor-pointer text-white/50">Mark All as Read</p>
+          <p
+            className="text-sm cursor-pointer text-white/50"
+            onClick={handleMarkAllRead}
+          >
+            Mark All as Read
+          </p>
         </div>
       )}
       {newNotifications?.map((notif) => (
         <div
           key={notif.id}
+          className="p-3 cursor-pointer hover:bg-white/5 transition-all duration-300 ease-in-out my-2 rounded-md"
           onClick={() => handleNotificationClick(notif)}
-          className="p-3 bg-white/10 cursor-pointer hover:bg-white/15 my-2 rounded-md"
         >
           <p className="text-lg font-bold">{notif.title}</p>
           <p className="text-xs text-white/50">{notif.description}</p>
@@ -101,33 +116,48 @@ export default function NotificationPage() {
       {oldNotifications && oldNotifications?.results.length > 0 && (
         <div className="flex items-center justify-between">
           <h1 className="capitalize font-semibold text-2xl">Previous</h1>
-          <p onClick={handleClearAll} className="text-white/50 cursor-pointer">Clear All</p>
+          <p
+            className="text-white/50 cursor-pointer hover:text-red-400"
+            onClick={handleClearAll}
+          >
+            Clear All
+          </p>
         </div>
       )}
       {combinedOldNotifications.map((notif) => (
-
         <div key={notif.id} className="flex items-center group gap-2 ">
-        <div
+          <div
+            className="p-3 flex items-center gap-3 w-full cursor-pointer hover:bg-white/5 transition-all duration-300 ease-in-out my-2 rounded-md"
             onClick={() => handleNotificationClick(notif)}
-            className="p-3 w-full cursor-pointer hover:bg-white/15 bg-white/10 my-2 rounded-md"
           >
-            <p className="text-lg font-bold text-white/50">{notif.title}</p>
-            <p className="text-xs text-white/50">{notif.description}</p>
+            <div>
+              {notif.notification_type === "downpayment_paid" ? (
+                <MdPayment className="text-green-400" size={30} />
+              ) : notif.notification_type.includes("booking") ? (
+                <FaCalendarPlus className="text-blue-400" size={30} />
+              ) : null}
+            </div>
+            <div>
+              <p className="text-lg font-bold text-white/50">{notif.title}</p>
+              <p className="text-xs text-white/50">{notif.description}</p>
+            </div>
           </div>
-          <div className="hidden group-hover:block ">
-
-          <Button onPress={()=>handleDelete(notif.id)}  isIconOnly>
-            <DeleteIcon />
-         </Button>
+          <div className="invisible group-hover:visible ">
+            <Button
+              isIconOnly
+              color="danger"
+              variant="light"
+              onPress={() => handleDelete(notif.id)}
+            >
+              <DeleteIcon />
+            </Button>
           </div>
-
-          </div>
+        </div>
       ))}
 
-      {oldNotifications && !oldNotifications.has_next &&
+      {oldNotifications && !oldNotifications.has_next && (
         <p className="text-center mt-3 text-white/50">No more notifications.</p>
-      }
-
+      )}
 
       {/* Loading and Load More Button */}
       {isLoading ? (
@@ -137,7 +167,9 @@ export default function NotificationPage() {
       ) : (
         oldNotifications?.has_next && (
           <div className="w-full flex mt-3  justify-center">
-            <Button onPress={() => setPage((prev) => prev + 1)}>Load More...</Button>
+            <Button onPress={() => setPage((prev) => prev + 1)}>
+              Load More...
+            </Button>
           </div>
         )
       )}

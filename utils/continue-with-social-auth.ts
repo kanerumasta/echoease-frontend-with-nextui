@@ -2,7 +2,7 @@ import { toast } from "react-toastify";
 
 export default async function continueWithSocialAuth(
   redirect: string,
-  provider: string
+  provider: string,
 ) {
   try {
     const url = `${process.env.NEXT_PUBLIC_HOST}/api/o/${provider}/?redirect_uri=http://localhost:3000/auth/${redirect}`;
@@ -11,6 +11,7 @@ export default async function continueWithSocialAuth(
       credentials: "include",
     });
     const data = await response.json();
+
     if (response.status === 200 && typeof window !== undefined) {
       window.location.replace(data.authorization_url);
     } else {

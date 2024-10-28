@@ -1,4 +1,3 @@
-
 import { useLogoutUserMutation } from "@/redux/features/authApiSlice";
 
 export default function useLogout() {
@@ -11,6 +10,7 @@ export default function useLogout() {
       })
       .catch((err) => console.error(err));
   };
+
   return {
     logout,
   };

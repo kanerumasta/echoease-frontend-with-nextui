@@ -1,6 +1,7 @@
-import React from 'react';
-import { z } from 'zod';
-import { BookInSchema } from '@/schemas/booking-schemas'; // inferred from BookInSchema
+import React from "react";
+import { z } from "zod";
+
+import { BookInSchema } from "@/schemas/booking-schemas"; // inferred from BookInSchema
 
 interface BasicBookingInfoProps {
   booking: z.infer<typeof BookInSchema>;
@@ -23,21 +24,25 @@ const BasicBookingInfo: React.FC<BasicBookingInfoProps> = ({ booking }) => {
 
       <div className="mb-2">
         <p className="text-gray-700">Event Date and Time:</p>
-        <p className="font-medium">{booking.formatted_event_date} ({booking.formatted_start_time} - {booking.formatted_end_time})</p>
+        <p className="font-medium">
+          {booking.formatted_event_date} ({booking.formatted_start_time} -{" "}
+          {booking.formatted_end_time})
+        </p>
       </div>
 
       <div className="mb-2">
-        <p className="text-gray-700">Event  Location and Venue:</p>
+        <p className="text-gray-700">Event Location and Venue:</p>
         <p className="font-medium">{booking.location}</p>
       </div>
 
       <div className="mb-2">
         <p className="text-gray-700">Booking Creation Date:</p>
-        <p className="font-medium">{new Date(booking.created_at).toLocaleDateString()}</p>
+        <p className="font-medium">
+          {new Date(booking.created_at).toLocaleDateString()}
+        </p>
       </div>
     </div>
   );
-
 };
 
 export default BasicBookingInfo;

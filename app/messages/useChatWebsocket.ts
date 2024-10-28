@@ -1,27 +1,41 @@
 import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
-import { toast } from "react-toastify";
 import { z } from "zod";
-import { MessageSchema } from "@/schemas/chat-schemas";
 
-export const useChatWebSocket = (websocketURL: string, setMessages: Dispatch<SetStateAction<z.infer<typeof MessageSchema>[]>>) => {
+import { MessageSchema } from "@/schemas/chat-schemas";
+import {
+  useFetchUnreadMessagesCountQuery,
+  useMarkConversationReadMutation,
+} from "@/redux/features/chatApiSlice";
+
+export const useChatWebSocket = (
+  code: string,
+  websocketURL: string,
+  setMessages: Dispatch<SetStateAction<z.infer<typeof MessageSchema>[]>>,
+) => {
   const websocket = useRef<WebSocket | null>(null);
   const [newMessage, setNewMessage] = useState<string>("");
+  const { refetch: refetchUnread } = useFetchUnreadMessagesCountQuery();
+  const [markConversationRead] = useMarkConversationReadMutation();
 
   useEffect(() => {
     const socket = new WebSocket(websocketURL);
 
     socket.onopen = () => {
-     console.log('connected')
+      console.log("connected");
     };
 
     socket.onclose = () => {
-     console.log('disconnected')
+      console.log("disconnected");
     };
 
-    socket.onmessage = (event) => {
+    socket.onmessage = async (event) => {
       const messageData = JSON.parse(event.data);
-      // Append new message while keeping the order
+
       setMessages((prevMessages) => [...prevMessages, messageData]);
+      //   if(window.location.pathname.includes('/messages/')){
+      //     await markConversationRead(code)
+      //   }
+      //   refetchUnread()
     };
 
     websocket.current = socket;

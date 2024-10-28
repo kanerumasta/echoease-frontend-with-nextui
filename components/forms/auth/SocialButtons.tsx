@@ -1,22 +1,19 @@
-import SocialButton from "./SocialButton";
 import { continueWithGoogle, continueWithFacebook } from "@/utils";
-import { ImGoogle, ImFacebook } from "react-icons/im";
+
+import SocialButton from "./SocialButton";
 
 export default function SocialButtons() {
   return (
     <div className="flex items-center my-4 gap-2 justify-between ">
       <SocialButton
         callBack={continueWithGoogle}
+        icon={<img alt="G" src="/media/google.png" width={20} />}
         text="Google"
-        icon={<img alt="G" width={20} src="/media/google.png" />}
-
       />
       <SocialButton
         callBack={continueWithFacebook}
+        icon={<img alt="F" src="/media/facebook.png" width={25} />}
         text="Facebook"
-        icon={<img alt="F" width={25} src="/media/facebook.png" />}
-
-
       />
     </div>
   );

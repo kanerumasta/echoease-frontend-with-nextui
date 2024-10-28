@@ -5,10 +5,13 @@ type StepperProps = {
   totalSteps: number;
 };
 
-export const Stepper: React.FC<StepperProps> = ({ currentStep, totalSteps }) => {
+export const Stepper: React.FC<StepperProps> = ({
+  currentStep,
+  totalSteps,
+}) => {
   const progressPercentage = useMemo(
     () => ((currentStep + 1) / totalSteps) * 100,
-    [currentStep, totalSteps]
+    [currentStep, totalSteps],
   );
 
   const steps = [

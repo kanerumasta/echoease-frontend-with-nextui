@@ -1,26 +1,29 @@
 "use client";
-import GenderPicker from "@/components/gender-picker";
-import { CalendarIcon } from "@/components/icons/calendar";
-import PhoneIcon from "@/components/icons/phone";
-import useSetupProfile from "@/hooks/auth/use-setup-profile";
-import useFetchAddresses from "@/hooks/utils/use-fetch-addresses";
 import { getLocalTimeZone, today } from "@internationalized/date";
 import { Autocomplete, AutocompleteItem } from "@nextui-org/autocomplete";
 import { Button } from "@nextui-org/button";
 import { DateInput } from "@nextui-org/date-input";
 import { Image } from "@nextui-org/image";
 import { Input } from "@nextui-org/input";
-import { useSearchParams } from "next/navigation";
 import { Fragment, Key, Suspense, useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
+
+import useFetchAddresses from "@/hooks/utils/use-fetch-addresses";
+import useSetupProfile from "@/hooks/auth/use-setup-profile";
+import PhoneIcon from "@/components/icons/phone";
+import { CalendarIcon } from "@/components/icons/calendar";
+import GenderPicker from "@/components/gender-picker";
 
 export default function CompleteProfilePage() {
   const imageRef = useRef<HTMLInputElement | null>(null);
   const [gender, setGender] = useState<"male" | "female">("male");
 
-  const redirect = typeof window !== "undefined" ? new URL(window.location.href).searchParams.get("redirect") || "/" : "/";
+  const redirect =
+    typeof window !== "undefined"
+      ? new URL(window.location.href).searchParams.get("redirect") || "/"
+      : "/";
 
-  const { form, onSubmit, isLoading, isSuccess, isError } = useSetupProfile();
+  const { form, onSubmit, isLoading, isSuccess } = useSetupProfile();
   const profileImage = form.watch("profile_image");
 
   const [selectedProvinceCode, setSelectedProvinceCode] = useState<any>(null);
@@ -57,20 +60,22 @@ export default function CompleteProfilePage() {
 
   function getProvinceName(
     provinces: { name: string; code: string }[],
-    provinceCode: Key
+    provinceCode: Key,
   ) {
     const filtered = provinces.filter(
-      (province) => province.code === provinceCode
+      (province) => province.code === provinceCode,
     );
+
     return filtered[0].name;
   }
   function getMunicipalityName(
     municipalities: { name: string; code: string }[],
-    municipalityCode: Key
+    municipalityCode: Key,
   ) {
     const filtered = municipalities.filter(
-      (municipality) => municipality.code === municipalityCode
+      (municipality) => municipality.code === municipalityCode,
     );
+
     return filtered[0].name;
   }
   useEffect(() => {
@@ -91,39 +96,38 @@ export default function CompleteProfilePage() {
         </p>
         <form
           {...form}
-          onSubmit={form.handleSubmit(onSubmit)}
           className="space-y-3"
+          onSubmit={form.handleSubmit(onSubmit)}
         >
           <div className="flex items-end justify-between space-x-2">
             <div className="space-y-4 w-full">
               <GenderPicker value={gender} onChange={setGender} />
-                <DateInput
-                   
-                onChange={(date) =>
-                  date && form.setValue("dob", date.toString())
-                }
-                radius="sm"
-                maxValue={today(getLocalTimeZone()).subtract({ years: 5 })}
-                variant="faded"
-                label="Date of Birth"
+              <DateInput
                 endContent={
                   <CalendarIcon className="text-2xl text-default-400 pointer-events-none flex-shrink-0" />
+                }
+                label="Date of Birth"
+                maxValue={today(getLocalTimeZone()).subtract({ years: 5 })}
+                radius="sm"
+                variant="faded"
+                onChange={(date) =>
+                  date && form.setValue("dob", date.toString())
                 }
               />
             </div>
 
             <div
-              onClick={() => imageRef?.current?.click()}
               className="flex relative  border-gray-500 overflow-hidden flex-col rounded-md items-center justify-center min-w-[150px] h-[150px] transition duration-200 ease-in  border-2 hover:bg-black/10  dark:hover:bg-white/10 cursor-pointer"
+              onClick={() => imageRef?.current?.click()}
             >
               {profileImage ? (
                 <Fragment>
                   <img
-                    className="w-full h-full object-cover"
                     alt={profileImage.name}
-                    width={100}
+                    className="w-full h-full object-cover"
                     height={100}
                     src={URL.createObjectURL(profileImage)}
+                    width={100}
                   />
                   <p className="text-xs dark:text-white absolute bottom-4">
                     Change Image
@@ -142,57 +146,57 @@ export default function CompleteProfilePage() {
                 </Fragment>
               )}
               <input
+                ref={imageRef}
+                accept="image/*"
+                style={{ display: "none" }}
+                type="file"
                 onChange={(e) => {
                   if (e.target.files?.[0]) {
                     form.setValue("profile_image", e.target.files[0]);
                   }
                 }}
-                ref={imageRef}
-                type="file"
-                accept="image/*"
-                style={{ display: "none" }}
               />
             </div>
           </div>
 
           <Input
             {...form.register("phone")}
-                      type="number"
-                      startContent={'+63'}
-            variant="faded"
-            isInvalid={!!form.formState.errors.phone}
-            errorMessage={form.formState.errors.phone?.message}
-                      label="Contact No."
-                      placeholder="9xxxxxxxxx"
-                      radius="sm"
-                      size="lg"
             endContent={
               <PhoneIcon className="text-2xl text-default-400 pointer-events-none flex-shrink-0" />
             }
+            errorMessage={form.formState.errors.phone?.message}
+            isInvalid={!!form.formState.errors.phone}
+            label="Contact No."
+            placeholder="9xxxxxxxxx"
+            radius="sm"
+            size="lg"
+            startContent={"+63"}
+            type="number"
+            variant="faded"
           />
           <div className="flex space-x-2">
             <Input
-                          variant="faded"
-                          size="lg"
-              radius="sm"
-              label="Country"
-              defaultValue="Philippines"
               isReadOnly
-            />
-
-            <Autocomplete
-              isInvalid={!!form.formState.errors.province}
-              errorMessage={form.formState.errors.province?.message}
+              defaultValue="Philippines"
+              label="Country"
               radius="sm"
               size="lg"
               variant="faded"
+            />
+
+            <Autocomplete
+              errorMessage={form.formState.errors.province?.message}
+              isInvalid={!!form.formState.errors.province}
+              isLoading={pronvinceLoading}
               label="Select a province"
+              radius="sm"
+              size="lg"
+              variant="faded"
               onSelectionChange={(val) => {
                 setSelectedProvinceCode(val);
                 val &&
                   form.setValue("province", getProvinceName(provinces, val));
               }}
-              isLoading={pronvinceLoading}
             >
               {provinces.map((prov) => (
                 <AutocompleteItem key={prov.code} value={prov.code}>
@@ -203,20 +207,20 @@ export default function CompleteProfilePage() {
           </div>
           <div className="flex space-x-2">
             <Autocomplete
-            size="lg"
-              isInvalid={!!form.formState.errors.municipality}
               errorMessage={form.formState.errors.municipality?.message}
-              radius="sm"
-              variant="faded"
-              label="Select city or municipality"
+              isInvalid={!!form.formState.errors.municipality}
               isLoading={municipalityLoading}
+              label="Select city or municipality"
+              radius="sm"
+              size="lg"
+              variant="faded"
               onSelectionChange={(key) => {
                 setSelectedMunicipalityCode(key);
                 municipalities &&
                   key &&
                   form.setValue(
                     "municipality",
-                    getMunicipalityName(municipalities, key)
+                    getMunicipalityName(municipalities, key),
                   );
               }}
             >
@@ -230,13 +234,13 @@ export default function CompleteProfilePage() {
               ))}
             </Autocomplete>
             <Autocomplete
-            size="lg"
-              isInvalid={!!form.formState.errors.brgy}
               errorMessage={form.formState.errors.brgy?.message}
-              radius="sm"
-              variant="faded"
-              label="Select a barangay"
+              isInvalid={!!form.formState.errors.brgy}
               isLoading={brgyLoading}
+              label="Select a barangay"
+              radius="sm"
+              size="lg"
+              variant="faded"
               onSelectionChange={(v) =>
                 v && form.setValue("brgy", v.toString())
               }
@@ -252,31 +256,31 @@ export default function CompleteProfilePage() {
           <div className="flex space-x-2">
             <Input
               {...form.register("street")}
-              variant="faded"
-              size="lg"
-              isInvalid={!!form.formState.errors.street}
               errorMessage={form.formState.errors.street?.message}
+              isInvalid={!!form.formState.errors.street}
               label="Street"
               radius="sm"
+              size="lg"
+              variant="faded"
             />
             <Input
               {...form.register("zipcode")}
-              variant="faded"
-              size="lg"
-              label="Zip Code"
-              isInvalid={!!form.formState.errors.zipcode}
               errorMessage={form.formState.errors.zipcode?.message}
+              isInvalid={!!form.formState.errors.zipcode}
+              label="Zip Code"
               radius="sm"
+              size="lg"
+              variant="faded"
             />
           </div>
 
           <Button
+            className="w-full"
+            color="primary"
             isDisabled={isLoading}
             isLoading={isLoading}
-            className="w-full"
             radius="sm"
             size="lg"
-            color="primary"
             type="submit"
           >
             Submit Profile

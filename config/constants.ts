@@ -1,4 +1,4 @@
 export const UserRoles = {
-    artist : 'artist',
-    client : 'client'
-}
+  artist: "artist",
+  client: "client",
+};
