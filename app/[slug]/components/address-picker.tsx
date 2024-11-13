@@ -42,14 +42,14 @@ export const AddressPicker = ({ provinceCode }: AddressPickerProps) => {
   };
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-2">
+        <div className="flex flex-col lg:flex-row gap-2">
       <Input
         isReadOnly
         label="Province"
         radius="sm"
         size="lg"
         value="Cebu"
-        variant="bordered"
       />
 
       <Autocomplete
@@ -60,7 +60,6 @@ export const AddressPicker = ({ provinceCode }: AddressPickerProps) => {
         placeholder={form.watch("municipality")}
         radius="sm"
         size="lg"
-        variant="bordered"
         onSelectionChange={(key) => {
           setSelectedMunicipalityCode(key);
           form.setValue("barangay", "");
@@ -73,6 +72,8 @@ export const AddressPicker = ({ provinceCode }: AddressPickerProps) => {
           </AutocompleteItem>
         ))}
       </Autocomplete>
+      </div>
+      <div className="flex flex-col lg:flex-row gap-2">
 
       <Autocomplete
         errorMessage={form.formState.errors.barangay?.message}
@@ -83,7 +84,6 @@ export const AddressPicker = ({ provinceCode }: AddressPickerProps) => {
         radius="sm"
         size="lg"
         value={form.watch("barangay")}
-        variant="bordered"
         onSelectionChange={(v) => v && form.setValue("barangay", v.toString())}
       >
         {barangays.map((barangay) => (
@@ -97,30 +97,32 @@ export const AddressPicker = ({ provinceCode }: AddressPickerProps) => {
         errorMessage={form.formState.errors.street?.message}
         isInvalid={!!form.formState.errors.street}
         size="lg"
-        variant="bordered"
         {...form.register("street")}
         label="Street"
         radius="sm"
       />
+      </div>
+      <div className="flex flex-col lg:flex-row gap-2">
 
       <Input
         errorMessage={form.formState.errors.landmark?.message}
         isInvalid={!!form.formState.errors.landmark}
         size="lg"
-        variant="bordered"
+
         {...form.register("landmark")}
         label="Landmark"
         radius="sm"
       />
       <Input
+        className="focus:outline-none border-2 border-transparent focus:border-blue-500"
         errorMessage={form.formState.errors.venue?.message}
         isInvalid={!!form.formState.errors.venue}
         size="lg"
-        variant="bordered"
         {...form.register("venue")}
         label="Event Venue"
         radius="sm"
       />
+      </div>
     </div>
   );
 };

@@ -31,11 +31,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html suppressHydrationWarning lang="en">
+    <html className="overflow-x-hidden" suppressHydrationWarning lang="en">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
       <head />
       <body
         className={clsx(
-          "min-h-screen bg-black/80 font-sans antialiased",
+          "min-h-screen bg-black/80 w-screen font-sans antialiased ",
           fontSans.variable,
         )}
       >

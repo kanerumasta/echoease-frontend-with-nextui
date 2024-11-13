@@ -7,6 +7,7 @@ import {
   GenreSchema,
   InPortfolioSchema,
   MyConnectionsSchema,
+  PaginatedArtistInSchema,
   RateSchema,
   RecommendedArtistsConnectionsSchema,
 } from "@/schemas/artist-schemas";
@@ -28,7 +29,7 @@ const artistApiSlice = apiSlice.injectEndpoints({
     }),
 
     // FETCH
-    fetchListArtists: builder.query<z.infer<typeof ArtistInSchema>[], void>({
+    fetchListArtists: builder.query<z.infer<typeof PaginatedArtistInSchema>[], void>({
       query: () => "/artists",
     }),
     fetchDetailCurrentArtist: builder.query<
@@ -233,16 +234,17 @@ const artistApiSlice = apiSlice.injectEndpoints({
       providesTags: ["followers"],
     }),
     fetchArtistsWithFilter: builder.query<
-      z.infer<typeof ArtistInSchema>[],
+      z.infer<typeof PaginatedArtistInSchema>,
       {
         q: string | null;
         min_price: number | null;
         max_price: number | null;
         genres: number[];
         category: string | null;
+        page:number
       }
     >({
-      query: ({ q, min_price, max_price, genres, category }) => {
+      query: ({ q, min_price, max_price, genres, category, page }) => {
         const params = new URLSearchParams();
 
         if (q) params.append("q", q);
@@ -256,6 +258,7 @@ const artistApiSlice = apiSlice.injectEndpoints({
           params.append("genres", genres.toString());
         }
         if (category) params.append("category", category);
+        if(page) params.append('page', page.toString());
 
         return `/artists?${params.toString()}`;
       },

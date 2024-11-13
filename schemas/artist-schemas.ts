@@ -169,3 +169,28 @@ export const RecommendedArtistsConnectionsSchema = z.object({
   genres: z.array(GenreSchema),
   mutual: z.array(ArtistInSchema),
 });
+
+
+// "links": {
+//     "next": "http://localhost:8000/api/artists/?page=2",
+//     "previous": null
+//   },
+//   "total_pages": 2,
+//   "current_page": 1,
+//   "has_next": true,
+//   "has_previous": false,
+//   "count": 12,
+//   "results":
+
+export const PaginatedArtistInSchema = z.object({
+    links: z.object({
+        next: z.string().nullable(),
+        previous: z.string().nullable(),
+    }),
+    total_pages: z.number(),
+    current_page: z.number(),
+    has_next: z.boolean(),
+    has_previous: z.boolean(),
+    count: z.number(),
+    results: z.array(ArtistInSchema)
+})

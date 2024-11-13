@@ -1,49 +1,38 @@
 "use client";
 
-import { Skeleton } from "@nextui-org/skeleton";
-import { Spacer } from "@nextui-org/spacer";
-import { useState } from "react";
-import { Checkbox } from "@nextui-org/checkbox";
-import { z } from "zod";
 import { Button } from "@nextui-org/button";
-
-import { useFetchListArtistsQuery } from "@/redux/features/artistApiSlice";
+import { Checkbox } from "@nextui-org/checkbox";
+import { Skeleton } from "@nextui-org/skeleton";
+import { useState } from "react";
+import { z } from "zod";
 import { GenreSchema } from "@/schemas/artist-schemas";
-
-import { SearchInput } from "./components/search-input";
+import EchoLoading from "@/components/echo-loading";
+import useLoginRequired from "@/hooks/use-login-required";
 import { BudgetRange } from "./components/budget-range";
-import { MultipleGenresPicker } from "./components/genres-picker";
 import { FilterResults } from "./components/filters-results";
+import { MultipleGenresPicker } from "./components/genres-picker";
+import { SearchInput } from "./components/search-input";
 
 export default function EchoeesPage() {
-  const { data, isLoading } = useFetchListArtistsQuery();
   const [budgetRange, setBudgetRange] = useState<number | number[]>([0, 5000]);
   const [searchFilter, setSearchFilter] = useState("");
   const [genresFilter, setGenresFilter] = useState<
     z.infer<typeof GenreSchema>[]
   >([]);
   const [activeBudgetRange, setActiveBudgetRange] = useState(false);
-  const [filterApplied, setFilterApplied] = useState(false);
+  const {loginChecked} = useLoginRequired('/echoees')
 
-  if (isLoading) {
-    return (
-      <div>
-        <CustomSkeleton />
-        <Spacer y={10} />
-        <CustomSkeleton />
-        <Spacer y={10} />
-        <CustomSkeleton />
-      </div>
-    );
+  if(!loginChecked) {
+    return <EchoLoading />
   }
 
   return (
     <div>
-      <div className="flex justify-between gap-3 mb-8">
+      <div className="flex flex-col md:flex-row justify-between gap-3 mb-8">
         <SearchInput
           setSearchFilter={setSearchFilter}
         />
-        <div className="flex  w-[400px] flex-col gap-3">
+        <div className="flex w-full md:w-[400px] flex-col gap-3">
           <div className="flex gap-3 w-full items-center">
             <Checkbox
               isSelected={activeBudgetRange}
@@ -56,12 +45,6 @@ export default function EchoeesPage() {
             />
           </div>
           <MultipleGenresPicker setPickedGenres={setGenresFilter} />
-          <Button
-            color={filterApplied ? "default" : "primary"}
-            onPress={() => setFilterApplied(!filterApplied)}
-          >
-            {filterApplied ? "Clear Filter" : "Apply Filter"}
-          </Button>
         </div>
       </div>
       {searchFilter && (
@@ -75,7 +58,6 @@ export default function EchoeesPage() {
           <FilterResults
             budgetRange={activeBudgetRange ? budgetRange : null}
             category={null}
-            filterApplied={filterApplied}
             genres={genresFilter}
             searchText={searchFilter}
             title=""
@@ -84,25 +66,44 @@ export default function EchoeesPage() {
       )}
 
       {searchFilter.length <= 0 && (
+        <>
         <FilterResults
           budgetRange={activeBudgetRange ? budgetRange : null}
-          category={null}
-          filterApplied={filterApplied}
+          category={"top"}
           genres={genresFilter}
           searchText={null}
           title="Top Echoees"
         />
-      )}
 
-      {searchFilter.length <= 0 && (
         <FilterResults
           budgetRange={activeBudgetRange ? budgetRange : null}
           category={"new"}
-          filterApplied={filterApplied}
           genres={genresFilter}
           searchText={null}
           title="Fresh Voices"
         />
+          <FilterResults
+            budgetRange={activeBudgetRange ? budgetRange : null}
+            category={"near"}
+            genres={genresFilter}
+            searchText={null}
+            title="Echoees Near You"
+          />
+        <FilterResults
+          budgetRange={activeBudgetRange ? budgetRange : null}
+          category={"versatile"}
+          genres={genresFilter}
+          searchText={null}
+          title="Versatile Performers"
+        />
+        <FilterResults
+          budgetRange={activeBudgetRange ? budgetRange : null}
+          category={null}
+          genres={genresFilter}
+          searchText={null}
+          title="All Echoees"
+        />
+        </>
       )}
     </div>
   );

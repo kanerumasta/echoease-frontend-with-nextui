@@ -12,7 +12,6 @@ import { z } from "zod";
 import { ArtistApplicationSchema } from "@/schemas/artist-schemas";
 
 export default function Step2() {
-  const MAX_FILE_SIZE = 150 * 1024 * 1024;
   const form = useFormContext<z.infer<typeof ArtistApplicationSchema>>();
   const dropZoneRef = useRef<HTMLDivElement | null>(null);
   const sampleVideosInputRef = useRef<HTMLInputElement | null>(null);

@@ -10,14 +10,13 @@ export const AnimatedSide = ({
 }) => {
   // Set up the in-view observer
   const { ref, inView } = useInView({
-    triggerOnce: true, // Only trigger once when it comes into view
-    threshold: 0.5, // Trigger when 10% of the element is in view
+    threshold: 0.4, // Trigger when 10% of the element is in view
   });
 
   // Define the spring animation based on inView state
   const style = useSpring({
     opacity: inView ? 1 : 0, // Fade in effect
-    transform: inView ? "translateX(0)" : "translateX(50px)", // Slide in effect
+    transform: inView ? "translateX(0)" : "translateX(-200px)", // Slide in effect
     config: { tension: 280, friction: 60 }, // Spring config
   });
 

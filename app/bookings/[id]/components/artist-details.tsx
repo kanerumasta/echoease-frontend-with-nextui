@@ -33,12 +33,15 @@ const ArtistDetails: React.FC<ArtistDetailsProps> = ({ booking }) => {
             />
           )}
         </Link>
+        
       </div>
-
+{
+    booking.artist.user.profile?.phone &&
       <div className="mb-2">
         <p className="text-gray-700">Contact Info:</p>
-        <p className="font-medium">{booking.artist.user.email}</p>
+        <p className="font-medium">{booking.artist.user.profile.phone}</p>
       </div>
+}
     </div>
   );
 };

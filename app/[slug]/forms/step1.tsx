@@ -26,11 +26,11 @@ export const Step1 = () => {
   }, [artist, selectedDate]);
 
   return (
-    <Fragment>
+    <div className="space-y-2">
       <Input
         radius="sm"
         size="lg"
-        variant="bordered"
+
         {...form.register("eventName")}
         isInvalid={!!form.formState.errors.eventName}
         label="What's the event?"
@@ -45,6 +45,6 @@ export const Step1 = () => {
       {selectedDate && (
         <TimeSlotPicker artist={artist.id} date={selectedDate} />
       )}
-    </Fragment>
+    </div>
   );
 };

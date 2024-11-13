@@ -2,11 +2,11 @@ import { Time } from "@internationalized/date";
 import { Button } from "@nextui-org/button";
 import { TimeInput } from "@nextui-org/date-input";
 import {
-  Modal,
-  ModalBody,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
+    Modal,
+    ModalBody,
+    ModalContent,
+    ModalFooter,
+    ModalHeader,
 } from "@nextui-org/modal";
 import { Dispatch, SetStateAction, useState } from "react";
 import { IoMdTime } from "react-icons/io";

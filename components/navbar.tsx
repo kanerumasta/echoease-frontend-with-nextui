@@ -50,6 +50,9 @@ import {
 import { cn } from "@/lib/utils";
 import { useFetchPendingBookingsQuery } from "@/redux/features/bookingApiSlice";
 import { useFetchUnreadMessagesCountQuery } from "@/redux/features/chatApiSlice";
+import { HiDotsVertical } from "react-icons/hi";
+import { MdSupportAgent } from "react-icons/md";
+import { FaGavel } from "react-icons/fa";
 
 export const Navbar = () => {
   const { data: user, isLoading, isError } = useFetchCurrentUserQuery();
@@ -165,6 +168,12 @@ export const Navbar = () => {
                 Bookings
               </Link>
             )}
+          </NavbarItem>
+          <NavbarItem>
+            <Link className={cn(
+                  "text-white/50 p-2 rounded-md",
+                  isActiveTab("/transactions") && "bg-blue-500 text-white",
+                )} href="/transactions">Transactions</Link>
           </NavbarItem>
           </>
           )}
@@ -292,7 +301,22 @@ export const Navbar = () => {
             </Dropdown>
           )}
         </NavbarItem>
+        {user &&
+        <NavbarItem>
+            <Dropdown>
+                <DropdownTrigger>
+                    <Button isIconOnly variant="light"><HiDotsVertical /></Button>
+                </DropdownTrigger>
+                <DropdownMenu classNames={{base:""}}>
+                    <DropdownItem classNames={{wrapper:'bg-red-400'}} key={"terms"} onClick={()=>{}} startContent={<FaGavel />}>Terms and Conditions</DropdownItem>
+                    <DropdownItem key={"help"} startContent={<MdSupportAgent />}><Link href="/support">Help and Chat Support</Link></DropdownItem>
+                </DropdownMenu>
+            </Dropdown>
+        </NavbarItem>
+    }
       </NavbarContent>
+
+
 
       <NavbarContent className="sm:hidden basis-1 pl-4" justify="end">
         <Link isExternal aria-label="Github" href={siteConfig.links.github}>

@@ -1,27 +1,25 @@
 "use client";
 
-import { Button } from "@nextui-org/button";
-import { Modal, useDisclosure } from "@nextui-org/modal";
+import { useDisclosure } from "@nextui-org/modal";
 import { Spacer } from "@nextui-org/spacer";
 import {
-  notFound,
-  useParams,
-  useRouter,
-  useSearchParams,
+    notFound,
+    useParams,
+    useRouter,
+    useSearchParams,
 } from "next/navigation";
 import { useEffect, useState } from "react";
-
 import EchoLoading from "@/components/echo-loading";
-import { UserRoles } from "@/config/constants";
+import { Footer } from "@/components/footer";
 import useLoginRequired from "@/hooks/use-login-required";
 import { useFetchDetailArtistBySlugQuery } from "@/redux/features/artistApiSlice";
 import { useFetchCurrentUserQuery } from "@/redux/features/authApiSlice";
-import { Footer } from "@/components/footer";
-
-import { BookingForm } from "./forms/booking-form";
 import AboutSection from "./sections/about";
 import { IntroductionSection } from "./sections/intro";
 import { PortfolioSection } from "./sections/portfolio";
+import { Genres } from "./sections/genres";
+import { Prices } from "./sections/prices";
+import { AnimatedComponent } from "@/components/animated-container";
 
 export default function SlugPage() {
   const params = useParams<{ slug: string }>();
@@ -64,6 +62,12 @@ export default function SlugPage() {
             <Spacer y={8} />
 
             <AboutSection artist={artist} />
+            <AnimatedComponent className="">
+            <Genres artist={artist}/>
+            </AnimatedComponent>
+            <AnimatedComponent className="">
+            <Prices artist={artist}/>
+            </AnimatedComponent>
             <Spacer y={8} />
             <h1 className="text-3xl text-center mb-8 font-bold text-blue-400">
               My Highlights

@@ -30,6 +30,12 @@ const disputeApiSlice = apiSlice.injectEndpoints({
         body: data,
       }),
     }),
+    cancelDispute:builder.mutation<any, number>({
+        query:(dispute_id)=>({
+            url:`/disputes/${dispute_id}/cancel`,
+            method: "POST",
+        })
+    })
   }),
 });
 
@@ -38,4 +44,5 @@ export const {
   useCreateClientDisputeMutation,
   useCreateDisputeMutation,
   useAddDisputeEvidenceMutation,
+  useCancelDisputeMutation
 } = disputeApiSlice;

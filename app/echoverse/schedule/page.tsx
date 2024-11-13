@@ -43,6 +43,7 @@ import {
 import { useFetchDetailCurrentArtistQuery } from "@/redux/features/artistApiSlice";
 
 import ArtistCalendar from "./sections/calendar";
+import { Spinner } from "@nextui-org/spinner";
 
 export default function SchedulePage() {
   const { data: currentArtist, isLoading: isArtistLoading } =
@@ -51,9 +52,11 @@ export default function SchedulePage() {
   const { data: scheduledDays } = useFetchArtistScheduleDaysQuery(
     currentArtist?.id ?? skipToken,
   ); //fetch all days of availability
-  const { data: combinedAvailability = [] } = useFetchCombinedAvailabilityQuery(
+  const { data: combinedAvailability = [], isLoading } = useFetchCombinedAvailabilityQuery(
     currentArtist?.id ?? skipToken,
   ); //fetch all days of availability
+
+
 
   return (
     <div className="w-full">
@@ -83,7 +86,7 @@ export default function SchedulePage() {
                 <TableColumn>End Time</TableColumn>
                 <TableColumn> </TableColumn>
               </TableHeader>
-              <TableBody items={combinedAvailability}>
+              <TableBody loadingState={isLoading ? 'loading' : 'idle'} loadingContent={<Spinner label="Loading..."/>} emptyContent={'To be hired by echoers, you need to setup your schedule.'} items={combinedAvailability}>
                 {(item) => (
                   <TableRow key={item.day_of_week}>
                     <TableCell>{item.day_of_week}</TableCell>

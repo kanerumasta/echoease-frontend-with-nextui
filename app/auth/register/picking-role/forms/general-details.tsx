@@ -23,7 +23,6 @@ export default function GeneralDocumentsForm({
   governmentIdType,
   setGovernmentIdType,
 }: GeneralDocumentsProps) {
-  const form = useFormContext<z.infer<typeof RolePickingSchema>>();
 
   return (
     <div className=" mt-12">

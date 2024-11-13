@@ -21,7 +21,7 @@ export default function UpcomingEvents() {
 
   return (
     <div className="h-full">
-      <Table classNames={{ td: "text-xs" }} radius="sm">
+      <Table classNames={{ td: "text-xs",wrapper:'bg-black/50' }} radius="sm">
         <TableHeader>
           <TableColumn>Event</TableColumn>
           <TableColumn>Date</TableColumn>

@@ -71,7 +71,7 @@ export default function AboutSection({
     useUnfollowArtistMutation();
 
   const router = useRouter();
-  const { ref, inView } = useInView({ threshold: 0.3, triggerOnce: true });
+  const { ref, inView } = useInView({ threshold: 0.3, triggerOnce:true});
 
   const style = useSpring({
     opacity: inView ? 1 : 0, // Fade in effect
@@ -138,11 +138,13 @@ const artistInConnections = () => {
 if (isLoading) return <div>Loading...</div>;
 
 return (
-    <div className="flex gap-4 duration-1000 animate-appearance-in min-h-screen w-full">
+    <div className="flex gap-4 relative duration-1000 animate-appearance-in min-h-screen w-full">
       {/* Image Profile */}
+
+
       <animated.div
         ref={ref}
-        className=" w-full md:w-[80%] min-h-[60%] m-auto flex flex-col lg:flex-row"
+        className="w-full md:w-[80%] min-h-[60%] z-10 m-auto flex flex-col lg:flex-row"
         style={style}
       >
         {artist.user.profile && (
@@ -153,11 +155,10 @@ return (
               height={100}
               src={artist.user.profile?.profile_image}
               width={100}
-
             />
           </div>
         )}
-        <div className=" w-full p-6 bg-slate-300/10">
+        <div className=" w-full p-6 bg-slate-900">
           <p className="text-blue-400 font-bold mb-2">About Me</p>
           <p className="capitalize lg:text-3xl md:text-3xl text-2xl font-bold">{`${artist.user.fullname}`}</p>
 
@@ -183,7 +184,7 @@ return (
           <Spacer y={2} />
 
           <div className="flex items-center gap-2">
-            {currentUser && !artist.followers.includes(currentUser.id) && (
+            {currentUser && !artist.followers.includes(currentUser.id)&& !(artist.user.id === currentUser.id) && (
               <Button
                 color="primary"
                 isLoading={followLoading}
@@ -287,6 +288,8 @@ return (
           <Links artist={artist} />
         </div>
       </animated.div>
+      <div className="h-[200px] w-[300px] bg-gradient-to-tl from-blue-500/30 to-purple-500/30 absolute bottom-[10%] left-[100px] rounded-full blur-[120px]"/>
+      <div className="h-[200px] w-[300px] bg-gradient-to-tl from-red-500/30 to-yellow-500/30 absolute top-[10%] right-[100px] rounded-full blur-[120px]"/>
     </div>
   );
 }

@@ -12,6 +12,7 @@ import { GithubIcon } from "@/components/icons";
 import MainLayout from "@/components/main-layout";
 import { subtitle, title } from "@/components/primitives";
 import { siteConfig } from "@/config/site";
+import { tv } from "tailwind-variants";
 
 export default function Home() {
   const springs = useSpring({
@@ -21,15 +22,15 @@ export default function Home() {
 
   return (
     <MainLayout>
-      <AnimatedComponent className="flex  min-h-[80vh] mb-20 flex-col items-center justify-center gap-4 py-8 md:py-10">
-        <div className="inline-block max-w-xl text-center justify-center">
-          <h1 className={title()}>Discover &nbsp;</h1>
-          <h1 className={title({ color: "violet" })}> talented &nbsp;</h1>
+      <AnimatedComponent className="flex bg-cover bg-center min-h-[80vh] mb-20 flex-col items-center justify-center gap-4 py-8 md:py-10">
+        <div className="inline-block  max-w-2xl text-center justify-center">
+            <div className="text-6xl font-bold">
+
+          <span>Find Your <span >Perfect</span> Singer With <span className="font-bold animate-text bg-gradient-to-r from-purple-500 to-blue-500 bg-clip-text text-transparent">Echoease</span>&nbsp;</span>
+
           <br />
-          <h1 className={title()}>
-            singers and simplify your event booking with EchoEase
-          </h1>
-          <h2 className={subtitle({ class: "mt-4" })}>
+          </div>
+          <h2 className="text-2xl mt-4">
             Where Music Meets Opportunity.
           </h2>
         </div>
@@ -41,7 +42,7 @@ export default function Home() {
               radius: "full",
               variant: "shadow",
             })}
-            href={"/search/echoees"}
+            href={"/echoees"}
           >
             Discover
           </Link>
@@ -56,22 +57,26 @@ export default function Home() {
         </div>
       </AnimatedComponent>
       <AnimatedComponent className="flex mb-40">
-        <div className="relative bg-blue-400/10 p-8 rounded-xl">
-          <AnimatedComponent className="invisible lg:visible absolute bottom-[-20%] right-[-10%]">
-            <img src="/media/echo-mascot.png" width={400} />
-          </AnimatedComponent>
-          <div className="  lg:w-2/4">
+        <div className="relative overflow-hidden p-8 rounded-xl ">
+        <div className="absolute blur-[120px] bottom-0 right-2 w-[300px] h-[300px] rotate-45 bg-blue-500"/>
+        <div className="absolute blur-[120px] top-[-5%] left-[-5%] w-[300px] h-[300px] rotate-45 bg-purple-500/20"/>
+            <div className="invisible overflow-hidden  lg:visible absolute bottom-0 right-[-10%]">
+                <img src="/media/hero.png" width={700} />
+
+            </div>
+
+          <div className="  lg:w-3/4">
             <div className="">
               <h1 className="text-4xl font-bold mb-6 text-blue-400">
                 Hire Singers with Ease
               </h1>
-              <p className="leading-loose text-lg text-white/50">
+              <p className="leading-loose text-lg text-white/50 mb-4 w-[80%]">
                 Browse and hire talented singers from EchoEase. Your payment is
                 only collected after the event is successfully completed. Book
                 securely, enjoy live performances.
               </p>
             </div>
-            <div className="flex flex-wrap">
+            <div className="flex flex-wrap gap-2">
               <Feature
                 description="Find and hire echoees effortlessly. Each echoee lists their rates clearly, so you always know what you’ll pay—no hidden fees, just transparent pricing."
                 icon={<TbCurrencyPeso className="text-blue-400" size={50} />}
@@ -110,7 +115,7 @@ type FeatureProps = {
 
 const Feature: React.FC<FeatureProps> = ({ title, description, icon }) => {
   return (
-    <AnimatedComponent className=" w-2/4 pt-8 rounded-md ">
+    <AnimatedComponent className=" w-[300px] bg-blue-400/5 p-2 pt-8 rounded-md ">
       <div className="flex gap-4">
         <div>{icon}</div>
         <div>

@@ -10,8 +10,8 @@ export const AnimatedComponent = ({
 }) => {
   // Set up the in-view observer
   const { ref, inView } = useInView({
-    triggerOnce: true, // Only trigger once when it comes into view
     threshold: 0.5, // Trigger when 10% of the element is in view
+    triggerOnce:true
   });
 
   // Define the spring animation based on inView state

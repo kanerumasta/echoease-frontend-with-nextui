@@ -1,19 +1,20 @@
-import type {
-  BaseQueryFn,
-  FetchArgs,
-  FetchBaseQueryError,
-} from "@reduxjs/toolkit/query";
+    import type {
+    BaseQueryFn,
+    FetchArgs,
+    FetchBaseQueryError,
+    } from "@reduxjs/toolkit/query";
 
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { Mutex } from "async-mutex";
+    import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+    import { Mutex } from "async-mutex";
 
-import { logout, setAuth, setLoading } from "../features/authSlice";
+    import { logout, setAuth, setLoading } from "../features/authSlice";
 
-const mutex = new Mutex();
-const baseQuery = fetchBaseQuery({
-  baseUrl: `${process.env.NEXT_PUBLIC_HOST}/api`,
-  credentials: "include",
-});
+    const mutex = new Mutex();
+    const baseQuery = fetchBaseQuery({
+    baseUrl: `${process.env.NEXT_PUBLIC_HOST}/api`,
+    credentials: "include",
+    
+    });
 const baseQueryWithReauth: BaseQueryFn<
   string | FetchArgs,
   unknown,

@@ -14,7 +14,7 @@ export const SentConnectionRequests = () => {
   const { data: sentRequests } = useFetchSentConnectionRequestsQuery();
 
   return (
-    <div className="flex gap-1 overflow-x-scroll min-h-[200px] scrollbar-hide md:max-w-[400px]">
+    <div className="flex gap-1 overflow-x-scroll min-h-[200px]  md:max-w-[400px]">
       {sentRequests && sentRequests.length <= 0 && (
         <EmptyList message="No Sent Connection Requests." />
       )}

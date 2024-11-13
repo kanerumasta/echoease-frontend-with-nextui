@@ -17,7 +17,7 @@ export const BudgetRange = ({
   return (
     <div className="w-full">
       <Slider
-        className="max-w-md"
+        className="w-full"
         formatOptions={{ style: "currency", currency: "PHP" }}
         isDisabled={!active}
         label="Budget Range"

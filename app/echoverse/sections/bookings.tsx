@@ -16,8 +16,7 @@ export default function NewBookings() {
   const { data: bookings = [], isLoading } = useFetchPendingBookingsQuery();
 
   return (
-    <div>
-      <Table classNames={{ td: "text-xs" }} radius="sm">
+      <Table classNames={{ td: "text-xs", wrapper:'bg-black/50' }} radius="sm">
         <TableHeader>
           <TableColumn>Event</TableColumn>
           <TableColumn>Date</TableColumn>
@@ -38,6 +37,5 @@ export default function NewBookings() {
           )}
         </TableBody>
       </Table>
-    </div>
   );
 }

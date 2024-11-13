@@ -3,7 +3,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { IoClose } from "react-icons/io5";
 import { z } from "zod";
-
+import { motion } from "framer-motion"; // Import motion from framer-motion
 import CustomImage from "@/components/image";
 import { cn } from "@/lib/utils";
 import { useFetchPortfolioQuery } from "@/redux/features/artistApiSlice";
@@ -12,13 +12,13 @@ import {
     InPortfolioItemSchema,
     MediaSchema,
 } from "@/schemas/artist-schemas";
+import { useInView } from "react-intersection-observer";
 
 export const PortfolioSection = ({
   artist,
 }: {
   artist: z.infer<typeof ArtistInSchema>;
 }) => {
-
   return (
     <div className="flex flex-col min-h-screen lg:flex-row md:px-20 gap-4">
       <Portfolio artist={artist} />
@@ -32,7 +32,7 @@ const Portfolio = ({ artist }: { artist: z.infer<typeof ArtistInSchema> }) => {
   );
 
   return (
-    <div className="w-full flex flex-wrap  gap-3 ">
+    <div className="w-full flex flex-wrap gap-3">
       {portfolio?.items.map((portfolioItem) => (
         <PortfolioItem key={portfolioItem.id} portfolioItem={portfolioItem} />
       ))}
@@ -45,24 +45,28 @@ const PortfolioItem = ({
 }: {
   portfolioItem: z.infer<typeof InPortfolioItemSchema>;
 }) => {
+  const { ref, inView } = useInView({
+    threshold: 0.2,
+  });
 
   return (
-    <>
-      <div
+    <motion.div
+      ref={ref}
+      initial={{ opacity: 0, translateY: 20 }} // Initial state
+      animate={inView ? { opacity: 1, translateY: 0 } : {opacity:0}} // Animate when in view
+      transition={{ duration: 0.5 }} // Transition duration
+      className={cn("relative w-full min-h-[200px] max-h-[400px] lg:min-w-[430px] lg:max-w-[430px] rounded-lg bg-gradient-to-br from-blue-500/20 to-purple-500/20 p-4 group")}
+    >
+      <h1 className="text-xl capitalize mb-2">{portfolioItem.title}</h1>
+      <p className="w-2/4 mb-4 text-white/40 text-sm">
+        {portfolioItem.description}
+      </p>
+      <MediaGrid
         key={portfolioItem.id}
-        className="relative w-full min-h-[450px] max-h-[450px] lg:min-w-[500px] lg:max-w-[500px] rounded-lg bg-gradient-to-br from-blue-500/20 to-purple-500/20  p-4 group"
-      >
-        <h1 className=" text-xl capitalize mb-2 ">{portfolioItem.title}</h1>
-        <p className="w-2/4 mb-4 text-white/40 text-sm">
-          {portfolioItem.description}
-        </p>
-        <MediaGrid
-          key={portfolioItem.id}
-          maxVisible={4}
-          portfolioItem={portfolioItem}
-        />
-      </div>
-    </>
+        maxVisible={4}
+        portfolioItem={portfolioItem}
+      />
+    </motion.div>
   );
 };
 
@@ -80,7 +84,7 @@ const MediaGrid = ({
   return (
     <>
       <div
-        className="w-full flex flex-wrap items-center justify-center mx-auto  cursor-pointer"
+        className="w-full flex flex-wrap items-center justify-center mx-auto cursor-pointer"
         onClick={() => setIsOpen(true)}
       >
         {filteredMedias.map((media, index) => (
@@ -113,7 +117,7 @@ const MediaItem = React.memo(
     return (
       <div className="flex-shrink-0 m-1">
         {media.media_type === "video" ? (
-          <div className="w-[200px] h-[150px] overflow-hidden">
+          <div className="md:w-[180px] md:h-[150px] w-[130px] h-[100px]  overflow-hidden">
             <video className="w-full h-full object-cover">
               <source src={mediaSrc} />
               Your browser does not support the video tag.
@@ -121,10 +125,10 @@ const MediaItem = React.memo(
           </div>
         ) : (
           <CustomImage
-            className="w-full h-full"
-            height="150px"
+            className="md:w-[180px] md:h-[150px] w-[130px] h-[100px]"
+            height=""
             src={mediaSrc}
-            width="200px"
+            width=""
           />
         )}
       </div>
@@ -150,14 +154,14 @@ const MediaModal = ({
   }, [heroMedia]);
 
   return (
-    <div className="fixed z-50 flex items-center justify-center top-0 left-0  w-screen min-h-screen bg-black/65 backdrop-blur-lg">
+    <div className="fixed z-50 flex items-center justify-center top-0 left-0 w-screen min-h-screen bg-black/65 backdrop-blur-lg">
       <IoClose
         className="absolute hover:cursor-pointer top-4 right-4"
         size={40}
         onClick={onClose}
       />
-      <div className="w-full lg:w-2/4 md:w-3/4 flex flex-col items-center ">
-        <div className="h-[60vh]   bg-black  border-2 border-white/50 flex justify-center items-center w-full">
+      <div className="w-full lg:w-2/4 md:w-3/4 flex flex-col items-center">
+        <div className="h-[60vh] bg-black border-2 border-white/50 flex justify-center items-center w-full">
           <div className="relative w-full h-full flex items-center justify-center">
             {heroMedia.media_type === "video" ? (
               <video
@@ -165,7 +169,7 @@ const MediaModal = ({
                 ref={videoRef}
                 autoPlay
                 controls
-                className="w-full h-full object-contain" // Use object-contain to maintain aspect ratio
+                className="w-full h-full object-contain"
               >
                 <source
                   src={`${process.env.NEXT_PUBLIC_HOST}${heroMedia.file}`}
@@ -175,14 +179,14 @@ const MediaModal = ({
             ) : (
               <img
                 alt="Media content"
-                className="w-full h-full object-contain" // Use object-contain for images too
+                className="w-full h-full object-contain"
                 src={`${process.env.NEXT_PUBLIC_HOST}${heroMedia.file}`}
               />
             )}
           </div>
         </div>
 
-        <div className="flex items-center gap-3 mt-4 p-4  rounded-lg bg-white/10 flex-wrap justify-center">
+        <div className="flex items-center gap-3 mt-4 p-4 rounded-lg bg-white/10 flex-wrap justify-center">
           {medias.map((media) => (
             <div
               key={media.id}

@@ -19,11 +19,13 @@ import {
   useFetchNewNotificationsQuery,
   useFetchOldNotificationsQuery,
   useMarkAllReadMutation,
+  useReadNotificationMutation,
 } from "@/redux/features/notificationApiSlice";
 import { NotificationInSchema } from "@/schemas/notification-schemas";
 
 export default function NotificationPage() {
   const [page, setPage] = useState(1);
+  const [readNotif] = useReadNotificationMutation()
   const [combinedOldNotifications, setCombinedOldNotifications] = useState<
     z.infer<typeof NotificationInSchema>[]
   >([]);
@@ -53,7 +55,7 @@ export default function NotificationPage() {
     }
   }, [oldNotifications]);
 
-  const handleNotificationClick = (
+  const handleNotificationClick = async (
     notification: z.infer<typeof NotificationInSchema>,
   ) => {
     if (currentUser && notification.booking) {
@@ -63,6 +65,10 @@ export default function NotificationPage() {
           : `/bookings/${notification.booking.id}`;
 
       router.push(bookingPath);
+    }
+    if(notification.notification_type === 'application_accepted'){
+        await readNotif(notification.id.toString());
+        router.push('/echoverse')
     }
   };
 
@@ -102,11 +108,20 @@ export default function NotificationPage() {
       {newNotifications?.map((notif) => (
         <div
           key={notif.id}
-          className="p-3 cursor-pointer hover:bg-white/5 transition-all duration-300 ease-in-out my-2 rounded-md"
+          className="p-3 flex items-center gap-3 cursor-pointer hover:bg-white/5 transition-all duration-300 ease-in-out my-2 rounded-md"
           onClick={() => handleNotificationClick(notif)}
         >
+             <div>
+              {notif.notification_type === "downpayment_paid" ? (
+                <MdPayment className="text-green-400" size={30} />
+              ) : notif.notification_type.includes("booking") ? (
+                <FaCalendarPlus className="text-blue-400" size={30} />
+              ) : null}
+            </div>
+            <div>
           <p className="text-lg font-bold">{notif.title}</p>
           <p className="text-xs text-white/50">{notif.description}</p>
+          </div>
         </div>
       ))}
 

@@ -1,3 +1,4 @@
+import { Progress } from "@nextui-org/progress";
 import { useMemo } from "react";
 
 type StepperProps = {
@@ -35,12 +36,9 @@ export const Stepper: React.FC<StepperProps> = ({
           </div>
         ))}
       </div>
-      <div className="relative w-full h-2 bg-gray-300 rounded">
-        <div
-          className="absolute top-0 left-0 h-2 bg-blue-500 rounded"
-          style={{ width: `${progressPercentage}%` }}
-        />
-      </div>
+
+        <Progress value={progressPercentage} />
+
     </div>
   );
 };

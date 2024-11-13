@@ -19,7 +19,7 @@ export const Step3 = () => {
 
   return (
     <Fragment>
-      <h1 className="text-center capitalize">
+      <h1 className="text-white/50 text-right mb-4 capitalize">
         Choose From {artist.user.first_name}&apos;s Available Package
       </h1>
       <div className="flex  w-full justify-evenly">

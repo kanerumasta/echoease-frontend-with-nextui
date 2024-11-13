@@ -10,6 +10,10 @@ import { ArtistInSchema } from "@/schemas/artist-schemas";
 import { Modal, useDisclosure } from "@nextui-org/modal";
 import { BookingForm } from "../forms/booking-form";
 import { useRouter } from "next/navigation";
+import { AnimatedSide } from "@/components/animated-side";
+import { IoLogoFacebook, IoLogoInstagram, IoLogoYoutube } from "react-icons/io5";
+import { FaSpotify } from "react-icons/fa";
+import { BsTwitterX } from "react-icons/bs";
 
 const interReg = Poppins({
   subsets: ["latin"],
@@ -61,40 +65,59 @@ export const IntroductionSection = ({
     <div
       className={cn(
         interReg.className,
-        "h-screen flex flex-col justify-center px-20 w-full ",
+        "h-screen flex  flex-row-reverse relative items-center justify-center px-20 w-full ",
       )}
     >
-      <div className="h-screen w-screen absolute top-0 right-0 overflow-hidden">
+
+
+
+      <div className="h-[600px] ring-offset-transparent relative rounded-full flex items-center w-[600px]">
         {artist.user.profile?.profile_image && (
-          <img
+            <img
             alt="Artist Image"
-            className="w-full h-full object-cover"
+            className="w-full rounded-full z-20 h-full object-cover"
             src={artist.user.profile?.profile_image}
             width={100}
             height={100}
-          />
+            />
         )}
+        <div className="bg-purple-500/10 blur-3xl h-full w-full scale-110 absolute top-0 left-0  "/>
       </div>
-      <div className="h-screen absolute top-0 left-0 w-full bg-gradient-to-r from-black via-black/70 to-black/35 " />
-      <div className="z-10 space-y-4  w-2/4">
+
+      <AnimatedSide className="z-10 space-y-4    flex flex-col justify-center  w-2/4">
         <h1 className="text-3xl tracking-wide text-white/70">
           Hello! I'm your Echoee,
         </h1>
         <p className={cn(interBold.className, "text-7xl capitalize font-bold")}>
           {artist.user.fullname}
         </p>
-        <p className="leading-loose text-lg text-white/50 ">{artist.bio} </p>
+        <p className="leading-loose text-lg text-white/50 max-w-[80%] ">{artist.bio} </p>
+        <div className="flex items-center gap-3">
         {user && user.role !== UserRoles.artist && (
-          <Button onPress={handleBookPress} className="bg-blue-500" radius="full" size="lg">
+          <Button  onPress={handleBookPress} className="bg-blue-500 w-[300px]" radius="full" size="lg">
             Bring Me Onstage
           </Button>
         )}
-      </div>
+        {artist.fb_link &&
+                <SocialButton icon={<IoLogoFacebook size={30} className="group-hover:text-blue-400 cursor-pointer"/>}/>
+}
+        {artist.instagram &&
+            <SocialButton icon={<IoLogoInstagram size={30} className="group-hover:text-blue-400 cursor-pointer"/>}/>
+     }
+        {artist.spotify &&
+                <SocialButton icon={<FaSpotify size={30} className="group-hover:text-blue-400 cursor-pointer"/>}/>
+}
+        {artist.twitter &&
+                <SocialButton icon={<BsTwitterX size={30} className="group-hover:text-blue-400 cursor-pointer"/>}/>
+}
+        {artist.youtube && <SocialButton icon={<IoLogoYoutube size={30} className="group-hover:text-blue-400 cursor-pointer"/>}/>
+        }
+        </div>
+      </AnimatedSide>
       {user && (
               <Modal
                 classNames={{
-                  base: "bg-white/5",
-                  backdrop: "bg-black/80 backdrop-blur-xl",
+                  backdrop: "bg-black/80 backdrop-blur-xl h-[100vh] w-screen",wrapper:'w-full p-10  h-[100vh]',base:''
                 }}
                 isDismissable={false}
                 isKeyboardDismissDisabled={false}
@@ -106,6 +129,20 @@ export const IntroductionSection = ({
                 <BookingForm artist={artist} currentUser={user} />
               </Modal>
             )}
+
+            <div className="absolute top-[50px] left-[-50px] blur-[120px] h-[350px] w-[350px] rounded-full bg-gradient-to-br from-red-500/30 to-yellow-500/30"/>
+            <div className="absolute top-[350px] left-[60px] blur-[120px] h-[350px] w-[350px] rounded-full  bg-gradient-to-br from-purple-500/50 to-blue-500/50"/>
+            <div className="absolute top-[150px] left-[240px] blur-[120px] h-[350px] w-[350px] rounded-full  bg-gradient-to-br from-pink-500/30 to-fuchsia-500/30"/>
+
     </div>
   );
 };
+
+
+const SocialButton = ({icon}:{icon:any}) => {
+    return (
+        <div className="border-2 h-[40px] p-2 w-[40px] flex items-center justify-center rounded-full border-blue-400">
+            {icon}
+        </div>
+    )
+}

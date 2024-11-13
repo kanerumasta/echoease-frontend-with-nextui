@@ -27,7 +27,7 @@ export default function BookingDetailPage() {
   const bookingId = params.id;
   const { data: curUser } = useFetchCurrentUserQuery();
 
-  const { data: bookingDetail } = useFetchBookingDetailQuery(bookingId, {
+  const { data: bookingDetail, refetch:refetchBooking } = useFetchBookingDetailQuery(bookingId, {
     refetchOnMountOrArgChange: true,
   });
 
@@ -73,12 +73,13 @@ export default function BookingDetailPage() {
             {bookingDetail.is_completed &&
               !bookingDetail.is_reviewed &&
               curUser && <PostReview bookingId={bookingDetail.id} />}
-            {!bookingDetail.is_completed &&
+            {!bookingDetail.is_completed && !(bookingDetail.status === 'rejected') &&
               !(bookingDetail.status === "cancelled") && !bookingDetail.is_event_due && (
                 <CancelBooking booking={bookingDetail} />
               )}
             {/* <DownloadBookingPDF bookingId={bookingDetail.id}/> */}
           </div>
+          <Spacer y={4} />
 
           {bookingDetail.status === "rejected" &&
             bookingDetail.decline_reason && (
@@ -97,7 +98,7 @@ export default function BookingDetailPage() {
               </div>
             )}
             {bookingDetail.disputes.length > 0 &&
-                <Disputes disputes={bookingDetail.disputes}/>
+                <Disputes onRefetch={refetchBooking} disputes={bookingDetail.disputes}/>
             }
 
         </Fragment>

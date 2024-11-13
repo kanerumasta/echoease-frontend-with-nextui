@@ -1,50 +1,49 @@
 "use client";
 
-import { z } from "zod";
 import { Button } from "@nextui-org/button";
 import {
-  Modal,
-  ModalBody,
-  ModalContent,
-  ModalHeader,
-  useDisclosure,
+    Dropdown,
+    DropdownItem,
+    DropdownMenu,
+    DropdownTrigger,
+} from "@nextui-org/dropdown";
+import {
+    Modal,
+    ModalBody,
+    ModalContent,
+    ModalHeader,
+    useDisclosure,
 } from "@nextui-org/modal";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableColumn,
-  TableHeader,
-  TableRow,
+    Table,
+    TableBody,
+    TableCell,
+    TableColumn,
+    TableHeader,
+    TableRow,
 } from "@nextui-org/table";
-import { useState } from "react";
-import {
-  Dropdown,
-  DropdownItem,
-  DropdownMenu,
-  DropdownTrigger,
-} from "@nextui-org/dropdown";
-import { HiDotsVertical } from "react-icons/hi";
 import { User } from "@nextui-org/user";
 import { useRouter } from "next/navigation";
-
-import { useFetchCurrentUserQuery } from "@/redux/features/authApiSlice";
-import {
-  useAttachDownPaymentIntentMutation,
-  useCreateDownPaymentIntentMutation,
-} from "@/redux/features/paymentApiSlice";
+import { useState } from "react";
+import { HiDotsVertical } from "react-icons/hi";
+import { z } from "zod";
 import CustomImage from "@/components/image";
-import { BookInSchema } from "@/schemas/booking-schemas";
+import { useFetchCurrentUserQuery } from "@/redux/features/authApiSlice";
 import { useFetchAwaitingDownpaymentBookingsQuery } from "@/redux/features/bookingApiSlice";
+import {
+    useAttachDownPaymentIntentMutation,
+    useCreateDownPaymentIntentMutation,
+} from "@/redux/features/paymentApiSlice";
+import { BookInSchema } from "@/schemas/booking-schemas";
 
 export const AwaitingDownpayments = () => {
-  const { data: awaitingBookings = [], isLoading } =
+  const { data: awaitingBookings = [] } =
     useFetchAwaitingDownpaymentBookingsQuery();
   const { data: currentUser } = useFetchCurrentUserQuery();
-  const { isOpen, onOpen, onClose, onOpenChange } = useDisclosure();
-  const [createDownPaymentIntent, { isLoading: creatingIntent, data }] =
+  const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const [createDownPaymentIntent, { data }] =
     useCreateDownPaymentIntentMutation();
-  const [attachDownPaymentIntent, { isLoading: attachingIntent }] =
+  const [attachDownPaymentIntent] =
     useAttachDownPaymentIntentMutation();
 
   const [clickedBooking, setClickedBooking] = useState<z.infer<
@@ -86,6 +85,7 @@ export const AwaitingDownpayments = () => {
           Awaiting Down payments
         </h1>
         <Table
+            selectionMode="single"
           classNames={{ wrapper: "bg-transparent" }}
           onRowAction={(e) => router.push(`/bookings/${e}`)}
         >

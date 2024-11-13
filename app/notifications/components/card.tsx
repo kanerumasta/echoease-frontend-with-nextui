@@ -56,6 +56,11 @@ export default function NotificationCard({
 
   const handleRedirect = () => {
     if (currentUser) {
+        alert(notif.notification_type)
+        if(notif.notification_type === 'application_accepted'){
+            router.push(`/echoverse`)
+            return;
+        }
       if (currentUser.role === "artist") {
         notif.booking?.id
           ? router.push(`/echoverse/bookings/${notif.booking?.id}`)
