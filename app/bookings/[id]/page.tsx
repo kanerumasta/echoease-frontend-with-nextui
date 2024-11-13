@@ -50,24 +50,12 @@ export default function BookingDetailPage() {
           </div>
           <div className="flex gap-3">
             <div className="w-full">
-              <div className="flex gap-2">
+              <div className="flex flex-col gap-2">
                 <BasicBookingInfo booking={bookingDetail} />
                 <ArtistDetails booking={bookingDetail} />
-              </div>
-              {/* <ClientDetails booking={bookingDetail}/> */}
-            </div>
-            {bookingDetail.status === "awaiting_downpayment" && (
-              <DownpaymentInfo booking={bookingDetail} />
-            )}
-            {bookingDetail.status === "completed" ||
-              (bookingDetail.status === "approved" && (
-                <PaymentInfo booking={bookingDetail} />
-              ))}
-          </div>
-
-          <Spacer y={4} />
-          <div className="flex gap-3">
-            {bookingDetail.is_event_due && curUser && (
+                <Spacer y={4} />
+                <div className="flex gap-3">
+                    {bookingDetail.is_event_due && curUser && (
               <CreateDispute booking={bookingDetail} clientId={curUser.id} />
             )}
             {bookingDetail.is_completed &&
@@ -80,6 +68,19 @@ export default function BookingDetailPage() {
             {/* <DownloadBookingPDF bookingId={bookingDetail.id}/> */}
           </div>
           <Spacer y={4} />
+              </div>
+              {/* <ClientDetails booking={bookingDetail}/> */}
+            </div>
+            {bookingDetail.status === "awaiting_downpayment" && (
+              <DownpaymentInfo booking={bookingDetail} />
+            )}
+            {bookingDetail.status === "completed" ||
+              (bookingDetail.status === "approved" && (
+                <PaymentInfo booking={bookingDetail} />
+              ))}
+          </div>
+
+
 
           {bookingDetail.status === "rejected" &&
             bookingDetail.decline_reason && (

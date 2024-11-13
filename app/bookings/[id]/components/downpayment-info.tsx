@@ -13,6 +13,7 @@ import { BookInSchema } from "@/schemas/booking-schemas";
 import {
   useAttachDownPaymentIntentMutation,
   useCreateDownPaymentIntentMutation,
+  useCreateInvoiceMutation,
 } from "@/redux/features/paymentApiSlice";
 import CustomImage from "@/components/image";
 import { useFetchCurrentUserQuery } from "@/redux/features/authApiSlice";
@@ -25,16 +26,20 @@ const DownpaymentInfo: React.FC<DownpaymentInfoProps> = ({ booking }) => {
   const { data: currentUser } = useFetchCurrentUserQuery();
   const [createDownPaymentIntent, { data }] =
     useCreateDownPaymentIntentMutation();
+    const [createInvoice,{data:invoiceData}] = useCreateInvoiceMutation()
   const [attachDownPaymentIntent] = useAttachDownPaymentIntentMutation();
   const { onOpen, onOpenChange, onClose, isOpen } = useDisclosure();
 
   const handlePayNowClick = async () => {
     const payload = {
-      booking: booking.id,
+      booking_id: booking.id.toString(),
+      payment_type:'downpayment',
+      redirect_url:process.env.NEXT_PUBLIC_SITE ?  `${process.env.NEXT_PUBLIC_SITE}/bookings/${booking.id.toString()}` : `http://localhost:3000/bookings/${booking.id.toString()}`
     };
 
-    await createDownPaymentIntent(payload);
-    onOpen();
+    const invoice = await createInvoice(payload).unwrap();
+    window.location.href = invoice?.invoice_url
+    // onOpen();
   };
 
   const handlePayWithMethod = async (
