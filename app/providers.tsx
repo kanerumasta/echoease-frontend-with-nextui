@@ -68,8 +68,13 @@ const WebsocketProvider: React.FC<WebSocketProviderProps> = ({ children }) => {
 
 
     React.useEffect(() => {
-        const socketUrl = 'ws://localhost:8000/ws/notification/';
+        const socketUrl = process.env.NEXT_PUBLIC_NOTIFICATION_WEBSOCKET;
+        if(!socketUrl) {
+            console.log('No WebSocket URL provided: app/providers.tsx')
+            return;
+        }
         const newSocket = new WebSocket(socketUrl);
+
 
         newSocket.onopen = () => {
             console.log('WebSocket connection established');

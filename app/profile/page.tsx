@@ -1,5 +1,5 @@
 "use client";
-import { useDisclosure } from "@nextui-org/modal";
+import { Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, useDisclosure } from "@nextui-org/modal";
 import { BsGenderFemale, BsGenderMale } from "react-icons/bs";
 import { FaPhone } from "react-icons/fa";
 import { ImLocation } from "react-icons/im";
@@ -12,7 +12,7 @@ import { Spacer } from "@nextui-org/spacer";
 
 import { cn } from "@/lib/utils";
 import { UserSchema } from "@/schemas/user-schemas";
-import { useFetchCurrentUserQuery } from "@/redux/features/authApiSlice";
+import { useDeactivateUserMutation, useFetchCurrentUserQuery } from "@/redux/features/authApiSlice";
 import { EditIcon } from "@/components/icons/edit";
 
 import ChangeProfileImage from "./forms/change-profile-image";
@@ -22,10 +22,13 @@ import { ChangePhone } from "./forms/change-phone";
 import { ChangeDob } from "./forms/change-dob";
 import { ChangeGender } from "./forms/change-gender";
 import { ChangePassword } from "./forms/change-password";
+import { Deactivate } from "./forms/deactivate";
 
 export default function ProfilePage() {
   const { data: currentUser, isLoading } = useFetchCurrentUserQuery();
   const { onOpen, isOpen, onOpenChange } = useDisclosure();
+
+
 
   return (
     <>
@@ -35,14 +38,7 @@ export default function ProfilePage() {
             PROFILE
           </h1>
           <div className=" absolute bottom-2 right-2 gap-2 flex items-center">
-            <Button
-              className="text-white"
-              color="danger"
-              radius="sm"
-              variant="ghost"
-            >
-              Deactivate
-            </Button>
+           <Deactivate />
             <ChangePassword />
           </div>
 
@@ -53,6 +49,7 @@ export default function ProfilePage() {
           {currentUser && <PersonalInfo user={currentUser} />}
         </div>
       </div>
+
     </>
   );
 }

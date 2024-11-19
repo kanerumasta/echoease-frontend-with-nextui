@@ -52,9 +52,6 @@ export default function EchoeeGroup({ title, filters }: Props) {
   const checkArrowVisibility = () => {
     if (scrollRef.current) {
       const { scrollLeft, clientWidth, scrollWidth } = scrollRef.current;
-      console.log('left',scrollLeft)
-      console.log('width',clientWidth)
-      console.log('swidth',scrollWidth)
       setShowLeftArrow(scrollLeft > 0);
       setShowRightArrow(Math.floor(scrollLeft + clientWidth) < Math.ceil(scrollWidth+5));
       console.log(Math.floor(scrollLeft + clientWidth + 2) < Math.ceil(scrollWidth))
@@ -120,7 +117,6 @@ export default function EchoeeGroup({ title, filters }: Props) {
                 <Skeleton className="max-w-[250px] min-w-[250px] min-h-[300px]" />
 
             </div>}
-
             {paginatedEchoees?.has_next && !isLoading &&
                 <Skeleton ref={endRef} className="max-w-[250px] min-w-[250px] min-h-[300px]"/>
 

@@ -13,12 +13,18 @@ import MainLayout from "@/components/main-layout";
 import { subtitle, title } from "@/components/primitives";
 import { siteConfig } from "@/config/site";
 import { tv } from "tailwind-variants";
+import { useFetchCurrentUserQuery } from "@/redux/features/authApiSlice";
+import { useRouter } from "next/navigation";
 
 export default function Home() {
-  const springs = useSpring({
-    from: { x: 0 },
-    to: { x: 100 },
-  });
+    const router=useRouter()
+
+
+  const {data:currentUser} = useFetchCurrentUserQuery()
+
+  if(currentUser && currentUser.is_deactivated){
+    router.replace('/account-deactivated')
+  }
 
   return (
     <MainLayout>

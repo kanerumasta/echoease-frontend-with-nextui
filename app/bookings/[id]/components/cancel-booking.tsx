@@ -6,6 +6,7 @@ import {
   Modal,
   ModalBody,
   ModalContent,
+  ModalFooter,
   ModalHeader,
   useDisclosure,
 } from "@nextui-org/modal";
@@ -15,6 +16,7 @@ import { z } from "zod";
 
 import { BookInSchema } from "@/schemas/booking-schemas";
 import { useCancelBookingMutation } from "@/redux/features/bookingApiSlice";
+import { CancellationPolicy } from "./cancellation-policy";
 
 type CancelBookingProps = {
   booking: z.infer<typeof BookInSchema>;
@@ -30,7 +32,15 @@ export const CancelBooking: React.FC<CancelBookingProps> = ({ booking }) => {
       reason: cancelReason,
     };
 
-    await cancelBooking(payload);
+    await cancelBooking(payload).unwrap(
+
+    ).then( ()=>
+        {toast.success("Your booking has been cancelled");
+            if(typeof window !== "undefined"){
+                window.location.reload()
+            }
+        })
+    .catch(()=> toast.error("Cancel failed. Please try again later"))
     onClose();
   };
 
@@ -46,31 +56,39 @@ export const CancelBooking: React.FC<CancelBookingProps> = ({ booking }) => {
       <Button color="warning" radius="sm" onPress={onOpen}>
         Cancel
       </Button>
-      <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
+      <Modal classNames={{
+        header:'pt-[300px]'
+      }} size="5xl" isOpen={isOpen} onOpenChange={onOpenChange}>
         <ModalContent>
-          <ModalHeader>Add Cancellation Policy HERE</ModalHeader>
+          <ModalHeader>Cancel Booking</ModalHeader>
           <ModalBody>
             <div>
-              <p>
+            <CancellationPolicy />
+              <p className="mb-5">
                 Do you want to cancel your booking for{" "}
-                {booking.artist.user.fullname} {booking.booking_reference} ?
+                {booking.artist.user.fullname} ?
               </p>
               {/* Add cancellation policy here */}
               <Textarea
-                label="Reaoson of Cancellation"
+                label="Reason of Cancellation"
                 placeholder="Please let your echoee know the reason of cancellation."
                 radius="sm"
                 variant="bordered"
                 onChange={(e) => setCancelReason(e.target.value)}
               />
             </div>
-            <Button color="warning" radius="sm" onPress={handleCancel}>
+
+
+          </ModalBody>
+          <ModalFooter>
+            <Button isLoading={isLoading} color="warning" radius="sm" onPress={handleCancel}>
               Proceed Cancel
             </Button>
-            <Button isLoading={isLoading} radius="sm" onPress={onClose}>
+            <Button  radius="sm" onPress={onClose}>
               No
             </Button>
-          </ModalBody>
+
+          </ModalFooter>
         </ModalContent>
       </Modal>
     </>

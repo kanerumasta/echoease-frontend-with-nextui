@@ -1,6 +1,7 @@
 import { z } from "zod";
 
 import { TransactionSchema } from "@/schemas/transaction-schemas";
+import Image from "next/image";
 
 type TransactionProps = {
   transaction: z.infer<typeof TransactionSchema>;
@@ -13,25 +14,29 @@ export const Transaction: React.FC<TransactionProps> = ({ transaction }) => {
         <div className="flex justify-between">
           <span className="font-medium text-gray-600">Transaction ID:</span>
           <span className="text-gray-500">
+
             {transaction.transaction_reference}
           </span>
         </div>
         <div className="flex justify-between mt-2">
           <span className="font-medium text-gray-600">Date:</span>
           <span className="text-gray-500">
-            {new Date(transaction.created_at).toLocaleString()}
+            {new Date(transaction.created_at).toDateString().slice(4)}
+            {', '}
+            {new Date(transaction.created_at).toLocaleTimeString()}
+
           </span>
         </div>
         <div className="flex justify-between mt-2">
           <span className="font-medium text-gray-600">Transaction Type:</span>
-          <span className="text-gray-500">{transaction.transaction_type}</span>
+          <span className="text-gray-500 capitalize">{transaction.transaction_type.split('_').join(' ')}</span>
         </div>
         <div className="flex justify-between mt-2">
           <span className="font-medium text-gray-600">Status:</span>
           <span
-            className={`text-gray-500 ${transaction.status === "completed" ? "text-green-600" : "text-red-600"}`}
+            className={`${transaction.transaction_type === 'refund' || transaction.transaction_type === 'payout' ? "#006fee":"text-[#17c964]"}`}
           >
-            {transaction.status}
+            Success
           </span>
         </div>
         <div className="flex justify-between mt-2">
@@ -40,51 +45,40 @@ export const Transaction: React.FC<TransactionProps> = ({ transaction }) => {
             &#8369;{parseFloat(transaction.amount).toFixed(2)}
           </span>
         </div>
-        <div className="flex justify-between mt-2">
-          <span className="font-medium text-gray-600">Net Amount:</span>
-          <span className="text-gray-500">
-            &#8369;{parseFloat(transaction.net_amount).toFixed(2)}
-          </span>
-        </div>
+
         <div className="flex justify-between items-center mt-2">
-          <span className="font-medium text-gray-600">siudhgf:</span>
+        <span className="font-medium text-gray-600">Payment Channel:</span>
           <span className="text-gray-500">
-            {transaction.payment_gateway === "gcash" ? (
+            {transaction.payment.payer_channel?.toLowerCase() === "gcash" ? (
               <img src="/media/GCash-Logo.png" width={80} />
-            ) : transaction.payment_gateway === "paymaya" ? (
+            ) : transaction.payment.payer_channel?.toLowerCase() === "paymaya" ? (
               <img src="/media/paymaya.png" width={80} />
-            ) : (
-              transaction.payment_gateway
+            ) : transaction.payment.payer_channel?.toLowerCase() === "grabpay" ? (
+                <img src="/media/grabpay.png" width={80} />
+              ) :(
+                transaction.payment.payer_channel
             )}
-          </span>
-        </div>
-        <div className="flex justify-between mt-2">
-          <span className="font-medium capitalize text-gray-600">
-            {transaction.payment_gateway || "Service"} Fee:
-          </span>
-          <span className="text-gray-500">
-            &#8369;{parseFloat(transaction.service_fee).toFixed(2)}
-          </span>
-        </div>
-        <div className="flex justify-between mt-2">
-          <span className="font-medium text-gray-600">Platform Fee:</span>
-          <span className="text-gray-500">
-            &#8369;{parseFloat(transaction.platform_fee).toFixed(2)}
           </span>
         </div>
       </div>
 
       <div className="mt-4 border-t border-gray-300 pt-4">
         <h3 className="text-md font-semibold text-gray-700">
-          Payer Information
+          Additional Information
         </h3>
+        {transaction.transaction_type === 'downpayment' || transaction.transaction_type === 'final_payment' || transaction.transaction_type === 'refund' ?
         <div className="flex justify-between mt-2">
           <span className="font-medium text-gray-600">Name:</span>
-          <span className="text-gray-500">{transaction.payer_name}</span>
-        </div>
+          <span className="text-gray-500">{transaction.booking.client.fullname}</span>
+        </div> :  transaction.transaction_type === 'payout' ?
+        <div className="flex justify-between mt-2">
+        <span className="font-medium text-gray-600">Name:</span>
+        <span className="text-gray-500">{transaction.booking.artist.user.fullname}</span>
+      </div> : null
+        }
         <div className="flex justify-between mt-2">
           <span className="font-medium text-gray-600">Email:</span>
-          <span className="text-gray-500">{transaction.payer_email}</span>
+          <span className="text-gray-500">{transaction.payment.payer_email}</span>
         </div>
       </div>
 

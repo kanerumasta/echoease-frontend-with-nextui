@@ -12,11 +12,11 @@ import {
 import { User } from "@nextui-org/user";
 import { useRouter } from "next/navigation";
 
-import { useFetchApprovedBookingsQuery, useFetchCompletedBookingsQuery, useFetchPendingBookingsQuery } from "@/redux/features/bookingApiSlice";
+import { useFetchApprovedBookingsQuery, useFetchPendingBookingsQuery } from "@/redux/features/bookingApiSlice";
 
-export const CompleteBookings = () => {
+export const FinalizedBookings = () => {
   const { data: pendingBookings = [], isLoading } =
-        useFetchCompletedBookingsQuery();
+        useFetchApprovedBookingsQuery();
   const loadingState = isLoading ? "loading" : "idle";
   const router = useRouter();
 

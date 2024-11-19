@@ -12,7 +12,7 @@ import { useEffect, useState } from "react";
 import EchoLoading from "@/components/echo-loading";
 import { Footer } from "@/components/footer";
 import useLoginRequired from "@/hooks/use-login-required";
-import { useFetchDetailArtistBySlugQuery } from "@/redux/features/artistApiSlice";
+import { useFetchArtistRatesQuery, useFetchDetailArtistBySlugQuery } from "@/redux/features/artistApiSlice";
 import { useFetchCurrentUserQuery } from "@/redux/features/authApiSlice";
 import AboutSection from "./sections/about";
 import { IntroductionSection } from "./sections/intro";
@@ -20,6 +20,9 @@ import { PortfolioSection } from "./sections/portfolio";
 import { Genres } from "./sections/genres";
 import { Prices } from "./sections/prices";
 import { AnimatedComponent } from "@/components/animated-container";
+import { Reviews } from "./components/reviews";
+import { skipToken } from "@reduxjs/toolkit/query";
+import { useFetchArtistScheduleDaysQuery, useFetchArtistUnavailableDatesQuery } from "@/redux/features/scheduleApiSlice";
 
 export default function SlugPage() {
   const params = useParams<{ slug: string }>();
@@ -28,6 +31,7 @@ export default function SlugPage() {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const { data: currentUser, isLoading: currentUserLoading } =
     useFetchCurrentUserQuery();
+
   const router = useRouter();
   const [firstOpen, setFirstOpen] = useState(open === "1");
   const {
@@ -35,6 +39,10 @@ export default function SlugPage() {
     isLoading: isArtistLoading,
     isError: isArtistError,
   } = useFetchDetailArtistBySlugQuery(params.slug);
+
+  const {data:rates} = useFetchArtistRatesQuery(artist ? artist.id.toString() : skipToken)
+  const {data:schedules} = useFetchArtistScheduleDaysQuery(artist ? artist.id: skipToken)
+  const {data:unavailableDates} = useFetchArtistUnavailableDatesQuery(artist ? artist.id: skipToken)
 
   useEffect(() => {
     if (currentUser && !currentUser?.profile?.is_complete) {
@@ -62,17 +70,19 @@ export default function SlugPage() {
             <Spacer y={8} />
 
             <AboutSection artist={artist} />
-            <AnimatedComponent className="">
-            <Genres artist={artist}/>
-            </AnimatedComponent>
+
             <AnimatedComponent className="">
             <Prices artist={artist}/>
+            </AnimatedComponent>
+            <AnimatedComponent className="">
+            <Genres artist={artist}/>
             </AnimatedComponent>
             <Spacer y={8} />
             <h1 className="text-3xl text-center mb-8 font-bold text-blue-400">
               My Highlights
             </h1>
             {artist && <PortfolioSection artist={artist} />}
+            {artist && <Reviews artistId={artist.id} />}
 
           </div>
         )}

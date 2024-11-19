@@ -33,6 +33,8 @@ export default function ProfileDetailPage() {
   const { onOpen, isOpen, onOpenChange } = useDisclosure();
   const { data: user } = useFetchUserDetailByIdQuery(params.id);
 
+  console.log(user)
+
   return (
     <>
       <div className="w-full md:px-[100px] ">
@@ -61,7 +63,7 @@ export default function ProfileDetailPage() {
           ) : (
             <div className="absolute bottom-[-30%]">
               <ProfileImage
-                imageSrc={`${process.env.NEXT_PUBLIC_HOST}${user?.profile?.profile_image}`}
+                imageSrc={`${user?.profile?.profile_image}`}
               />
             </div>
           )}

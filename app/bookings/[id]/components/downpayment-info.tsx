@@ -38,27 +38,11 @@ const DownpaymentInfo: React.FC<DownpaymentInfoProps> = ({ booking }) => {
     };
 
     const invoice = await createInvoice(payload).unwrap();
-    window.location.href = invoice?.invoice_url
+    if(typeof window !== "undefined")
+        window.location.href = invoice?.invoice_url
     // onOpen();
   };
 
-  const handlePayWithMethod = async (
-    booking: z.infer<typeof BookInSchema>,
-    method: "gcash" | "paymaya",
-  ) => {
-    const payload = {
-      payment_intent_id: data?.payment_intent_id,
-      payment_method: method,
-      booking: booking.id,
-      return_url: `${process.env.NEXT_PUBLIC_SITE}/pay/validate/down-payment`,
-      email: currentUser?.email,
-      name: currentUser?.fullname,
-    };
-
-    const response = await attachDownPaymentIntent(payload);
-
-    window.location.href = response.data.url;
-  };
 
   return (
     <div className="min-w-[400px] bg-white shadow-lg rounded-lg p-6">
@@ -151,48 +135,6 @@ const DownpaymentInfo: React.FC<DownpaymentInfoProps> = ({ booking }) => {
       >
         Pay Down Payment Now
       </Button>
-      <Modal
-        classNames={{
-          base: "bg-white text-black",
-          header: "bg-blue-500 text-white",
-          closeButton: "text-white hover:bg-white/30",
-        }}
-        isOpen={isOpen}
-        onOpenChange={onOpenChange}
-      >
-        <ModalContent>
-          <ModalHeader>Pay Downpayment</ModalHeader>
-          <ModalBody>
-            <div>
-              <h1 className="text-center font-bold text-lg">Pay with</h1>
-              <div className="fles items-center justify-center">
-                <div className="flex justify-center gap-4 p-3">
-                  <div
-                    className="border-3 hover:cursor-pointer hover:bg-blue-500/20 border-blue-500/50 p-3 rounded-xl"
-                    onClick={() => handlePayWithMethod(booking, "gcash")}
-                  >
-                    <CustomImage
-                      height="60px"
-                      src="/media/GCash-Logo.png"
-                      width="100px"
-                    />
-                  </div>
-                  <div
-                    className="border-3 hover:cursor-pointer hover:bg-green-500/20 border-green-500/50 p-3 rounded-xl"
-                    onClick={() => handlePayWithMethod(booking, "paymaya")}
-                  >
-                    <CustomImage
-                      height="60px"
-                      src="/media/paymaya.png"
-                      width="100px"
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
-          </ModalBody>
-        </ModalContent>
-      </Modal>
     </div>
   );
 };

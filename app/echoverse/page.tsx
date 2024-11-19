@@ -55,7 +55,7 @@ export default function EchoversePage() {
             href="/echoverse/bookings"
             title={newBookings.length === 1 ? "New Booking" : "New Bookings"}
           />
-          {ratingData &&
+          {ratingData && ratingData.rating__avg &&
             <EchoverseMenu
                 icon = {<Image alt="Icon Event" width={60} src={"/media/rating.png"}/>}
                 color="bg-gradient-to-r from-purple-700/30 to-purple-500/30"

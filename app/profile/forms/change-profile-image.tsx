@@ -78,7 +78,7 @@ export default function ChangeProfileImage({
         <CustomImage
           className="hover:cursor-pointer hover:opacity-80 ring-2 rounded-full ring-black/45 ring-offset-1 ring-offset-transparent"
           height="200px"
-          src={`${process.env.NEXT_PUBLIC_HOST}${currentUser?.profile?.profile_image}`}
+          src={`${currentUser?.profile?.profile_image}`}
           width="200px"
           onPress={onOpen}
         />

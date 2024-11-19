@@ -62,6 +62,8 @@ export const ArtistApplicationSchema = z.object({
   fb_link: z.string().nullable().optional(),
   bio: z.string(),
   stage_name: z.string().nullable().optional(),
+//   account_holder_name:z.string(),
+//   account_number:z.string(),
   rates: z
     .array(
       z.object({

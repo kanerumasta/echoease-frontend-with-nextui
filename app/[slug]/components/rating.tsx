@@ -2,9 +2,10 @@ import { IoStar, IoStarHalf, IoStarOutline } from "react-icons/io5";
 
 interface RatingsProps {
   rating: number;
+  size:number
 }
 
-export const Ratings = ({ rating }: RatingsProps) => {
+export const Ratings = ({ rating,size }: RatingsProps) => {
   // Get the whole number of full stars
   const fullStars = Math.floor(rating);
 
@@ -15,15 +16,15 @@ export const Ratings = ({ rating }: RatingsProps) => {
   const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
 
   return (
-    <div className="flex items-center gap-3">
+    <div className="flex items-center gap-2">
       {Array.from({ length: fullStars }, (_, index) => (
-        <IoStar key={index} className="text-yellow-400" size={20} />
+        <IoStar key={index} className="text-yellow-500" size={size} />
       ))}
 
-      {hasHalfStar && <IoStarHalf className="text-yellow-400" size={20} />}
+      {hasHalfStar && <IoStarHalf className="text-yellow-500" size={size} />}
 
       {Array.from({ length: emptyStars }, (_, index) => (
-        <IoStarOutline key={index} className="text-yellow-400" size={20} />
+        <IoStar key={index} className="text-white/50" size={size} />
       ))}
     </div>
   );

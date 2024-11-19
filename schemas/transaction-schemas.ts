@@ -1,6 +1,7 @@
 import { z } from "zod";
 
 import { BookInSchema } from "./booking-schemas";
+import { PaymentSchema } from "./payment-schemas";
 
 export const TransactionSchema = z.object({
   id: z.number(),
@@ -10,9 +11,7 @@ export const TransactionSchema = z.object({
   status: z.string(),
   amount: z.string(),
   net_amount: z.string(),
-  payment_gateway: z.string(),
-  payment_intent_id: z.string(),
-  service_fee: z.string(),
+  payment:PaymentSchema,
   payer_email: z.string(),
   payer_name: z.string(),
   platform_fee: z.string(),

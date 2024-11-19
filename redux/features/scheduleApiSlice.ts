@@ -85,7 +85,10 @@ const scheduleApiSlice = apiSlice.injectEndpoints({
       number
     >({
       query: (artist) => `/schedule/artist-unavailable-dates/${artist}`,
-      providesTags: ["MyUnavailableDates"],
+      providesTags: (result, error, artistId) =>
+        result
+          ? [{ type: 'UnavailableDates', id: artistId }]
+          : [],
     }),
     fetchArtistAvailabilities: builder.query<
       z.infer<typeof TimeSlotSchema>[],

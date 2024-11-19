@@ -163,7 +163,7 @@ return (
           <p className="capitalize lg:text-3xl md:text-3xl text-2xl font-bold">{`${artist.user.fullname}`}</p>
 
           {ratingsData && ratingsData.rating__avg && (
-            <Ratings rating={ratingsData.rating__avg} />
+            <Ratings size={20} rating={ratingsData.rating__avg} />
           )}
           <Spacer y={2} />
 

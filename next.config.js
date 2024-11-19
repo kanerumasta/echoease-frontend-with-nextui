@@ -1,3 +1,5 @@
+const env = require('./utils/validateEnv'); // This will validate and load environment variables
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   eslint: {
@@ -6,6 +8,9 @@ const nextConfig = {
   experimental: {
     missingSuspenseWithCSRBailout: false,
   },
+  images:{
+    domains: ['192.168.1.242']
+  }
 
 };
 

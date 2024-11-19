@@ -13,7 +13,7 @@ const ArtistDetails: React.FC<ArtistDetailsProps> = ({ booking }) => {
   return (
 
 
-    <div className="p-4 relative bg-white/5 flex gap-3 shadow-md w-full rounded-lg">
+    <div className="p-4 relative  flex gap-3 border-b-[1px] border-white/10 w-full ">
     <div className="mb-2">
         <p className="text-gray-700">Echoee Profile:</p>
         <Link

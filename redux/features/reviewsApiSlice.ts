@@ -1,4 +1,6 @@
+import { z } from "zod";
 import { apiSlice } from "../services/apiSlice";
+import { PaginatedFeedbacksSchema } from "@/schemas/reviews-schemas";
 
 const reviewsApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
@@ -13,8 +15,11 @@ const reviewsApiSlice = apiSlice.injectEndpoints({
       }),
       invalidatesTags: ["Bookings", "CompletedBookings"],
     }),
+    fetchArtistFeedbacks:builder.query<z.infer<typeof PaginatedFeedbacksSchema>,{artistId:number, page:number}>({
+        query:(data)=>`/reviews/feedbacks/${data.artistId}?page=${data.page}`
+    })
   }),
 });
 
-export const { useFetchArtistRatingQuery, usePostAReviewMutation } =
+export const { useFetchArtistRatingQuery, usePostAReviewMutation, useFetchArtistFeedbacksQuery } =
   reviewsApiSlice;

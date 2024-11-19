@@ -46,6 +46,11 @@ export default function MainForm() {
       id: 3,
       fields: ["instagram", "fb_link", "youtube", "spotify", "twitter"],
     },
+    {
+      name: "step5",
+      id: 4,
+      fields: ["account_holder_name", "acount_number"],
+    },
   ];
 
   function triggerSubmitForm() {

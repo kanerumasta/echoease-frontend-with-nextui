@@ -9,7 +9,7 @@ interface BasicBookingInfoProps {
 
 const BasicBookingInfo: React.FC<BasicBookingInfoProps> = ({ booking }) => {
   return (
-    <div className="p-4 bg-white/5 w-full shadow-md rounded-lg">
+    <div className="p-4  w-full border-b-[1px] border-white/10">
       <h2 className="text-xl font-bold mb-4">Basic Booking Information</h2>
 
       <div className="mb-2">

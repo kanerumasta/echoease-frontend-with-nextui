@@ -8,8 +8,10 @@ import useIsArtistOnly from "@/hooks/use-is-artist-only";
 
 import { PendingBookings } from "./components/pending";
 import { CompleteBookings } from "./components/complete";
-import { ApprovedBookings } from "./components/approved";
+
 import { BookingHistory } from "./components/booking-history";
+import { WaitingBookings } from "./components/waiting";
+import { FinalizedBookings } from "./components/finalized";
 
 export default function BookingsPage() {
   const { loginChecked } = useLoginRequired("/echoverse");
@@ -41,11 +43,21 @@ export default function BookingsPage() {
           key="approved"
           title={
             <div className="flex items-center space-x-2">
-              <span>Approved</span>
+              <span>Waiting Downpayments</span>
             </div>
           }
         >
-          <ApprovedBookings />
+          <WaitingBookings />
+        </Tab>
+        <Tab
+          key="upcoming"
+          title={
+            <div className="flex items-center space-x-2">
+              <span>Upcoming Events</span>
+            </div>
+          }
+        >
+          <FinalizedBookings />
         </Tab>
         <Tab
           key="completed"

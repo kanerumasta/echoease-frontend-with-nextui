@@ -14,6 +14,7 @@ import { useFetchCurrentUserQuery } from "@/redux/features/authApiSlice";
 import {
   useAttachFinalPaymentMutation,
   useCreateFinalPaymentIntentMutation,
+  useCreateInvoiceMutation,
 } from "@/redux/features/paymentApiSlice";
 import { BookInSchema } from "@/schemas/booking-schemas";
 
@@ -22,74 +23,68 @@ interface PaymentInfoProps {
 }
 
 const PaymentInfo: React.FC<PaymentInfoProps> = ({ booking }) => {
-  const [createFinalPayment, { data: intentData, isLoading: loadingIntent }] =
-    useCreateFinalPaymentIntentMutation();
-  const { data: currentUser } = useFetchCurrentUserQuery();
-  const [attachFinalPayment] = useAttachFinalPaymentMutation();
-  const { onOpen, onOpenChange, isOpen } = useDisclosure();
+
+    const [createInvoice,{isLoading}] = useCreateInvoiceMutation();
+
   const handlePayNowClick = async () => {
     const payload = {
-      booking: booking.id,
+      booking_id: booking.id.toString(),
+      payment_type:'final_payment',
+      redirect_url:process.env.NEXT_PUBLIC_SITE ?  `${process.env.NEXT_PUBLIC_SITE}/bookings/${booking.id.toString()}` : `http://localhost:3000/bookings/${booking.id.toString()}`
     };
 
-    await createFinalPayment(payload);
-    onOpen();
+    const invoice = await createInvoice(payload).unwrap();
+    window.location.href = invoice?.invoice_url
   };
 
   return (
-    <div className="min-w-[400px] bg-white shadow-lg rounded-lg p-6 my-4">
+    <div className="min-w-[400px] bg-white/5 p-2 rounded-md">
+        <div className=" bg-white shadow-lg rounded-lg p-6 ">
       {/* Booking Reference */}
-      <div className="mb-4">
-        <h3 className="text-lg font-semibold text-gray-700">
+      <div className="mb-4 flex justify-between items-center">
+        <h3 className="text-md font-semibold text-gray-700">
           Booking Reference
         </h3>
-        <p className="text-gray-600">{booking.booking_reference}</p>
+        <p className="text-sm text-gray-600">{booking.booking_reference}</p>
       </div>
 
       {/* Event Name */}
-      <div className="mb-4">
-        <h3 className="text-lg font-semibold text-gray-700">Event Name</h3>
-        <p className="text-gray-600">{booking.event_name}</p>
+      <div className="mb-4 flex justify-between items-center">
+        <h3 className="text-md font-semibold text-gray-700">Event Name</h3>
+        <p className="text-sm text-gray-600">{booking.event_name}</p>
       </div>
 
       {/* Event Date */}
-      <div className="mb-4">
-        <h3 className="text-lg font-semibold text-gray-700">Event Date</h3>
-        <p className="text-gray-600">{booking.formatted_event_date}</p>
+      <div className="mb-4 flex justify-between items-center">
+        <h3 className="text-md font-semibold text-gray-700">Event Date</h3>
+        <p className="text-sm text-gray-600">{booking.formatted_event_date}</p>
       </div>
 
       {/* Total Amount */}
-      <div className="mb-4">
-        <h3 className="text-lg font-semibold text-gray-700">Total Amount</h3>
-        <p className="text-gray-600">₱{booking.rate.amount}</p>
+      <div className="mb-4 flex justify-between items-center">
+        <h3 className="text-md font-semibold text-gray-700">Total Amount</h3>
+        <p className="text-sm text-gray-600">₱{booking.rate.amount}</p>
       </div>
 
       {/* Downpayment */}
-      <div className="mb-4">
-        <h3 className="text-lg font-semibold text-gray-700">Downpayment</h3>
-        <p className="text-gray-600">₱{booking.downpayment_amount}</p>
+      <div className="mb-4 flex justify-between items-center">
+        <h3 className="text-md font-semibold text-gray-700">Downpayment Paid</h3>
+        <p className="text-sm text-gray-600">₱{booking.downpayment_amount}</p>
       </div>
 
       {/* Service Fee */}
-      <div className="mb-4">
-        <h3 className="text-lg font-semibold text-gray-700">Service Fee</h3>
-        <p className="text-gray-600">₱{booking.service_fee}</p>
+      <div className="mb-4 flex justify-between items-center">
+        <h3 className="text-md font-semibold text-gray-700">Amount to Pay</h3>
+        <p className="text-sm text-gray-600">₱{booking.rate.amount - booking.downpayment_amount}</p>
       </div>
 
-      {/* Net Amount */}
-      <div className="mb-4">
-        <h3 className="text-lg font-semibold text-gray-700">Net Amount</h3>
-        <p className="text-gray-600">
-          ₱{booking.rate.amount - booking.service_fee}
-        </p>
-      </div>
 
       {/* Payment Status */}
-      <div className="mb-4">
-        <h3 className="text-lg font-semibold text-gray-700">Payment Status</h3>
+      <div className="mb-4 flex justify-between items-center">
+        <h3 className="text-md font-semibold text-gray-700">Booking Status</h3>
         <p
           className={`text-sm font-bold ${
-            booking.status === "paid" ? "text-green-500" : "text-red-500"
+            booking.status === "paid" || booking.status === "approved" ? "text-green-500" : "text-red-500"
           }`}
         >
           {booking.status.charAt(0).toUpperCase() + booking.status.slice(1)}
@@ -97,11 +92,11 @@ const PaymentInfo: React.FC<PaymentInfoProps> = ({ booking }) => {
       </div>
 
       {/* Transaction Date */}
-      <div className="mb-4">
-        <h3 className="text-lg font-semibold text-gray-700">
+      <div className="mb-4 flex justify-between items-center">
+        <h3 className="text-md font-semibold text-gray-700">
           Transaction Date
         </h3>
-        <p className="text-gray-600">
+        <p className="text-sm text-gray-600">
           {new Date(booking.created_at).toLocaleDateString()}
         </p>
       </div>
@@ -111,7 +106,7 @@ const PaymentInfo: React.FC<PaymentInfoProps> = ({ booking }) => {
           fullWidth
           className=""
           color="primary"
-          isLoading={loadingIntent}
+         isLoading={isLoading}
           radius="sm"
           size="lg"
           onPress={handlePayNowClick}
@@ -119,49 +114,8 @@ const PaymentInfo: React.FC<PaymentInfoProps> = ({ booking }) => {
           Pay Final Payment Now
         </Button>
       )}
-      <Modal
-        classNames={{
-          base: "bg-white text-black",
-          header: "bg-blue-500 text-white",
-          closeButton: "text-white hover:bg-white/30",
-        }}
-        isOpen={isOpen}
-        onOpenChange={onOpenChange}
-      >
-        <ModalContent>
-          <ModalHeader>Pay Downpayment</ModalHeader>
-          <ModalBody>
-            <div>
-              <h1 className="text-center font-bold text-lg">Pay with</h1>
-              <div className="fles items-center justify-center">
-                <div className="flex justify-center gap-4 p-3">
-                  {currentUser && intentData && (
-                    <>
-                      <PaymentButton
-                        bookingId={booking.id}
-                        currentUser={currentUser}
-                        paymentGateway={"gcash"}
-                        paymentIntentId={intentData?.payment_intent_id}
-                        src={"/media/GCash-Logo.png"}
-                        onPayHandler={attachFinalPayment}
-                      />
+      </div>
 
-                      <PaymentButton
-                        bookingId={booking.id}
-                        currentUser={currentUser}
-                        paymentGateway={"paymaya"}
-                        paymentIntentId={intentData?.payment_intent_id}
-                        src={"/media/paymaya.png"}
-                        onPayHandler={attachFinalPayment}
-                      />
-                    </>
-                  )}
-                </div>
-              </div>
-            </div>
-          </ModalBody>
-        </ModalContent>
-      </Modal>
     </div>
   );
 };

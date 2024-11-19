@@ -13,7 +13,6 @@
     const baseQuery = fetchBaseQuery({
     baseUrl: `${process.env.NEXT_PUBLIC_HOST}/api`,
     credentials: "include",
-    
     });
 const baseQueryWithReauth: BaseQueryFn<
   string | FetchArgs,
@@ -82,6 +81,8 @@ export const apiSlice = createApi({
     "Transactions",
     "followers",
     "BlockedChats",
+    "Rates",
+    "UnavailableDates"
   ],
   baseQuery: baseQueryWithReauth,
   endpoints: (builder) => ({}),

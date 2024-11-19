@@ -19,6 +19,7 @@ import { Heading } from "./components/heading";
 import PaymentInfo from "./components/payment-info";
 import { PostReview } from "./components/post-review";
 import { Disputes } from "./components/disputes";
+import {MyMap} from "@/components/map";
 
 export default function BookingDetailPage() {
   const params = useParams<{ id: string }>();
@@ -27,12 +28,13 @@ export default function BookingDetailPage() {
   const bookingId = params.id;
   const { data: curUser } = useFetchCurrentUserQuery();
 
-  const { data: bookingDetail, refetch:refetchBooking } = useFetchBookingDetailQuery(bookingId, {
+  const { data: bookingDetail, refetch:refetchBooking, refetch } = useFetchBookingDetailQuery(bookingId, {
     refetchOnMountOrArgChange: true,
   });
 
   useEffect(() => {
     refetchNewNotif();
+    refetch()
   }, []);
 
   if (curUser && curUser.role === UserRoles.artist) {
@@ -49,7 +51,7 @@ export default function BookingDetailPage() {
             <BookingProgress status={bookingDetail.status} />
           </div>
           <div className="flex gap-3">
-            <div className="w-full">
+            <div className="w-full bg-white/5 p-2 rounded-md    ">
               <div className="flex flex-col gap-2">
                 <BasicBookingInfo booking={bookingDetail} />
                 <ArtistDetails booking={bookingDetail} />
@@ -67,7 +69,7 @@ export default function BookingDetailPage() {
               )}
             {/* <DownloadBookingPDF bookingId={bookingDetail.id}/> */}
           </div>
-          <Spacer y={4} />
+
               </div>
               {/* <ClientDetails booking={bookingDetail}/> */}
             </div>
@@ -101,7 +103,7 @@ export default function BookingDetailPage() {
             {bookingDetail.disputes.length > 0 &&
                 <Disputes onRefetch={refetchBooking} disputes={bookingDetail.disputes}/>
             }
-
+            {bookingDetail.latitude && bookingDetail.longitude && <MyMap booking={bookingDetail}/>}
         </Fragment>
       )}
     </div>

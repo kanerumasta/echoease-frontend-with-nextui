@@ -20,7 +20,7 @@ export const PortfolioSection = ({
   artist: z.infer<typeof ArtistInSchema>;
 }) => {
   return (
-    <div className="flex flex-col min-h-screen lg:flex-row md:px-20 gap-4">
+    <div className="flex flex-col lg:flex-row md:px-20 gap-4">
       <Portfolio artist={artist} />
     </div>
   );

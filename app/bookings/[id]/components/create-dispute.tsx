@@ -101,7 +101,6 @@ export const CreateDispute: React.FC<CreateDisputeProps> = ({
         radius="sm"
         size="md"
         startContent={<DisputeIcon />}
-        variant="bordered"
         onPress={onOpen}
       >
         Report a Dispute

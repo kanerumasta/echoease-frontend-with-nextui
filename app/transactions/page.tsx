@@ -18,6 +18,7 @@ import { TransactionSchema } from "@/schemas/transaction-schemas";
 import { useFetchTransactionsQuery } from "@/redux/features/transactionApiSlice";
 
 import { Transaction } from "./components/transaction";
+import Image from "next/image";
 
 export default function TransactionPage() {
   const [page, setPage] = useState(1);
@@ -66,14 +67,21 @@ export default function TransactionPage() {
         >
           {(item) => (
             <TableRow key={item.id} onClick={() => setClickedTransaction(item)}>
-              <TableCell>{item.transaction_reference}</TableCell>
+              <TableCell><div className="flex items-center gap-3">
+              {item.transaction_type === 'refund' || item.transaction_type === 'payout' ?
+            <Image alt="" width={40} height={40} src="/media/down-arrow.png"/>    :
+            <Image alt="" width={40} height={40} src="/media/up-arrow.png"/>
+        }
+                {item.transaction_reference}</div>
+
+                </TableCell>
 
               <TableCell>{item.transaction}</TableCell>
               <TableCell className="text-xs">
                 {item.formatted_created_at}
               </TableCell>
               <TableCell>
-                <span className="text-[#f31260]">-&#8369;{item.amount}</span>
+                <span className={`${item.transaction_type === 'refund' || item.transaction_type === 'payout' ? "text-[#006fee]":"text-[#f31260]"}`}>{item.transaction_type === 'refund' || item.transaction_type === 'payout' ? "+" : "-"}&#8369;{item.amount}</span>
               </TableCell>
             </TableRow>
           )}
