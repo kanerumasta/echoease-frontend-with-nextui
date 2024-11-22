@@ -12,9 +12,7 @@ export default function UpcomingBookings({ bookings }: Props) {
   return (
     <div className="flex flex-col w-full max-h-[75vh] overflow-y-scroll gap-2 scrollbar-hide">
       {bookings.map((booking) => (
-        <BookingCard key={booking.id} booking={booking}>
-
-        </BookingCard>
+        <BookingCard key={booking.id} booking={booking} />
       ))}
     </div>
   );

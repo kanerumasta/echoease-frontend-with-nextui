@@ -2,7 +2,7 @@ import { Time } from "@internationalized/date";
 
 export function formatTimeTo12Hour(time: Time) {
   const hour = time.hour % 12 || 12;
-  const minutes = time.minute;
+  const minutes = String(time.minute).padStart(2, "0");
   const meridiem = time.hour > 12 ? "PM" : "AM";
 
   return `${hour}:${minutes} ${meridiem}`;

@@ -16,6 +16,7 @@ import { z } from "zod";
 
 import { BookInSchema } from "@/schemas/booking-schemas";
 import { useCancelBookingMutation } from "@/redux/features/bookingApiSlice";
+
 import { CancellationPolicy } from "./cancellation-policy";
 
 type CancelBookingProps = {
@@ -32,15 +33,15 @@ export const CancelBooking: React.FC<CancelBookingProps> = ({ booking }) => {
       reason: cancelReason,
     };
 
-    await cancelBooking(payload).unwrap(
-
-    ).then( ()=>
-        {toast.success("Your booking has been cancelled");
-            if(typeof window !== "undefined"){
-                window.location.reload()
-            }
-        })
-    .catch(()=> toast.error("Cancel failed. Please try again later"))
+    await cancelBooking(payload)
+      .unwrap()
+      .then(() => {
+        toast.success("Your booking has been cancelled");
+        if (typeof window !== "undefined") {
+          window.location.reload();
+        }
+      })
+      .catch(() => toast.error("Cancel failed. Please try again later"));
     onClose();
   };
 
@@ -56,14 +57,19 @@ export const CancelBooking: React.FC<CancelBookingProps> = ({ booking }) => {
       <Button color="warning" radius="sm" onPress={onOpen}>
         Cancel
       </Button>
-      <Modal classNames={{
-        header:'pt-[300px]'
-      }} size="5xl" isOpen={isOpen} onOpenChange={onOpenChange}>
+      <Modal
+        classNames={{
+          header: "pt-[300px]",
+        }}
+        isOpen={isOpen}
+        size="5xl"
+        onOpenChange={onOpenChange}
+      >
         <ModalContent>
           <ModalHeader>Cancel Booking</ModalHeader>
           <ModalBody>
             <div>
-            <CancellationPolicy />
+              <CancellationPolicy />
               <p className="mb-5">
                 Do you want to cancel your booking for{" "}
                 {booking.artist.user.fullname} ?
@@ -77,17 +83,19 @@ export const CancelBooking: React.FC<CancelBookingProps> = ({ booking }) => {
                 onChange={(e) => setCancelReason(e.target.value)}
               />
             </div>
-
-
           </ModalBody>
           <ModalFooter>
-            <Button isLoading={isLoading} color="warning" radius="sm" onPress={handleCancel}>
+            <Button
+              color="warning"
+              isLoading={isLoading}
+              radius="sm"
+              onPress={handleCancel}
+            >
               Proceed Cancel
             </Button>
-            <Button  radius="sm" onPress={onClose}>
+            <Button radius="sm" onPress={onClose}>
               No
             </Button>
-
           </ModalFooter>
         </ModalContent>
       </Modal>

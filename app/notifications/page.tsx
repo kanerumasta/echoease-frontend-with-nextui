@@ -25,7 +25,7 @@ import { NotificationInSchema } from "@/schemas/notification-schemas";
 
 export default function NotificationPage() {
   const [page, setPage] = useState(1);
-  const [readNotif] = useReadNotificationMutation()
+  const [readNotif] = useReadNotificationMutation();
   const [combinedOldNotifications, setCombinedOldNotifications] = useState<
     z.infer<typeof NotificationInSchema>[]
   >([]);
@@ -66,9 +66,9 @@ export default function NotificationPage() {
 
       router.push(bookingPath);
     }
-    if(notification.notification_type === 'application_accepted'){
-        await readNotif(notification.id.toString());
-        router.push('/echoverse')
+    if (notification.notification_type === "application_accepted") {
+      await readNotif(notification.id.toString());
+      router.push("/echoverse");
     }
   };
 
@@ -111,16 +111,16 @@ export default function NotificationPage() {
           className="p-3 flex items-center gap-3 cursor-pointer hover:bg-white/5 transition-all duration-300 ease-in-out my-2 rounded-md"
           onClick={() => handleNotificationClick(notif)}
         >
-             <div>
-              {notif.notification_type === "downpayment_paid" ? (
-                <MdPayment className="text-green-400" size={30} />
-              ) : notif.notification_type.includes("booking") ? (
-                <FaCalendarPlus className="text-blue-400" size={30} />
-              ) : null}
-            </div>
-            <div>
-          <p className="text-lg font-bold">{notif.title}</p>
-          <p className="text-xs text-white/50">{notif.description}</p>
+          <div>
+            {notif.notification_type === "downpayment_paid" ? (
+              <MdPayment className="text-green-400" size={30} />
+            ) : notif.notification_type.includes("booking") ? (
+              <FaCalendarPlus className="text-blue-400" size={30} />
+            ) : null}
+          </div>
+          <div>
+            <p className="text-lg font-bold">{notif.title}</p>
+            <p className="text-xs text-white/50">{notif.description}</p>
           </div>
         </div>
       ))}

@@ -1,25 +1,5 @@
 "use client";
 
-import { UserRoles } from "@/config/constants";
-import {
-    useConnectArtistMutation,
-    useFetchConnectionRequestsQuery,
-    useFetchDetailArtistBySlugQuery,
-    useFetchDetailCurrentArtistQuery,
-    useFollowArtistMutation,
-    useUnfollowArtistMutation,
-} from "@/redux/features/artistApiSlice";
-import { useFetchCurrentUserQuery } from "@/redux/features/authApiSlice";
-import {
-    useFetchChatBySlugQuery,
-    useFetchChatsQuery,
-} from "@/redux/features/chatApiSlice";
-import { useFetchArtistRatingQuery } from "@/redux/features/reviewsApiSlice";
-import {
-    ArtistInSchema,
-    ConnectionRequestSchema,
-    RateSchema,
-} from "@/schemas/artist-schemas";
 import { Button } from "@nextui-org/button";
 import { Chip } from "@nextui-org/chip";
 import { Divider } from "@nextui-org/divider";
@@ -36,10 +16,32 @@ import { SlUserFollowing } from "react-icons/sl";
 import { useInView } from "react-intersection-observer";
 import { toast } from "react-toastify";
 import { z } from "zod";
-import { Followers } from "../components/followers";
-import { Links } from "../components/links";
-import { Ratings } from "../components/rating";
 import Image from "next/image";
+
+import {
+  ArtistInSchema,
+  ConnectionRequestSchema,
+  RateSchema,
+} from "@/schemas/artist-schemas";
+import { useFetchArtistRatingQuery } from "@/redux/features/reviewsApiSlice";
+import {
+  useFetchChatBySlugQuery,
+  useFetchChatsQuery,
+} from "@/redux/features/chatApiSlice";
+import { useFetchCurrentUserQuery } from "@/redux/features/authApiSlice";
+import {
+  useConnectArtistMutation,
+  useFetchConnectionRequestsQuery,
+  useFetchDetailArtistBySlugQuery,
+  useFetchDetailCurrentArtistQuery,
+  useFollowArtistMutation,
+  useUnfollowArtistMutation,
+} from "@/redux/features/artistApiSlice";
+import { UserRoles } from "@/config/constants";
+
+import { Ratings } from "../components/rating";
+import { Links } from "../components/links";
+import { Followers } from "../components/followers";
 
 export default function AboutSection({
   artist,
@@ -71,7 +73,7 @@ export default function AboutSection({
     useUnfollowArtistMutation();
 
   const router = useRouter();
-  const { ref, inView } = useInView({ threshold: 0.3, triggerOnce:true});
+  const { ref, inView } = useInView({ threshold: 0.3, triggerOnce: true });
 
   const style = useSpring({
     opacity: inView ? 1 : 0, // Fade in effect
@@ -86,29 +88,32 @@ export default function AboutSection({
     } else if (errorConnectingArtist) {
       toast.error("Connection request failed. Please try again.");
     }
-  }, [successConnectingArtist, errorConnectingArtist, refetchConnectionRequests]);
-
+  }, [
+    successConnectingArtist,
+    errorConnectingArtist,
+    refetchConnectionRequests,
+  ]);
 
   const handleFollow = () => {
-      const formData = new FormData();
+    const formData = new FormData();
 
-      formData.append("artist", artist.id.toString());
-      followArtist(formData)
+    formData.append("artist", artist.id.toString());
+    followArtist(formData)
       .unwrap()
       .then(() => refetch())
       .catch();
-    };
-    const handleUnfollow = () => {
-        const formData = new FormData();
+  };
+  const handleUnfollow = () => {
+    const formData = new FormData();
 
-        formData.append("artist", artist.id.toString());
-        unfollowArtist(formData)
-        .unwrap()
+    formData.append("artist", artist.id.toString());
+    unfollowArtist(formData)
+      .unwrap()
       .then(() => refetch())
       .catch();
-    };
+  };
 
-    const handleSendArtistConnection = () => {
+  const handleSendArtistConnection = () => {
     const sender = currentUserArtist?.id;
     const receiver = artist.id;
 
@@ -118,40 +123,39 @@ export default function AboutSection({
     };
 
     connectArtist(payload);
-};
+  };
 
-const handleMessageMeClick = () => {
+  const handleMessageMeClick = () => {
     refetchChats();
     router.push(`/messages/${conversation?.code}`);
-};
+  };
 
-const artistInRequest = (
+  const artistInRequest = (
     connectionRequests: z.infer<typeof ConnectionRequestSchema>[],
     artistId: number,
-): boolean => {
+  ): boolean => {
     return connectionRequests.some((req) => req.receiver.id === artistId);
-};
-const artistInConnections = () => {
+  };
+  const artistInConnections = () => {
     return currentUserArtist?.connections.includes(artist.id) || false;
-};
+  };
 
-if (isLoading) return <div>Loading...</div>;
+  if (isLoading) return <div>Loading...</div>;
 
-return (
+  return (
     <div className="flex gap-4 relative duration-1000 animate-appearance-in min-h-screen w-full">
       {/* Image Profile */}
 
-
       <animated.div
         ref={ref}
-        className="w-full md:w-[80%] min-h-[60%] z-10 m-auto flex flex-col lg:flex-row"
+        className="w-full md:w-[80%] z-10 m-auto flex flex-col lg:flex-row"
         style={style}
       >
         {artist.user.profile && (
           <div className="w-full min-w-[50%] lg:max-w-[50%] ">
             <img
-                alt="Echoee Image"
-              className="w-full h-full object-cover"
+              alt="Echoee Image"
+              className="w-full hidden lg:block h-full object-cover"
               height={100}
               src={artist.user.profile?.profile_image}
               width={100}
@@ -163,7 +167,7 @@ return (
           <p className="capitalize lg:text-3xl md:text-3xl text-2xl font-bold">{`${artist.user.fullname}`}</p>
 
           {ratingsData && ratingsData.rating__avg && (
-            <Ratings size={20} rating={ratingsData.rating__avg} />
+            <Ratings rating={ratingsData.rating__avg} size={20} />
           )}
           <Spacer y={2} />
 
@@ -184,18 +188,20 @@ return (
           <Spacer y={2} />
 
           <div className="flex items-center gap-2">
-            {currentUser && !artist.followers.includes(currentUser.id)&& !(artist.user.id === currentUser.id) && (
-              <Button
-                color="primary"
-                isLoading={followLoading}
-                radius="sm"
-                size="sm"
-                startContent={<RiUserFollowFill />}
-                onPress={handleFollow}
-              >
-                Follow
-              </Button>
-            )}
+            {currentUser &&
+              !artist.followers.includes(currentUser.id) &&
+              !(artist.user.id === currentUser.id) && (
+                <Button
+                  color="primary"
+                  isLoading={followLoading}
+                  radius="sm"
+                  size="sm"
+                  startContent={<RiUserFollowFill />}
+                  onPress={handleFollow}
+                >
+                  Follow
+                </Button>
+              )}
             {currentUser && artist.followers.includes(currentUser.id) && (
               <Button
                 isLoading={unfollowLoading}
@@ -288,8 +294,8 @@ return (
           <Links artist={artist} />
         </div>
       </animated.div>
-      <div className="h-[200px] w-[300px] bg-gradient-to-tl from-blue-500/30 to-purple-500/30 absolute bottom-[10%] left-[100px] rounded-full blur-[120px]"/>
-      <div className="h-[200px] w-[300px] bg-gradient-to-tl from-red-500/30 to-yellow-500/30 absolute top-[10%] right-[100px] rounded-full blur-[120px]"/>
+      <div className="h-[200px] w-[300px] bg-gradient-to-tl from-blue-500/30 to-purple-500/30 absolute bottom-[10%] left-[100px] rounded-full blur-[120px]" />
+      <div className="h-[200px] w-[300px] bg-gradient-to-tl from-red-500/30 to-yellow-500/30 absolute top-[10%] right-[100px] rounded-full blur-[120px]" />
     </div>
   );
 }
@@ -298,7 +304,10 @@ const Rates = ({ rates }: { rates: z.infer<typeof RateSchema>[] }) => {
   return (
     <div className=" flex flex-wrap gap-3">
       {rates.map((rate) => (
-        <div key={rate.id} className=" w-1/6 p-1 border-[1px] border-blue-400/5 flex flex-col rounded-lg bg-white/5 gap-2 items-center">
+        <div
+          key={rate.id}
+          className=" w-1/6 p-1 border-[1px] border-blue-400/5 flex flex-col rounded-lg bg-white/5 gap-2 items-center"
+        >
           <p className="text-center text-md text-blue-400">
             &#8369;{Math.round(rate.amount)}
           </p>

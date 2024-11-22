@@ -3,6 +3,7 @@ import { z } from "zod";
 import { BookInSchema, PaginatedBookInSchema } from "@/schemas/booking-schemas";
 import { ArtistInSchema } from "@/schemas/artist-schemas";
 import { UserSchema } from "@/schemas/user-schemas";
+
 import { apiSlice } from "../services/apiSlice";
 // {
 //   "id": 4,
@@ -37,23 +38,25 @@ const bookingApiSlice = apiSlice.injectEndpoints({
     fetchMyBookings: builder.query<
       z.infer<typeof PaginatedBookInSchema>,
       {
-        page:number,
-        sort_by:string|null,
-        sort_order:string|null,
-        status:string|null,
-        paginate:boolean,
-        q:string|null
+        page: number;
+        sort_by: string | null;
+        sort_order: string | null;
+        status: string | null;
+        paginate: boolean;
+        q: string | null;
       }
     >({
-      query: ({page, sort_by,sort_order, status, paginate, q}) => {
-        const params = new URLSearchParams()
-        params.append('page', page.toString())
-        params.append('paginate', paginate.toString())
-        if(q) params.append('q', q)
-        if(sort_by) params.append('sort_by', sort_by)
-        if(sort_order) params.append('sort_order', sort_order)
-        if(status) params.append('status', status)
-        return `/bookings?${params.toString()}`
+      query: ({ page, sort_by, sort_order, status, paginate, q }) => {
+        const params = new URLSearchParams();
+
+        params.append("page", page.toString());
+        params.append("paginate", paginate.toString());
+        if (q) params.append("q", q);
+        if (sort_by) params.append("sort_by", sort_by);
+        if (sort_order) params.append("sort_order", sort_order);
+        if (status) params.append("status", status);
+
+        return `/bookings?${params.toString()}`;
       },
       providesTags: ["Bookings"],
     }),

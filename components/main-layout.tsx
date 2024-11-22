@@ -19,7 +19,7 @@ export default function MainLayout({
         poppins.className,
       )}
     >
-     {/* <div
+      {/* <div
         className="bg-gradient-to-b from-[#121212]/80 to-[#121212]/100 h-screen w-full fixed top-0 left-0 z-0 pointer-events-none"
         style={{ zIndex: 0 }}
       /> */}

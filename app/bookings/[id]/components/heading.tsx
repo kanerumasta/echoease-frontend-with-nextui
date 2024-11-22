@@ -16,18 +16,16 @@ type HeadingProps = {
 export const Heading: React.FC<HeadingProps> = ({ booking }) => {
   const [copied, setCopied] = useState(false); //Booking reference copied to clipboard
   const handleCopy = () => {
-    console.log(
-        'cojpsadf'
-    )
+    console.log("cojpsadf");
     try {
       navigator.clipboard.writeText(booking.booking_reference);
       setCopied(true);
       setTimeout(() => {
         setCopied(false);
       }, 2000);
-      console.log('copied')
+      console.log("copied");
     } catch (error) {
-        console.log(error)
+      console.log(error);
     }
   };
   const router = useRouter();
@@ -53,7 +51,13 @@ export const Heading: React.FC<HeadingProps> = ({ booking }) => {
       <div className="flex flex-col items-end gap-1">
         <div className="flex items-center gap-2">
           <p className="text-white/50">Booking: {booking.booking_reference}</p>
-          <Button onClick={handleCopy} className="z-50" isIconOnly radius="full" variant="light">
+          <Button
+            isIconOnly
+            className="z-50"
+            radius="full"
+            variant="light"
+            onClick={handleCopy}
+          >
             <IoCopy className="text-white/50 hover:text-white cursor-pointer" />
           </Button>
           {copied && <p>Copied!</p>}

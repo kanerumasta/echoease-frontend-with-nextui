@@ -9,6 +9,7 @@ import { Button } from "@nextui-org/button";
 import { Dispatch, Ref, RefObject, SetStateAction } from "react";
 
 import { useRolePicking } from "@/hooks/account";
+import useCompleteProfile from "@/hooks/use-complete-profile";
 
 import {
   BarOwnerForm,
@@ -39,9 +40,10 @@ const MainForm = () => {
   const [businessName, setBusinessName] = useState<string | null>(null);
   const [businessImage, setBusinessImage] = useState<File | null>(null);
   const searchParams = useSearchParams();
-  const redirect = searchParams.get("redirect") || "/";
+  const redirect = searchParams.get("redirect") || "/echoees";
   const formRef = useRef<HTMLFormElement | null>(null);
   const formSteps = ["role", "organizer or bar", "general"];
+  const {} = useCompleteProfile("/auth/register/picking-role");
 
   useEffect(() => {
     rolePicked && form.setValue("category", rolePicked);

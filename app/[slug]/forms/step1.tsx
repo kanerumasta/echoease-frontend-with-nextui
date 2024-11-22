@@ -1,7 +1,7 @@
 "use client";
 
 import { Input } from "@nextui-org/input";
-import { Fragment, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useFormContext } from "react-hook-form";
 import { z } from "zod";
 
@@ -30,7 +30,6 @@ export const Step1 = () => {
       <Input
         radius="sm"
         size="lg"
-
         {...form.register("eventName")}
         isInvalid={!!form.formState.errors.eventName}
         label="What's the event?"

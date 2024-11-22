@@ -22,7 +22,7 @@ import {
   TableRow,
 } from "@nextui-org/table";
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, useRouter } from "next/navigation";
 import { ChangeEvent, useRef, useState } from "react";
 import { IoClose } from "react-icons/io5";
 import { toast } from "react-toastify";
@@ -271,9 +271,25 @@ const ArtistDetails = ({
 }: {
   artist: z.infer<typeof ArtistInSchema>;
 }) => {
+  const router = useRouter();
+
   return (
     <div className="p-4 w-full space-y-4 rounded-md bg-white/5">
       <h1 className="text-white/50 mb-4">Echoee Details</h1>
+      <div className="">
+        <p>Portfolio Link</p>
+        <div className="flex justify-between items-center">
+          <p className="text-md flex-1 text-white/60">{`${process.env.NEXT_PUBLIC_SITE}/${artist.slug}`}</p>
+          <Button
+            color="primary"
+            radius="sm"
+            size="sm"
+            onPress={() => router.push(`/${artist.slug}`)}
+          >
+            View Portfolio
+          </Button>
+        </div>
+      </div>
       <div>
         <p>Genres</p>
         <div className="space-x-2">

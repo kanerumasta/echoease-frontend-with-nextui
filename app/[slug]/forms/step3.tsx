@@ -26,18 +26,18 @@ export const Step3 = () => {
         {rates?.map((r) => (
           <div
             key={r.name}
+            aria-pressed={selectedRateId === r.id.toString()}
             className={cn(
               "flex flex-col hover:cursor-pointer items-center bg-white p-8 rounded-xl",
               { "bg-blue-500": selectedRateId === r.id.toString() },
             )}
+            role="button"
+            tabIndex={0}
             onClick={() => {
               form.setValue("rate", r.id.toString());
               form.setValue("rateAmount", r.amount.toString());
               form.setValue("rateName", r.name);
             }}
-            role="button"
-            tabIndex={0}
-            aria-pressed={selectedRateId === r.id.toString()}
           >
             <p
               className={cn("capitalize text-black/70", {

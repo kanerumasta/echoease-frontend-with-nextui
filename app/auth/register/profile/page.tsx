@@ -13,6 +13,8 @@ import useSetupProfile from "@/hooks/auth/use-setup-profile";
 import PhoneIcon from "@/components/icons/phone";
 import { CalendarIcon } from "@/components/icons/calendar";
 import GenderPicker from "@/components/gender-picker";
+import useLoginRequired from "@/hooks/use-login-required";
+import EchoLoading from "@/components/echo-loading";
 
 export default function CompleteProfilePage() {
   const imageRef = useRef<HTMLInputElement | null>(null);
@@ -41,6 +43,8 @@ export default function CompleteProfilePage() {
     fetchBarangays,
     fetchProvinces,
   } = useFetchAddresses();
+
+  const { loginChecked, isError } = useLoginRequired(redirect);
 
   useEffect(() => {
     fetchProvinces();
@@ -86,6 +90,10 @@ export default function CompleteProfilePage() {
       }, 1000);
     }
   }, [isSuccess]);
+
+  if (!loginChecked) {
+    return <EchoLoading />;
+  }
 
   return (
     <Suspense>

@@ -1,12 +1,14 @@
 "use client";
 
 import { User } from "@nextui-org/user";
+import { useRouter } from "next/navigation";
 
 import { EmptyList } from "@/components/empty-list";
 import { useFetchMyConnectionsQuery } from "@/redux/features/artistApiSlice";
 
 export const ArtistConnectionList = () => {
   const { data: myConnections } = useFetchMyConnectionsQuery();
+  const router = useRouter();
 
   return (
     <div className="flex flex-col space-y-2 min-h-[400px] max-h-[400px] md:max-w-[400px] overflow-y-scroll scrollbar-hide ">
@@ -25,6 +27,7 @@ export const ArtistConnectionList = () => {
           }}
           description={"Echoee"}
           name={artist.user.fullname}
+          onClick={() => router.push(`/${artist.slug}`)}
         />
       ))}
     </div>

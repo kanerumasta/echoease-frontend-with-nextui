@@ -2,12 +2,15 @@ import { apiSlice } from "../services/apiSlice";
 
 const paymentApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
-    createInvoice:builder.mutation<{invoice_url:string},{booking_id:string, payment_type:string, redirect_url:string}>({
-        query:(data) => ({
-            url: "/payments/create-invoice",
-            method: "POST",
-            body:data
-        })
+    createInvoice: builder.mutation<
+      { invoice_url: string },
+      { booking_id: string; payment_type: string; redirect_url: string }
+    >({
+      query: (data) => ({
+        url: "/payments/create-invoice",
+        method: "POST",
+        body: data,
+      }),
     }),
     createDownPaymentIntent: builder.mutation<
       { payment_intent_id: string },
@@ -67,5 +70,5 @@ export const {
   useCreateFinalPaymentIntentMutation,
   useAttachFinalPaymentMutation,
   useFinalizeFinalPaymentMutation,
-  useCreateInvoiceMutation
+  useCreateInvoiceMutation,
 } = paymentApiSlice;

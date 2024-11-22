@@ -92,7 +92,7 @@ export default function Step1() {
         <div key={item.id} className="flex items-center gap-2">
           <Input
             {...form.register(`rates.${index}.name`)}
-            label="Name of this rate"
+            label="Echo Package"
             placeholder="E.g. 1 to 3 songs"
             radius="sm"
             size="lg"
@@ -100,7 +100,7 @@ export default function Step1() {
           />
 
           <Input
-            label="Rate amount"
+            label="Package amount"
             radius="sm"
             size="lg"
             type="number"

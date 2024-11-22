@@ -2,25 +2,25 @@
 
 import { Button } from "@nextui-org/button";
 import {
-    Dropdown,
-    DropdownItem,
-    DropdownMenu,
-    DropdownTrigger,
+  Dropdown,
+  DropdownItem,
+  DropdownMenu,
+  DropdownTrigger,
 } from "@nextui-org/dropdown";
 import {
-    Modal,
-    ModalBody,
-    ModalContent,
-    ModalHeader,
-    useDisclosure,
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalHeader,
+  useDisclosure,
 } from "@nextui-org/modal";
 import {
-    Table,
-    TableBody,
-    TableCell,
-    TableColumn,
-    TableHeader,
-    TableRow,
+  Table,
+  TableBody,
+  TableCell,
+  TableColumn,
+  TableHeader,
+  TableRow,
 } from "@nextui-org/table";
 import { User } from "@nextui-org/user";
 import { useRouter } from "next/navigation";
@@ -31,8 +31,8 @@ import CustomImage from "@/components/image";
 import { useFetchCurrentUserQuery } from "@/redux/features/authApiSlice";
 import { useFetchPendingPaymentsQuery } from "@/redux/features/bookingApiSlice";
 import {
-    useAttachFinalPaymentMutation,
-    useCreateFinalPaymentIntentMutation,
+  useAttachFinalPaymentMutation,
+  useCreateFinalPaymentIntentMutation,
 } from "@/redux/features/paymentApiSlice";
 
 export default function PendingPayments() {
@@ -85,8 +85,8 @@ export default function PendingPayments() {
           Pending Payments
         </h1>
         <Table
-        selectionMode="single"
           classNames={{ wrapper: "bg-trasparent" }}
+          selectionMode="single"
           onRowAction={(e) => router.push(`/bookings/${e}`)}
         >
           <TableHeader>

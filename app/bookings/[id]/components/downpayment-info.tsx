@@ -1,13 +1,7 @@
 import React from "react";
 import { z } from "zod";
 import { Button } from "@nextui-org/button";
-import {
-  Modal,
-  ModalBody,
-  ModalContent,
-  ModalHeader,
-  useDisclosure,
-} from "@nextui-org/modal";
+import { useDisclosure } from "@nextui-org/modal";
 
 import { BookInSchema } from "@/schemas/booking-schemas";
 import {
@@ -15,7 +9,6 @@ import {
   useCreateDownPaymentIntentMutation,
   useCreateInvoiceMutation,
 } from "@/redux/features/paymentApiSlice";
-import CustomImage from "@/components/image";
 import { useFetchCurrentUserQuery } from "@/redux/features/authApiSlice";
 
 interface DownpaymentInfoProps {
@@ -26,23 +19,25 @@ const DownpaymentInfo: React.FC<DownpaymentInfoProps> = ({ booking }) => {
   const { data: currentUser } = useFetchCurrentUserQuery();
   const [createDownPaymentIntent, { data }] =
     useCreateDownPaymentIntentMutation();
-    const [createInvoice,{data:invoiceData}] = useCreateInvoiceMutation()
+  const [createInvoice, { data: invoiceData }] = useCreateInvoiceMutation();
   const [attachDownPaymentIntent] = useAttachDownPaymentIntentMutation();
   const { onOpen, onOpenChange, onClose, isOpen } = useDisclosure();
 
   const handlePayNowClick = async () => {
     const payload = {
       booking_id: booking.id.toString(),
-      payment_type:'downpayment',
-      redirect_url:process.env.NEXT_PUBLIC_SITE ?  `${process.env.NEXT_PUBLIC_SITE}/bookings/${booking.id.toString()}` : `http://localhost:3000/bookings/${booking.id.toString()}`
+      payment_type: "downpayment",
+      redirect_url: process.env.NEXT_PUBLIC_SITE
+        ? `${process.env.NEXT_PUBLIC_SITE}/bookings/${booking.id.toString()}`
+        : `http://localhost:3000/bookings/${booking.id.toString()}`,
     };
 
     const invoice = await createInvoice(payload).unwrap();
-    if(typeof window !== "undefined")
-        window.location.href = invoice?.invoice_url
+
+    if (typeof window !== "undefined")
+      window.location.href = invoice?.invoice_url;
     // onOpen();
   };
-
 
   return (
     <div className="min-w-[400px] bg-white shadow-lg rounded-lg p-6">

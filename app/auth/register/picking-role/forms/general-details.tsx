@@ -2,12 +2,9 @@
 
 import { Spacer } from "@nextui-org/spacer";
 import { Dispatch, SetStateAction } from "react";
-import { useFormContext } from "react-hook-form";
-import { z } from "zod";
 
 import { AcceptedIdsPicker } from "@/components/accepted-id-picker";
 import { ImagePicker } from "@/components/image-picker";
-import { RolePickingSchema } from "@/schemas/user-schemas";
 
 type GeneralDocumentsProps = {
   governmentId: File | null;
@@ -23,7 +20,6 @@ export default function GeneralDocumentsForm({
   governmentIdType,
   setGovernmentIdType,
 }: GeneralDocumentsProps) {
-
   return (
     <div className=" mt-12">
       <AcceptedIdsPicker

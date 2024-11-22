@@ -2,37 +2,38 @@
 
 import { Button } from "@nextui-org/button";
 import {
-    Dropdown,
-    DropdownItem,
-    DropdownMenu,
-    DropdownTrigger,
+  Dropdown,
+  DropdownItem,
+  DropdownMenu,
+  DropdownTrigger,
 } from "@nextui-org/dropdown";
 import {
-    Modal,
-    ModalBody,
-    ModalContent,
-    ModalHeader,
-    useDisclosure,
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalHeader,
+  useDisclosure,
 } from "@nextui-org/modal";
 import {
-    Table,
-    TableBody,
-    TableCell,
-    TableColumn,
-    TableHeader,
-    TableRow,
+  Table,
+  TableBody,
+  TableCell,
+  TableColumn,
+  TableHeader,
+  TableRow,
 } from "@nextui-org/table";
 import { User } from "@nextui-org/user";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { HiDotsVertical } from "react-icons/hi";
 import { z } from "zod";
+
 import CustomImage from "@/components/image";
 import { useFetchCurrentUserQuery } from "@/redux/features/authApiSlice";
 import { useFetchAwaitingDownpaymentBookingsQuery } from "@/redux/features/bookingApiSlice";
 import {
-    useAttachDownPaymentIntentMutation,
-    useCreateDownPaymentIntentMutation,
+  useAttachDownPaymentIntentMutation,
+  useCreateDownPaymentIntentMutation,
 } from "@/redux/features/paymentApiSlice";
 import { BookInSchema } from "@/schemas/booking-schemas";
 
@@ -43,8 +44,7 @@ export const AwaitingDownpayments = () => {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [createDownPaymentIntent, { data }] =
     useCreateDownPaymentIntentMutation();
-  const [attachDownPaymentIntent] =
-    useAttachDownPaymentIntentMutation();
+  const [attachDownPaymentIntent] = useAttachDownPaymentIntentMutation();
 
   const [clickedBooking, setClickedBooking] = useState<z.infer<
     typeof BookInSchema
@@ -85,8 +85,8 @@ export const AwaitingDownpayments = () => {
           Awaiting Down payments
         </h1>
         <Table
-            selectionMode="single"
           classNames={{ wrapper: "bg-transparent" }}
+          selectionMode="single"
           onRowAction={(e) => router.push(`/bookings/${e}`)}
         >
           <TableHeader>

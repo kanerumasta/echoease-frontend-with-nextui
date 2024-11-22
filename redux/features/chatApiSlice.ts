@@ -1,6 +1,10 @@
 import { z } from "zod";
 
-import { ChatDetailSchema, ChatSchema } from "@/schemas/chat-schemas";
+import {
+  ChatDetailSchema,
+  ChatSchema,
+  MessageSchema,
+} from "@/schemas/chat-schemas";
 
 import { apiSlice } from "../services/apiSlice";
 
@@ -64,6 +68,19 @@ const chatApiSlice = apiSlice.injectEndpoints({
       }),
       invalidatesTags: ["BlockedChats"],
     }),
+    chatAdmin: builder.mutation<
+      z.infer<typeof MessageSchema>,
+      { content: string }
+    >({
+      query: (data) => ({
+        url: `/chat/admin-chat/`,
+        method: "POST",
+        body: data,
+      }),
+    }),
+    fetchAdminChats: builder.query<z.infer<typeof ChatDetailSchema>, void>({
+      query: () => `/chat/admin-chat/`,
+    }),
   }),
 });
 
@@ -78,4 +95,6 @@ export const {
   useFetchBlockedChatsQuery,
   useUnblockChatMutation,
   useBlockAChatMutation,
+  useChatAdminMutation,
+  useFetchAdminChatsQuery,
 } = chatApiSlice;

@@ -33,7 +33,7 @@ export default function ProfileDetailPage() {
   const { onOpen, isOpen, onOpenChange } = useDisclosure();
   const { data: user } = useFetchUserDetailByIdQuery(params.id);
 
-  console.log(user)
+  console.log(user);
 
   return (
     <>
@@ -62,9 +62,7 @@ export default function ProfileDetailPage() {
             <ChangeProfileImage currentUser={currentUser} />
           ) : (
             <div className="absolute bottom-[-30%]">
-              <ProfileImage
-                imageSrc={`${user?.profile?.profile_image}`}
-              />
+              <ProfileImage imageSrc={`${user?.profile?.profile_image}`} />
             </div>
           )}
         </div>

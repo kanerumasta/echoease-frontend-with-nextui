@@ -12,11 +12,11 @@ export default function UpcomingEventsPage() {
 
   return (
     <div className="w-full h-full flex flex-wrap gap-3">
-        {approvedBookings && approvedBookings?.length <= 0 &&
-            <div className="bg-white/5 w-full h-full flex items-center justify-center">
-                <p className="text-xl text-white/50">No upcoming events</p>
-            </div>
-        }
+      {approvedBookings && approvedBookings?.length <= 0 && (
+        <div className="bg-white/5 w-full h-full flex items-center justify-center">
+          <p className="text-xl text-white/50">No upcoming events</p>
+        </div>
+      )}
       {approvedBookings?.map((booking) => <EventCard booking={booking} />)}
     </div>
   );

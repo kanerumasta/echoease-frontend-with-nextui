@@ -18,19 +18,24 @@ import Link from "next/link";
 
 import { ArtistApplicationSchema } from "@/schemas/artist-schemas";
 import { useCreateArtistApplicationMutation } from "@/redux/features/artistApiSlice";
+import { useFetchCurrentUserQuery } from "@/redux/features/authApiSlice";
 
 import Step4 from "./step4";
 import Stepper from "./stepper";
 import Step3 from "./step3";
 import Step2 from "./step2";
 import Step1 from "./step1";
+import { Step5 } from "./step5";
 
 export default function MainForm() {
   const [uploadProgress, setUploadProgress] = useState(0);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [portfolioItemId, setPortfolioItemId] = useState(null);
   const form = useForm<z.infer<typeof ArtistApplicationSchema>>({
     resolver: zodResolver(ArtistApplicationSchema),
   });
+
+  const { data: currentUser } = useFetchCurrentUserQuery();
 
   const [createArtistApplication, { isLoading: isApplicationSubmitting }] =
     useCreateArtistApplicationMutation();
@@ -49,7 +54,7 @@ export default function MainForm() {
     {
       name: "step5",
       id: 4,
-      fields: ["account_holder_name", "acount_number"],
+      fields: ["account_holder_name", "acount_number", "channel_code"],
     },
   ];
 
@@ -60,6 +65,23 @@ export default function MainForm() {
   }
   const onSubmit = async (data: z.infer<typeof ArtistApplicationSchema>) => {
     const formData = new FormData();
+
+    if (!data.account_holder_name) {
+      console.log("no account_holder_name");
+      toast.error("Please provide an account holder name.");
+
+      return;
+    }
+    if (!data.account_number) {
+      console.log("no ac");
+      toast.error("Please provide an account number.");
+
+      return;
+    }
+    formData.append("account_holder_name", data.account_holder_name);
+    formData.append("account_number", data.account_number);
+    formData.append("channel_code", data.channel_code);
+    currentUser && formData.append("user", currentUser.id.toString());
 
     formData.append("bio", data.bio);
 
@@ -88,11 +110,11 @@ export default function MainForm() {
       if (data[field]) formData.append(field, data[field] as string);
     });
 
-    const artistApplication = await createArtistApplication(formData).unwrap();
+    const artist = await createArtistApplication(formData).unwrap();
 
     const ratePromises = data.rates.map((r) => {
       const payload = {
-        artist_application: artistApplication.id,
+        artist: artist.id,
         name: r.name,
         amount: r.amount,
       };
@@ -111,24 +133,59 @@ export default function MainForm() {
     const videoEntries = Array.from(data.sampleVideos.entries());
 
     setUploadProgress(1);
-    for (const [index, vid] of videoEntries) {
-      const videoFormData = new FormData();
 
-      videoFormData.append(`sample_video${index + 1}`, vid);
+    try {
+      // POST request to create/update the portfolio item
+      const portfolioResponse = await fetch(
+        `${process.env.NEXT_PUBLIC_HOST}/api/artists/portfolio-item-sample`,
+        {
+          method: "POST", // Changed to POST if you're creating a new portfolio item
+          credentials: "include",
+        },
+      );
 
-      try {
-        await fetch(
-          `${process.env.NEXT_PUBLIC_HOST}/api/artists/applications/${artistApplication.id}`,
-          {
-            method: "PATCH",
-            body: videoFormData,
-            credentials: "include",
-          },
+      if (!portfolioResponse.ok) {
+        throw new Error(
+          `Portfolio request failed with status: ${portfolioResponse.status}`,
         );
-        setUploadProgress((prev) => prev + 100 / data.sampleVideos.length);
-      } catch (error) {
-        console.log("Error occurred while uploading video", error);
       }
+
+      const portfolioItem = await portfolioResponse.json();
+
+      // Iterate over the videos and upload each media file
+      for (const [index, vid] of videoEntries) {
+        const videoFormData = new FormData();
+
+        videoFormData.append("portfolio_item", portfolioItem.id); // Assuming response contains `id`
+        videoFormData.append("media_type", "video");
+        videoFormData.append("file", vid);
+
+        try {
+          const mediaResponse = await fetch(
+            `${process.env.NEXT_PUBLIC_HOST}/api/artists/portfolio-item-media`,
+            {
+              method: "POST",
+              body: videoFormData,
+              credentials: "include",
+            },
+          );
+
+          if (!mediaResponse.ok) {
+            throw new Error(
+              `Media upload failed for video index ${index} with status: ${mediaResponse.status}`,
+            );
+          }
+
+          setUploadProgress((prev) => prev + 100 / data.sampleVideos.length);
+        } catch (error) {
+          console.error(
+            `Error occurred while uploading video at index ${index}`,
+            error,
+          );
+        }
+      }
+    } catch (error) {
+      console.error("Error occurred while creating portfolio item:", error);
     }
 
     // Check upload progress and set success state
@@ -153,6 +210,7 @@ export default function MainForm() {
           {currentStep === 1 && <Step2 />}
           {currentStep === 2 && <Step3 />}
           {currentStep === 3 && <Step4 />}
+          {currentStep === 4 && <Step5 />}
         </form>
 
         {/* step controller */}
@@ -250,9 +308,9 @@ const SuccessModal = ({ isOpen }: { isOpen: boolean }) => {
           <ModalFooter className="flex justify-center">
             <Link
               className="text-xl text-blue-500 p-4 transition-all duration-300 rounded-lg hover:bg-black/5"
-              href={"/"}
+              href={"/echoverse/schedule"}
             >
-              Back to Home
+              Go to Echoverse
             </Link>
           </ModalFooter>
         </ModalContent>

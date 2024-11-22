@@ -13,13 +13,12 @@ export const UserRoles = {
 //     ('expired','Expired'),
 //     ]
 
-
 export const statusChoices = [
-    { value: 'pending', label: 'Pending' },
-    { value: 'cancelled', label: 'Cancelled' },
-    { value: 'awaiting_downpayment', label: 'Waiting for Downpayment' },
-    { value: 'rejected', label: 'Rejected' },
-    { value: 'approved', label: 'Approved' },
-    { value: 'completed', label: 'Completed' },
-    { value: 'expired', label: 'Expired' }
-  ];
+  { value: "pending", label: "Pending" },
+  { value: "cancelled", label: "Cancelled" },
+  { value: "awaiting_downpayment", label: "Waiting for Downpayment" },
+  { value: "rejected", label: "Rejected" },
+  { value: "approved", label: "Approved" },
+  { value: "completed", label: "Completed" },
+  { value: "expired", label: "Expired" },
+];

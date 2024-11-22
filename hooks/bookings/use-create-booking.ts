@@ -31,7 +31,7 @@ export default function useCreateBooking(
       street: data.street,
       landmark: data.landmark,
       rate: data.rate,
-      venue:data.venue
+      venue: data.venue,
     };
 
     createNewBooking(payload).unwrap();

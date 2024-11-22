@@ -30,7 +30,12 @@ export const ProfileSchema = z.object({
   municipality: z.string({ required_error: "This field is required" }),
   brgy: z.string({ required_error: "This field is required" }),
   street: z.string({ required_error: "This field is required" }),
-  zipcode: z.string({ required_error: "This field is required" }),
+  zipcode: z
+    .string({
+      required_error: "This field is required",
+    })
+    .regex(/^\d{4}$/, "Zipcode must be a valid 4-digit number"),
+
   profile_image: z.string(),
   nationality: z.string().nullable().optional(),
   language: z.string().nullable().optional(),

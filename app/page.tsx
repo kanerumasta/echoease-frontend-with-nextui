@@ -2,43 +2,40 @@
 
 import { Link } from "@nextui-org/link";
 import { button as buttonStyles } from "@nextui-org/theme";
-import { useSpring } from "@react-spring/web";
 import { FaHeadset, FaRocketchat } from "react-icons/fa";
 import { RiSecurePaymentFill } from "react-icons/ri";
 import { TbCurrencyPeso } from "react-icons/tb";
-
-import { AnimatedComponent } from "@/components/animated-container";
-import { GithubIcon } from "@/components/icons";
-import MainLayout from "@/components/main-layout";
-import { subtitle, title } from "@/components/primitives";
-import { siteConfig } from "@/config/site";
-import { tv } from "tailwind-variants";
-import { useFetchCurrentUserQuery } from "@/redux/features/authApiSlice";
 import { useRouter } from "next/navigation";
 
+import { AnimatedComponent } from "@/components/animated-container";
+import MainLayout from "@/components/main-layout";
+import { useFetchCurrentUserQuery } from "@/redux/features/authApiSlice";
+
 export default function Home() {
-    const router=useRouter()
+  const router = useRouter();
 
+  const { data: currentUser } = useFetchCurrentUserQuery();
 
-  const {data:currentUser} = useFetchCurrentUserQuery()
-
-  if(currentUser && currentUser.is_deactivated){
-    router.replace('/account-deactivated')
+  if (currentUser && currentUser.is_deactivated) {
+    router.replace("/account-deactivated");
   }
 
   return (
     <MainLayout>
       <AnimatedComponent className="flex bg-cover bg-center min-h-[80vh] mb-20 flex-col items-center justify-center gap-4 py-8 md:py-10">
         <div className="inline-block  max-w-2xl text-center justify-center">
-            <div className="text-6xl font-bold">
+          <div className="text-6xl font-bold">
+            <span>
+              Find Your <span>Perfect</span> Singer With{" "}
+              <span className="font-bold animate-text bg-gradient-to-r from-purple-500 to-blue-500 bg-clip-text text-transparent">
+                Echoease
+              </span>
+              &nbsp;
+            </span>
 
-          <span>Find Your <span >Perfect</span> Singer With <span className="font-bold animate-text bg-gradient-to-r from-purple-500 to-blue-500 bg-clip-text text-transparent">Echoease</span>&nbsp;</span>
-
-          <br />
+            <br />
           </div>
-          <h2 className="text-2xl mt-4">
-            Where Music Meets Opportunity.
-          </h2>
+          <h2 className="text-2xl mt-4">Where Music Meets Opportunity.</h2>
         </div>
 
         <div className="flex gap-3">
@@ -47,29 +44,21 @@ export default function Home() {
               color: "primary",
               radius: "full",
               variant: "shadow",
+              size: "lg",
             })}
             href={"/echoees"}
           >
             Discover
           </Link>
-          <Link
-            isExternal
-            className={buttonStyles({ variant: "bordered", radius: "full" })}
-            href={siteConfig.links.github}
-          >
-            <GithubIcon size={20} />
-            GitHub
-          </Link>
         </div>
       </AnimatedComponent>
       <AnimatedComponent className="flex mb-40">
         <div className="relative overflow-hidden p-8 rounded-xl ">
-        <div className="absolute blur-[120px] bottom-0 right-2 w-[300px] h-[300px] rotate-45 bg-blue-500"/>
-        <div className="absolute blur-[120px] top-[-5%] left-[-5%] w-[300px] h-[300px] rotate-45 bg-purple-500/20"/>
-            <div className="invisible overflow-hidden  lg:visible absolute bottom-0 right-[-10%]">
-                <img src="/media/hero.png" width={700} />
-
-            </div>
+          <div className="absolute blur-[120px] bottom-0 right-2 w-[300px] h-[300px] rotate-45 bg-blue-500" />
+          <div className="absolute blur-[120px] top-[-5%] left-[-5%] w-[300px] h-[300px] rotate-45 bg-purple-500/20" />
+          <div className="invisible overflow-hidden  lg:visible absolute bottom-0 right-[-10%]">
+            <img src="/media/hero.png" width={700} />
+          </div>
 
           <div className="  lg:w-3/4">
             <div className="">

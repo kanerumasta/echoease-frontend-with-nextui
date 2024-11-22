@@ -15,16 +15,16 @@
 import { z } from "zod";
 
 export const PaymentSchema = z.object({
-    id: z.number(),
-    title: z.string().optional(),
-    payment_reference: z.string().optional(),
-    payment_status: z.string(),
-    booking: z.number(),
-    amount: z.number(),
-    net_amount: z.number(),
-    payment_date: z.date(),
-    payment_method: z.string().optional(),
-    payer_channel: z.string().optional(),
-    payer_email: z.string().optional(),
-    is_refunded: z.boolean(),
-})
+  id: z.number(),
+  title: z.string().optional(),
+  payment_reference: z.string().optional(),
+  payment_status: z.string(),
+  booking: z.number(),
+  amount: z.number(),
+  net_amount: z.number(),
+  payment_date: z.date(),
+  payment_method: z.string().optional(),
+  payer_channel: z.string().optional(),
+  payer_email: z.string().optional(),
+  is_refunded: z.boolean(),
+});

@@ -2,12 +2,14 @@ import { useEffect } from "react";
 
 export const useBookingNotificationWebSocket = (artistId: number) => {
   useEffect(() => {
-
     const url = process.env.NEXT_PUBLIC_NOTIFICATION_WEBSOCKET;
-    console.log('CONNECTING TO SOCKET NOTIF NOW:',url)
+
+    console.log("CONNECTING TO SOCKET NOTIF NOW:", url);
     if (!url) {
-        console.log('SOCKET URL NOT FOUND!')
-        return};
+      console.log("SOCKET URL NOT FOUND!");
+
+      return;
+    }
     const webSocket = new WebSocket(url);
 
     webSocket.onopen = () => {

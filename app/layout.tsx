@@ -31,8 +31,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html className="overflow-x-hidden" suppressHydrationWarning lang="en">
-    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+    <html suppressHydrationWarning className="overflow-x-hidden" lang="en">
+      <meta
+        content="width=device-width, initial-scale=1, user-scalable=no"
+        name="viewport"
+      />
       <head />
       <body
         className={clsx(

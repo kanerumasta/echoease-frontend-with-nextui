@@ -1,11 +1,11 @@
-import { IoStar, IoStarHalf, IoStarOutline } from "react-icons/io5";
+import { IoStar, IoStarHalf } from "react-icons/io5";
 
 interface RatingsProps {
   rating: number;
-  size:number
+  size: number;
 }
 
-export const Ratings = ({ rating,size }: RatingsProps) => {
+export const Ratings = ({ rating, size }: RatingsProps) => {
   // Get the whole number of full stars
   const fullStars = Math.floor(rating);
 

@@ -25,6 +25,7 @@ import { skipToken } from "@reduxjs/toolkit/query";
 import { toast } from "react-toastify";
 import { IoAdd, IoClose, IoSave } from "react-icons/io5";
 import { Spacer } from "@nextui-org/spacer";
+import { Spinner } from "@nextui-org/spinner";
 
 import { formatTimeStringTo12Hour } from "@/utils/format-time";
 import { AvailabilitySchema } from "@/schemas/schedule-schemas";
@@ -43,7 +44,6 @@ import {
 import { useFetchDetailCurrentArtistQuery } from "@/redux/features/artistApiSlice";
 
 import ArtistCalendar from "./sections/calendar";
-import { Spinner } from "@nextui-org/spinner";
 
 export default function SchedulePage() {
   const { data: currentArtist, isLoading: isArtistLoading } =
@@ -52,11 +52,8 @@ export default function SchedulePage() {
   const { data: scheduledDays } = useFetchArtistScheduleDaysQuery(
     currentArtist?.id ?? skipToken,
   ); //fetch all days of availability
-  const { data: combinedAvailability = [], isLoading } = useFetchCombinedAvailabilityQuery(
-    currentArtist?.id ?? skipToken,
-  ); //fetch all days of availability
-
-
+  const { data: combinedAvailability = [], isLoading } =
+    useFetchCombinedAvailabilityQuery(currentArtist?.id ?? skipToken); //fetch all days of availability
 
   return (
     <div className="w-full">
@@ -86,7 +83,14 @@ export default function SchedulePage() {
                 <TableColumn>End Time</TableColumn>
                 <TableColumn> </TableColumn>
               </TableHeader>
-              <TableBody loadingState={isLoading ? 'loading' : 'idle'} loadingContent={<Spinner label="Loading..."/>} emptyContent={'To be hired by echoers, you need to setup your schedule.'} items={combinedAvailability}>
+              <TableBody
+                emptyContent={
+                  "To be hired by echoers, you need to setup your schedule."
+                }
+                items={combinedAvailability}
+                loadingContent={<Spinner label="Loading..." />}
+                loadingState={isLoading ? "loading" : "idle"}
+              >
                 {(item) => (
                   <TableRow key={item.day_of_week}>
                     <TableCell>{item.day_of_week}</TableCell>

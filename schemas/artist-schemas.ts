@@ -62,8 +62,12 @@ export const ArtistApplicationSchema = z.object({
   fb_link: z.string().nullable().optional(),
   bio: z.string(),
   stage_name: z.string().nullable().optional(),
-//   account_holder_name:z.string(),
-//   account_number:z.string(),
+  channel_code: z.string(),
+  account_holder_name: z.string(),
+  account_number: z
+    .string()
+    .length(11, { message: "Phone number must be 11 digits long" })
+    .regex(/^09\d{9}$/, { message: "Phone number format is invalid." }),
   rates: z
     .array(
       z.object({
@@ -172,7 +176,6 @@ export const RecommendedArtistsConnectionsSchema = z.object({
   mutual: z.array(ArtistInSchema),
 });
 
-
 // "links": {
 //     "next": "http://localhost:8000/api/artists/?page=2",
 //     "previous": null
@@ -185,14 +188,14 @@ export const RecommendedArtistsConnectionsSchema = z.object({
 //   "results":
 
 export const PaginatedArtistInSchema = z.object({
-    links: z.object({
-        next: z.string().nullable(),
-        previous: z.string().nullable(),
-    }),
-    total_pages: z.number(),
-    current_page: z.number(),
-    has_next: z.boolean(),
-    has_previous: z.boolean(),
-    count: z.number(),
-    results: z.array(ArtistInSchema)
-})
+  links: z.object({
+    next: z.string().nullable(),
+    previous: z.string().nullable(),
+  }),
+  total_pages: z.number(),
+  current_page: z.number(),
+  has_next: z.boolean(),
+  has_previous: z.boolean(),
+  count: z.number(),
+  results: z.array(ArtistInSchema),
+});

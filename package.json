@@ -3,7 +3,7 @@
     "version": "0.0.1",
     "private": true,
     "scripts": {
-        "dev": "next dev -H 192.168.1.242 -p 3000 --turbo",
+        "dev": "next dev -H 192.168.1.242 -p 3000",
         "build": "next build",
         "start": "next start -H 192.168.1.242 -p 3000",
         "lint": "eslint . --ext .ts,.tsx -c .eslintrc.json --fix"
@@ -98,6 +98,7 @@
         "eslint-plugin-react-hooks": "^4.6.0",
         "eslint-plugin-unused-imports": "^3.2.0",
         "postcss": "8.4.38",
+        "prettier": "^3.3.3",
         "tailwind-variants": "0.1.20",
         "tailwindcss": "3.4.3",
         "typescript": "5.0.4"

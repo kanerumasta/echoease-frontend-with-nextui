@@ -37,8 +37,7 @@ export const Stepper: React.FC<StepperProps> = ({
         ))}
       </div>
 
-        <Progress value={progressPercentage} />
-
+      <Progress value={progressPercentage} />
     </div>
   );
 };

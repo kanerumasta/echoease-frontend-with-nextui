@@ -9,10 +9,7 @@ const AccountApiSlice = apiSlice.injectEndpoints({
     fetchMyProfile: builder.query<z.infer<typeof ProfileSchema>, void>({
       query: () => "/profile/",
     }),
-    fetchProfileById: builder.query<
-      z.infer<typeof ProfileSchema>,
-     number
-    >({
+    fetchProfileById: builder.query<z.infer<typeof ProfileSchema>, number>({
       query: (userId) => `/profile/${userId}`,
     }),
     fetchUserDetailById: builder.query<z.infer<typeof UserSchema>, string>({

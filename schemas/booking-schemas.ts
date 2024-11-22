@@ -81,11 +81,10 @@ export const BookInSchema = z.object({
   is_event_due: z.boolean(),
   rate: RateSchema,
   location: z.string(),
-  disputes : z.array(DisputeSchema),
-  latitude:z.number().nullable(),
-  longitude:z.number().nullable(),
-  venue:z.string()
-
+  disputes: z.array(DisputeSchema),
+  latitude: z.number().nullable(),
+  longitude: z.number().nullable(),
+  venue: z.string(),
 });
 
 export const PaginatedBookInSchema = z.object({

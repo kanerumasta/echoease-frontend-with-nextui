@@ -8,10 +8,10 @@ import {
   useDisclosure,
 } from "@nextui-org/modal";
 import { z } from "zod";
+import { useRouter } from "next/navigation";
 
 import CustomImage from "@/components/image";
 import { BookInSchema } from "@/schemas/booking-schemas";
-import { useRouter } from "next/navigation";
 
 type Props = {
   booking: z.infer<typeof BookInSchema>;
@@ -27,11 +27,12 @@ export const BookingCard = ({
   modalHeader,
 }: Props) => {
   const { onOpen, onClose, onOpenChange, isOpen } = useDisclosure();
-const router = useRouter()
+  const router = useRouter();
+
   return (
     <div
       className=" rounded-lg p-2 flex gap-2 hover:bg-white/5 hover:z-30 transition-all duration-100 ease-in-out hover:cursor-pointer"
-      onClick={()=>router.push(`/bookings/${booking.id}`)}
+      onClick={() => router.push(`/bookings/${booking.id}`)}
     >
       <div className="min-w-[160px] rounded-lg ">
         <CustomImage

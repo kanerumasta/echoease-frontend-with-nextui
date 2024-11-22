@@ -23,15 +23,21 @@ export const ConnectionRequests = () => {
         <h1 className="mb-3 text-md text-white/50">Connection Requests</h1>
         {isLoading && <Spinner />}
         {requests && requests.length <= 0 && (
-            <div className="h-[200px] flex items-center justify-center">
-                <EmptyList message="Empty Requests." />
+          <div className="h-[200px] flex items-center justify-center">
+            <EmptyList message="Empty Requests." />
           </div>
         )}
-        {requests &&
-        <div className={cn("flex  w-full gap-2 overflow-x-scroll",{"scrollbar-hide":requests.length < 2})}>
-        {requests.map((req) => <Card key={req.id} request={req} />)}
-        </div>
-}
+        {requests && (
+          <div
+            className={cn("flex  w-full gap-2 overflow-x-scroll", {
+              "scrollbar-hide": requests.length < 2,
+            })}
+          >
+            {requests.map((req) => (
+              <Card key={req.id} request={req} />
+            ))}
+          </div>
+        )}
       </div>
     </>
   );

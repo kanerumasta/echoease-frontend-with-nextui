@@ -1,5 +1,5 @@
 "use client";
-import { Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, useDisclosure } from "@nextui-org/modal";
+import { useDisclosure } from "@nextui-org/modal";
 import { BsGenderFemale, BsGenderMale } from "react-icons/bs";
 import { FaPhone } from "react-icons/fa";
 import { ImLocation } from "react-icons/im";
@@ -7,13 +7,14 @@ import { IoPerson } from "react-icons/io5";
 import { LiaBirthdayCakeSolid } from "react-icons/lia";
 import { MdEmail } from "react-icons/md";
 import { z } from "zod";
-import { Button } from "@nextui-org/button";
 import { Spacer } from "@nextui-org/spacer";
 
 import { cn } from "@/lib/utils";
 import { UserSchema } from "@/schemas/user-schemas";
-import { useDeactivateUserMutation, useFetchCurrentUserQuery } from "@/redux/features/authApiSlice";
+import { useFetchCurrentUserQuery } from "@/redux/features/authApiSlice";
 import { EditIcon } from "@/components/icons/edit";
+import useCompleteProfile from "@/hooks/use-complete-profile";
+import EchoLoading from "@/components/echo-loading";
 
 import ChangeProfileImage from "./forms/change-profile-image";
 import { ChangeName } from "./forms/change-name";
@@ -27,8 +28,11 @@ import { Deactivate } from "./forms/deactivate";
 export default function ProfilePage() {
   const { data: currentUser, isLoading } = useFetchCurrentUserQuery();
   const { onOpen, isOpen, onOpenChange } = useDisclosure();
+  const { profileChecked } = useCompleteProfile("/profile");
 
-
+  if (!profileChecked) {
+    return <EchoLoading />;
+  }
 
   return (
     <>
@@ -38,7 +42,7 @@ export default function ProfilePage() {
             PROFILE
           </h1>
           <div className=" absolute bottom-2 right-2 gap-2 flex items-center">
-           <Deactivate />
+            <Deactivate />
             <ChangePassword />
           </div>
 
@@ -49,7 +53,6 @@ export default function ProfilePage() {
           {currentUser && <PersonalInfo user={currentUser} />}
         </div>
       </div>
-
     </>
   );
 }

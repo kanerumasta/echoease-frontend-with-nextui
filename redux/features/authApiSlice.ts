@@ -108,21 +108,20 @@ const authApiSlice = apiSlice.injectEndpoints({
         },
       }),
     }),
-    activateUser:builder.mutation<any, void>({
-        query: () => ({
-          url: "/activate/",
-          method: "POST",
-
-        }),
-        invalidatesTags:['CurrentUser']
+    activateUser: builder.mutation<any, void>({
+      query: () => ({
+        url: "/activate/",
+        method: "POST",
       }),
-      deactivateUser:builder.mutation<any, void>({
-        query: () => ({
-          url: "/deactivate/",
-          method: "POST",
-        }),
-        invalidatesTags:['CurrentUser']
+      invalidatesTags: ["CurrentUser"],
+    }),
+    deactivateUser: builder.mutation<any, void>({
+      query: () => ({
+        url: "/deactivate/",
+        method: "POST",
       }),
+      invalidatesTags: ["CurrentUser"],
+    }),
   }),
 });
 
@@ -138,5 +137,5 @@ export const {
   useResetPasswordMutation,
   useResendActivationMutation,
   useDeactivateUserMutation,
-  useActivateUserMutation
+  useActivateUserMutation,
 } = authApiSlice;

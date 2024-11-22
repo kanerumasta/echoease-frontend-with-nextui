@@ -1,8 +1,6 @@
 "use client";
 
 import { Button } from "@nextui-org/button";
-import { Input } from "@nextui-org/input";
-import { Kbd } from "@nextui-org/kbd";
 import { Link } from "@nextui-org/link";
 import {
   NavbarBrand,
@@ -10,7 +8,6 @@ import {
   NavbarItem,
   NavbarMenu,
   NavbarMenuItem,
-  NavbarMenuToggle,
   Navbar as NextUINavbar,
 } from "@nextui-org/navbar";
 import NextLink from "next/link";
@@ -34,25 +31,19 @@ import { User } from "@nextui-org/user";
 import { usePathname, useRouter } from "next/navigation";
 import { Fragment, useCallback } from "react";
 import { IoNotifications } from "react-icons/io5";
+import { HiDotsVertical } from "react-icons/hi";
+import { MdSupportAgent } from "react-icons/md";
+import { FaGavel } from "react-icons/fa";
 
 import { useIsCurrentUserAnArtist } from "@/utils/check-is-artist";
 import { useFetchNewNotificationsQuery } from "@/redux/features/notificationApiSlice";
 import { useFetchCurrentUserQuery } from "@/redux/features/authApiSlice";
 import { useLogout } from "@/hooks/auth";
 import { siteConfig } from "@/config/site";
-import {
-  DiscordIcon,
-  GithubIcon,
-  Logo,
-  SearchIcon,
-  TwitterIcon,
-} from "@/components/icons";
+import { Logo } from "@/components/icons";
 import { cn } from "@/lib/utils";
 import { useFetchPendingBookingsQuery } from "@/redux/features/bookingApiSlice";
 import { useFetchUnreadMessagesCountQuery } from "@/redux/features/chatApiSlice";
-import { HiDotsVertical } from "react-icons/hi";
-import { MdSupportAgent } from "react-icons/md";
-import { FaGavel } from "react-icons/fa";
 
 export const Navbar = () => {
   const { data: user, isLoading, isError } = useFetchCurrentUserQuery();
@@ -71,28 +62,6 @@ export const Navbar = () => {
 
   const { isArtist, isLoading: checkUserAnArtistLoading } =
     useIsCurrentUserAnArtist();
-
-  const searchInput = (
-    <Input
-      aria-label="Search"
-      classNames={{
-        inputWrapper: "bg-default-100",
-        input: "text-sm",
-      }}
-      endContent={
-        <Kbd className="hidden lg:inline-block" keys={["command"]}>
-          K
-        </Kbd>
-      }
-      labelPlacement="outside"
-      placeholder="Search..."
-      radius="full"
-      startContent={
-        <SearchIcon className="text-base text-default-400 pointer-events-none flex-shrink-0" />
-      }
-      type="search"
-    />
-  );
 
   return (
     <NextUINavbar
@@ -135,49 +104,52 @@ export const Navbar = () => {
           )}
           {user && (
             <>
-            <NavbarItem>
-              <Badge
-                color="danger"
-                content={unreadMessages?.unread_messages_count ?? 0}
-                isInvisible={
-                  !unreadMessages || unreadMessages?.unread_messages_count <= 0
-                }
-              >
-                <Link
-                  className={cn("text-white/50 p-2 rounded-md", {
-                    "bg-blue-500 text-white": isActiveTab("/messages"),
-                  })}
-                  href={"/messages"}
+              <NavbarItem>
+                <Badge
+                  color="danger"
+                  content={unreadMessages?.unread_messages_count ?? 0}
+                  isInvisible={
+                    !unreadMessages ||
+                    unreadMessages?.unread_messages_count <= 0
+                  }
                 >
-                  Messages
-                </Link>
-              </Badge>
-            </NavbarItem>
+                  <Link
+                    className={cn("text-white/50 p-2 rounded-md", {
+                      "bg-blue-500 text-white": isActiveTab("/messages"),
+                    })}
+                    href={"/messages"}
+                  >
+                    Messages
+                  </Link>
+                </Badge>
+              </NavbarItem>
 
-
-
-          <NavbarItem>
-            {!isArtist && (
-              <Link
-                className={cn(
-                  "text-white/50 p-2 rounded-md",
-                  isActiveTab("/bookings") && "bg-blue-500 text-white",
+              <NavbarItem>
+                {!isArtist && (
+                  <Link
+                    className={cn(
+                      "text-white/50 p-2 rounded-md",
+                      isActiveTab("/bookings") && "bg-blue-500 text-white",
+                    )}
+                    href={"/bookings"}
+                  >
+                    Bookings
+                  </Link>
                 )}
-                href={"/bookings"}
-              >
-                Bookings
-              </Link>
-            )}
-          </NavbarItem>
-          <NavbarItem>
-            <Link className={cn(
-                  "text-white/50 p-2 rounded-md",
-                  isActiveTab("/transactions") && "bg-blue-500 text-white",
-                )} href="/transactions">Transactions</Link>
-          </NavbarItem>
-          </>
+              </NavbarItem>
+              <NavbarItem>
+                <Link
+                  className={cn(
+                    "text-white/50 p-2 rounded-md",
+                    isActiveTab("/transactions") && "bg-blue-500 text-white",
+                  )}
+                  href="/transactions"
+                >
+                  Transactions
+                </Link>
+              </NavbarItem>
+            </>
           )}
-
         </ul>
       </NavbarContent>
 
@@ -185,26 +157,21 @@ export const Navbar = () => {
         className="hidden sm:flex basis-1/5 sm:basis-full"
         justify="end"
       >
-        {!(user?.role === "artist") && !user?.is_roled && (
+        {!(user?.role === "artist") && !user?.is_roled && user && (
           <NavbarItem>
             <Link className="text-white" href={"/become-an-echoee"}>
-              Become an echoee
+              Be an Echoee
+            </Link>
+          </NavbarItem>
+        )}
+        {!(user?.role === "artist") && !user?.is_roled && user && (
+          <NavbarItem>
+            <Link className="text-white" href={`/auth/register/picking-role`}>
+              Be an Echoer
             </Link>
           </NavbarItem>
         )}
 
-        <NavbarItem className="hidden sm:flex gap-2">
-          <Link isExternal aria-label="Twitter" href={siteConfig.links.twitter}>
-            <TwitterIcon className="text-default-500" />
-          </Link>
-          <Link isExternal aria-label="Discord" href={siteConfig.links.discord}>
-            <DiscordIcon className="text-default-500" />
-          </Link>
-          <Link isExternal aria-label="Github" href={siteConfig.links.github}>
-            <GithubIcon className="text-default-500" />
-          </Link>
-          {/* <ThemeSwitch /> */}
-        </NavbarItem>
         {/* <NavbarItem className="hidden lg:flex">{searchInput}</NavbarItem> */}
 
         {!user && (
@@ -301,29 +268,30 @@ export const Navbar = () => {
             </Dropdown>
           )}
         </NavbarItem>
-        {user &&
-        <NavbarItem>
+        {user && (
+          <NavbarItem>
             <Dropdown>
-                <DropdownTrigger>
-                    <Button isIconOnly variant="light"><HiDotsVertical /></Button>
-                </DropdownTrigger>
-                <DropdownMenu classNames={{base:""}}>
-                    <DropdownItem classNames={{wrapper:'bg-red-400'}} key={"terms"} onClick={()=>{}} startContent={<FaGavel />}>Terms and Conditions</DropdownItem>
-                    <DropdownItem key={"help"} startContent={<MdSupportAgent />}><Link href="/support">Help and Chat Support</Link></DropdownItem>
-                </DropdownMenu>
+              <DropdownTrigger>
+                <Button isIconOnly variant="light">
+                  <HiDotsVertical />
+                </Button>
+              </DropdownTrigger>
+              <DropdownMenu classNames={{ base: "" }}>
+                <DropdownItem
+                  key={"terms"}
+                  classNames={{ wrapper: "bg-red-400" }}
+                  startContent={<FaGavel />}
+                  onClick={() => {}}
+                >
+                  Terms and Conditions
+                </DropdownItem>
+                <DropdownItem key={"help"} startContent={<MdSupportAgent />}>
+                  <Link href="/support">Help and Chat Support</Link>
+                </DropdownItem>
+              </DropdownMenu>
             </Dropdown>
-        </NavbarItem>
-    }
-      </NavbarContent>
-
-
-
-      <NavbarContent className="sm:hidden basis-1 pl-4" justify="end">
-        <Link isExternal aria-label="Github" href={siteConfig.links.github}>
-          <GithubIcon className="text-default-500" />
-        </Link>
-        {/* <ThemeSwitch /> */}
-        <NavbarMenuToggle />
+          </NavbarItem>
+        )}
       </NavbarContent>
 
       <NavbarMenu>

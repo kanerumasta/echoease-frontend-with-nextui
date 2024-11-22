@@ -11,7 +11,7 @@ export const TransactionSchema = z.object({
   status: z.string(),
   amount: z.string(),
   net_amount: z.string(),
-  payment:PaymentSchema,
+  payment: PaymentSchema,
   payer_email: z.string(),
   payer_name: z.string(),
   platform_fee: z.string(),

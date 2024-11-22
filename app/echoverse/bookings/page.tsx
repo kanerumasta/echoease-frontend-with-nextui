@@ -8,7 +8,6 @@ import useIsArtistOnly from "@/hooks/use-is-artist-only";
 
 import { PendingBookings } from "./components/pending";
 import { CompleteBookings } from "./components/complete";
-
 import { BookingHistory } from "./components/booking-history";
 import { WaitingBookings } from "./components/waiting";
 import { FinalizedBookings } from "./components/finalized";

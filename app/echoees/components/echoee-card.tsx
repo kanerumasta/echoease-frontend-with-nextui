@@ -5,10 +5,9 @@ import { z } from "zod";
 
 import { ArtistInSchema } from "@/schemas/artist-schemas";
 import CustomImage from "@/components/image";
-import { AnimatedSide } from "@/components/animated-side";
 
 export default function EchoeeCard({
-  echoee
+  echoee,
 }: {
   echoee: z.infer<typeof ArtistInSchema>;
 }) {

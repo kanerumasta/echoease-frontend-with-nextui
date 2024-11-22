@@ -12,18 +12,18 @@ import {
 import { User } from "@nextui-org/user";
 import { useRouter } from "next/navigation";
 
-import { useFetchApprovedBookingsQuery, useFetchAwaitingDownpaymentBookingsQuery, useFetchPendingBookingsQuery } from "@/redux/features/bookingApiSlice";
+import { useFetchAwaitingDownpaymentBookingsQuery } from "@/redux/features/bookingApiSlice";
 
 export const WaitingBookings = () => {
   const { data: pendingBookings = [], isLoading } =
-        useFetchAwaitingDownpaymentBookingsQuery();
+    useFetchAwaitingDownpaymentBookingsQuery();
   const loadingState = isLoading ? "loading" : "idle";
   const router = useRouter();
 
   return (
     <div className="p-4 rounded-lg bg-white/5 ">
       <h1 className="text-center mb-4 text-white/40 text-lg">
-            Upcoming Events
+        Upcoming Events
       </h1>
       <Table
         classNames={{

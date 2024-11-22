@@ -9,6 +9,7 @@ import { UserRoles } from "@/config/constants";
 import { useFetchCurrentUserQuery } from "@/redux/features/authApiSlice";
 import { useFetchBookingDetailQuery } from "@/redux/features/bookingApiSlice";
 import { useFetchNewNotificationsQuery } from "@/redux/features/notificationApiSlice";
+import { MyMap } from "@/components/map";
 
 import ArtistDetails from "./components/artist-details";
 import BasicBookingInfo from "./components/basic-details";
@@ -19,7 +20,6 @@ import { Heading } from "./components/heading";
 import PaymentInfo from "./components/payment-info";
 import { PostReview } from "./components/post-review";
 import { Disputes } from "./components/disputes";
-import {MyMap} from "@/components/map";
 
 export default function BookingDetailPage() {
   const params = useParams<{ id: string }>();
@@ -28,13 +28,17 @@ export default function BookingDetailPage() {
   const bookingId = params.id;
   const { data: curUser } = useFetchCurrentUserQuery();
 
-  const { data: bookingDetail, refetch:refetchBooking, refetch } = useFetchBookingDetailQuery(bookingId, {
+  const {
+    data: bookingDetail,
+    refetch: refetchBooking,
+    refetch,
+  } = useFetchBookingDetailQuery(bookingId, {
     refetchOnMountOrArgChange: true,
   });
 
   useEffect(() => {
     refetchNewNotif();
-    refetch()
+    refetch();
   }, []);
 
   if (curUser && curUser.role === UserRoles.artist) {
@@ -57,19 +61,23 @@ export default function BookingDetailPage() {
                 <ArtistDetails booking={bookingDetail} />
                 <Spacer y={4} />
                 <div className="flex gap-3">
-                    {bookingDetail.is_event_due && curUser && (
-              <CreateDispute booking={bookingDetail} clientId={curUser.id} />
-            )}
-            {bookingDetail.is_completed &&
-              !bookingDetail.is_reviewed &&
-              curUser && <PostReview bookingId={bookingDetail.id} />}
-            {!bookingDetail.is_completed && !(bookingDetail.status === 'rejected') &&
-              !(bookingDetail.status === "cancelled") && !bookingDetail.is_event_due && (
-                <CancelBooking booking={bookingDetail} />
-              )}
-            {/* <DownloadBookingPDF bookingId={bookingDetail.id}/> */}
-          </div>
-
+                  {bookingDetail.is_event_due && curUser && (
+                    <CreateDispute
+                      booking={bookingDetail}
+                      clientId={curUser.id}
+                    />
+                  )}
+                  {bookingDetail.is_completed &&
+                    !bookingDetail.is_reviewed &&
+                    curUser && <PostReview bookingId={bookingDetail.id} />}
+                  {!bookingDetail.is_completed &&
+                    !(bookingDetail.status === "rejected") &&
+                    !(bookingDetail.status === "cancelled") &&
+                    !bookingDetail.is_event_due && (
+                      <CancelBooking booking={bookingDetail} />
+                    )}
+                  {/* <DownloadBookingPDF bookingId={bookingDetail.id}/> */}
+                </div>
               </div>
               {/* <ClientDetails booking={bookingDetail}/> */}
             </div>
@@ -81,8 +89,6 @@ export default function BookingDetailPage() {
                 <PaymentInfo booking={bookingDetail} />
               ))}
           </div>
-
-
 
           {bookingDetail.status === "rejected" &&
             bookingDetail.decline_reason && (
@@ -100,10 +106,15 @@ export default function BookingDetailPage() {
                 <p className="text-md">{bookingDetail.cancel_reason}</p>
               </div>
             )}
-            {bookingDetail.disputes.length > 0 &&
-                <Disputes onRefetch={refetchBooking} disputes={bookingDetail.disputes}/>
-            }
-            {bookingDetail.latitude && bookingDetail.longitude && <MyMap booking={bookingDetail}/>}
+          {bookingDetail.disputes.length > 0 && (
+            <Disputes
+              disputes={bookingDetail.disputes}
+              onRefetch={refetchBooking}
+            />
+          )}
+          {bookingDetail.latitude && bookingDetail.longitude && (
+            <MyMap booking={bookingDetail} />
+          )}
         </Fragment>
       )}
     </div>

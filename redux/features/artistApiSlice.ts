@@ -29,7 +29,10 @@ const artistApiSlice = apiSlice.injectEndpoints({
     }),
 
     // FETCH
-    fetchListArtists: builder.query<z.infer<typeof PaginatedArtistInSchema>[], void>({
+    fetchListArtists: builder.query<
+      z.infer<typeof PaginatedArtistInSchema>[],
+      void
+    >({
       query: () => "/artists",
     }),
     fetchDetailCurrentArtist: builder.query<
@@ -112,6 +115,8 @@ const artistApiSlice = apiSlice.injectEndpoints({
 
     fetchArtistRates: builder.query<z.infer<typeof RateSchema>[], string>({
       query: (artistId) => `/artists/${artistId}/rates`,
+      providesTags: (result, error, artistId) =>
+        result ? [{ type: "Rates", id: artistId }] : [],
     }),
     addArtistRates: builder.mutation<any, any>({
       query: (data) => ({
@@ -171,8 +176,14 @@ const artistApiSlice = apiSlice.injectEndpoints({
       z.infer<typeof MyConnectionsSchema>,
       void
     >({
-      query: () => "/artists/connections",
+      query: () => `/artists/connections`,
       providesTags: ["Connections"],
+    }),
+    fetchArtistConnections: builder.query<
+      z.infer<typeof MyConnectionsSchema>,
+      number
+    >({
+      query: (id) => `/artists/artist-connections/${id}`,
     }),
     fetchReceivedConnectionRequests: builder.query<
       z.infer<typeof ConnectionRequestSchema>[],
@@ -241,7 +252,7 @@ const artistApiSlice = apiSlice.injectEndpoints({
         max_price: number | null;
         genres: number[];
         category: string | null;
-        page:number
+        page: number;
       }
     >({
       query: ({ q, min_price, max_price, genres, category, page }) => {
@@ -258,10 +269,19 @@ const artistApiSlice = apiSlice.injectEndpoints({
           params.append("genres", genres.toString());
         }
         if (category) params.append("category", category);
-        if(page) params.append('page', page.toString());
+        if (page) params.append("page", page.toString());
 
         return `/artists?${params.toString()}`;
       },
+    }),
+    fetchFollowing: builder.query<z.infer<typeof ArtistInSchema>, number>({
+      query: (id) => `/artists/${id}/following`,
+    }),
+    reportPortfolioItem: builder.mutation<any, number>({
+      query: (id) => ({
+        url: `/artists/portfolio-item/${id}/report`,
+        method: "POST",
+      }),
     }),
   }),
 });
@@ -281,6 +301,8 @@ export const {
   useFetchRecommendedArtistConnectionsQuery,
   useFetchFollowersQuery,
   useFetchArtistsWithFilterQuery,
+  useFetchFollowingQuery,
+  useFetchArtistConnectionsQuery,
 
   useCreateArtistApplicationMutation,
   useFollowArtistMutation,
@@ -300,4 +322,5 @@ export const {
   useDeleteGenreMutation,
   useAddGenreMutation,
   useUpdateArtistMutation,
+  useReportPortfolioItemMutation,
 } = artistApiSlice;

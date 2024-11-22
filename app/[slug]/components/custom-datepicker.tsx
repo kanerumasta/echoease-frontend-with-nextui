@@ -29,7 +29,7 @@ type Props = {
 export const CustomDatePicker = ({
   selectedDate,
   setSelectedDate,
-  unavailableDates
+  unavailableDates,
 }: Props) => {
   const { artist } = useBookingContext();
   const form = useFormContext<z.infer<typeof BookingSchema>>();
@@ -44,7 +44,12 @@ export const CustomDatePicker = ({
       )}
     >
       {selectedDate?.toDateString()}
-      <Button radius="sm" color="primary" startContent={<IoCalendar />} onPress={onOpen}>
+      <Button
+        color="primary"
+        radius="sm"
+        startContent={<IoCalendar />}
+        onPress={onOpen}
+      >
         Pick the event date
       </Button>
 
