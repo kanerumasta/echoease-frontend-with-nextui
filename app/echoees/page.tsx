@@ -125,19 +125,23 @@ import { SearchInput } from "./components/search-input";
 //   );
 // };
 
+type Genre = {
+    id: number;
+    name: string;
+  };
+
 export default function EchoeesPage() {
   const [draftBudgetRange, setDraftBudgetRange] = useState<number | number[]>([
     0, 5000,
   ]);
   const [searchFilter, setSearchFilter] = useState("");
-  const [draftGenresFilter, setDraftGenresFilter] = useState<
-    z.infer<typeof GenreSchema>[]
-  >([]);
+
+  const [draftGenresFilter, setDraftGenresFilter] = useState<Genre[]>([]);
   const [draftActiveBudgetRange, setDraftActiveBudgetRange] = useState(false);
 
   const [appliedFilters, setAppliedFilters] = useState({
-    budgetRange: [0, 5000],
-    genresFilter: [],
+    budgetRange: draftBudgetRange,
+    genresFilter: draftGenresFilter,
     activeBudgetRange: false,
   });
 
@@ -149,12 +153,11 @@ export default function EchoeesPage() {
 
   const applyFilters = () => {
     setAppliedFilters({
-      budgetRange: draftBudgetRange,
+      budgetRange: Array.isArray(draftBudgetRange) ? draftBudgetRange : [draftBudgetRange, draftBudgetRange],
       genresFilter: draftGenresFilter,
       activeBudgetRange: draftActiveBudgetRange,
     });
   };
-
   return (
     <div>
       <div className="flex flex-col md:flex-row justify-between gap-3 mb-8">

@@ -30,10 +30,10 @@ export const PostReview = ({ bookingId }: { bookingId: number }) => {
       rating: rating,
       feedback: feedback,
       booking: bookingId,
-      client: currentUser.id,
+      client_id: currentUser.id,
     };
 
-    console.log(payload);
+
     await postAReview(payload);
     toast.success("Thank you for your feedback Echoer.");
     setRating(5);

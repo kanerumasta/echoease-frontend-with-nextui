@@ -42,21 +42,16 @@ export default function MessagePage() {
   const params = useParams<{ code: string }>();
   const scrollRef = useRef<HTMLDivElement | null>(null);
 
-  const {
-    data: conversation,
-    isLoading: isConversationLoading,
-    refetch: refetchChatsCode,
-  } = useFetchChatByCodeQuery(
-    {
+  const { data: conversation, isLoading: isConversationLoading, refetch:refetchChatsCode } =
+    useFetchChatByCodeQuery({
       code: params.code,
       page: page,
-    },
-    {
-      refetchOnMountOrArgChange: true,
-    },
-  );
-  const { data: convDetail, refetch: refetchConvDetail } =
-    useFetchConversationDetailQuery(params.code);
+    },{
+        refetchOnMountOrArgChange:true,
+
+
+    });
+  const { data: convDetail, refetch:refetchConvDetail } = useFetchConversationDetailQuery(params.code);
   const [markConversationRead] = useMarkConversationReadMutation();
 
   const websocketURL = `${process.env.NEXT_PUBLIC_CHAT_WEBSOCKET}/${params.code}`;
@@ -65,9 +60,9 @@ export default function MessagePage() {
     websocketURL,
     setMessages,
   );
-
-  // Refetch conversation and details on first mount
-  useEffect(() => {
+  
+   // Refetch conversation and details on first mount
+   useEffect(() => {
     const fetchData = async () => {
       await Promise.all([refetchChatsCode(), refetchConvDetail()]);
     };
@@ -75,8 +70,10 @@ export default function MessagePage() {
     fetchData();
   }, [refetchChatsCode, refetchConvDetail]);
 
+
   useEffect(() => {
     if (conversation) {
+
       // Prepend new messages but maintain order
       setMessages((prevMessages) => [
         ...conversation.messages,

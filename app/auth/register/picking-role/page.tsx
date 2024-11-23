@@ -9,7 +9,6 @@ import { Button } from "@nextui-org/button";
 import { Dispatch, Ref, RefObject, SetStateAction } from "react";
 
 import { useRolePicking } from "@/hooks/account";
-import useCompleteProfile from "@/hooks/use-complete-profile";
 
 import {
   BarOwnerForm,
@@ -17,6 +16,8 @@ import {
   GeneralDocumentsForm,
   RolePickingForm,
 } from "./forms";
+import useCompleteProfile from "@/hooks/use-complete-profile";
+import EchoLoading from "@/components/echo-loading";
 
 export default function PickingRolePage() {
   return (
@@ -43,7 +44,7 @@ const MainForm = () => {
   const redirect = searchParams.get("redirect") || "/echoees";
   const formRef = useRef<HTMLFormElement | null>(null);
   const formSteps = ["role", "organizer or bar", "general"];
-  const {} = useCompleteProfile("/auth/register/picking-role");
+  const {profileChecked} = useCompleteProfile("/auth/register/picking-role")
 
   useEffect(() => {
     rolePicked && form.setValue("category", rolePicked);
@@ -78,6 +79,10 @@ const MainForm = () => {
     console.log("iscuss", isSuccess);
     console.log("iserror", isError);
   }, [isSuccess, isLoading, isError]);
+  
+  if(!profileChecked){
+    return <EchoLoading />
+  }
 
   return (
     <Suspense>

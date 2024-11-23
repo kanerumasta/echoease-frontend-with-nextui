@@ -42,6 +42,7 @@ export default function RegisterForm() {
               name="first_name"
               render={({ field }) => (
                 <Input
+                    maxLength={100}
                   label="Firstname"
                   radius="sm"
                   {...field}
@@ -57,6 +58,7 @@ export default function RegisterForm() {
               name="last_name"
               render={({ field }) => (
                 <Input
+                maxLength={100}
                   label="Lastname"
                   radius="sm"
                   {...field}
@@ -73,6 +75,7 @@ export default function RegisterForm() {
             name="email"
             render={({ field }) => (
               <Input
+              maxLength={250}
                 label="Email"
                 radius="sm"
                 type="email"

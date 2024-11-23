@@ -58,6 +58,7 @@ export default function LoginForm({ redirect }: { redirect: string }) {
           name="email"
           render={({ field }) => (
             <Input
+                maxLength={250}
               label="Email"
               radius="sm"
               type="email"
