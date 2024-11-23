@@ -32,8 +32,8 @@ import {
 } from "@nextui-org/modal";
 import { User } from "@nextui-org/user";
 import { usePathname, useRouter } from "next/navigation";
-import { Fragment, useCallback } from "react";
-import { IoNotifications } from "react-icons/io5";
+import { Fragment, useCallback, useState } from "react";
+import { IoChatbubble, IoNotifications } from "react-icons/io5";
 
 import { useIsCurrentUserAnArtist } from "@/utils/check-is-artist";
 import { useFetchNewNotificationsQuery } from "@/redux/features/notificationApiSlice";
@@ -63,6 +63,7 @@ export const Navbar = () => {
   const { data: pendingBookings } = useFetchPendingBookingsQuery();
   const currentPath = usePathname();
   const { data: unreadMessages } = useFetchUnreadMessagesCountQuery();
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
 
   const isActiveTab = useCallback(
     (path: string) => currentPath.includes(path),
@@ -78,16 +79,33 @@ export const Navbar = () => {
       className="bg-black dark:bg-transparent"
       maxWidth="xl"
       position="sticky"
+      isMenuOpen={isMenuOpen}
+      onMenuOpenChange={setIsMenuOpen}
     >
-      <NavbarContent className="basis-1/5 sm:basis-full" justify="start">
+        {/* Toggle */}
+        <NavbarContent className="md:hidden w-[80px] " justify="start">
+            <NavbarMenuToggle aria-label={isMenuOpen ? "Close menu" : "Open menu"} />
+            <NavbarBrand as="li" className="gap-3 max-w-fit">
+                <NextLink className="flex justify-start items-center gap-1" href="/">
+                    <Logo />
+                    <p className="font-bold text-blue-400">EchoEase</p>
+                </NextLink>
+                </NavbarBrand>
+        </NavbarContent>
+
+        <NavbarContent className="hidden md:flex ">
         <NavbarBrand as="li" className="gap-3 max-w-fit">
-          <NextLink className="flex justify-start items-center gap-1" href="/">
-            <Logo />
-            <p className="font-bold text-blue-400">EchoEase</p>
-          </NextLink>
-        </NavbarBrand>
-        <ul className="hidden lg:flex gap-4 justify-start ml-2">
-          {!isArtist && (
+                <NextLink className="flex justify-start items-center gap-1" href="/">
+                    <Logo />
+                    <p className="font-bold text-blue-400">EchoEase</p>
+                </NextLink>
+                </NavbarBrand>
+        </NavbarContent>
+
+
+      <NavbarContent className="hidden md:flex basis-1/5 md:basis-full">
+
+          {user && (
             <NavbarItem>
               <Link
                 className={cn("text-white/50 p-2 rounded-md", {
@@ -114,29 +132,8 @@ export const Navbar = () => {
           )}
           {user && (
             <>
-            <NavbarItem>
-              <Badge
-                color="danger"
-                content={unreadMessages?.unread_messages_count ?? 0}
-                isInvisible={
-                  !unreadMessages || unreadMessages?.unread_messages_count <= 0
-                }
-              >
-                <Link
-                  className={cn("text-white/50 p-2 rounded-md", {
-                    "bg-blue-500 text-white": isActiveTab("/messages"),
-                  })}
-                  href={"/messages"}
-                >
-                  Messages
-                </Link>
-              </Badge>
-            </NavbarItem>
-
-
-
-          <NavbarItem>
             {!isArtist && (
+          <NavbarItem>
               <Link
                 className={cn(
                   "text-white/50 p-2 rounded-md",
@@ -146,8 +143,8 @@ export const Navbar = () => {
               >
                 Bookings
               </Link>
-            )}
           </NavbarItem>
+            )}
           <NavbarItem>
             <Link className={cn(
                   "text-white/50 p-2 rounded-md",
@@ -156,29 +153,26 @@ export const Navbar = () => {
           </NavbarItem>
           </>
           )}
-
-        </ul>
       </NavbarContent>
 
-      <NavbarContent
-        className="hidden sm:flex basis-1/5 sm:basis-full"
-        justify="end"
-      >
-        {!(user?.role === "artist") && !user?.is_roled && user &&(
-          <NavbarItem>
+      {!(user?.role === "artist") && !user?.is_roled && user &&(
+      <NavbarContent >
+            <NavbarItem>
             <Link className="text-white" href={"/become-an-echoee"}>
               Be an Echoee
             </Link>
           </NavbarItem>
-        )}
-        {!(user?.role === "artist") && !user?.is_roled && user && (
           <NavbarItem>
             <Link className="text-white" href={`/auth/register/picking-role`}>
-    Be an Echoer
-  </Link>
+                 Be an Echoer
+            </Link>
           </NavbarItem>
-        )}
+      </NavbarContent>        )}
 
+      <NavbarContent
+        className="basis-1/5 sm:basis-full"
+        justify="end"
+      >
         {!user && (
           <Fragment>
             <NavbarItem>
@@ -199,12 +193,33 @@ export const Navbar = () => {
             </NavbarItem>
           </Fragment>
         )}
-        {user && (
-          <NavbarItem>
-            {newNotifications.length > 0 ? (
+{user &&
+
+
+<NavbarContent justify="end">
+<NavbarItem>
+              <Badge
+                color="danger"
+                content={unreadMessages?.unread_messages_count ?? 0}
+                isInvisible={
+                  !unreadMessages || unreadMessages?.unread_messages_count <= 0
+                }
+              >
+                <IoChatbubble
+                 className="hover:cursor-pointer"
+                 color="white"
+                 size={24}
+                 onClick={() => router.push("/messages")}
+                />
+
+
+              </Badge>
+            </NavbarItem>
+            <NavbarItem >
               <Badge
                 color="danger"
                 content={newNotifications.length.toString()}
+                isInvisible={!newNotifications || newNotifications.length <= 0}
               >
                 <IoNotifications
                   className="hover:cursor-pointer"
@@ -213,19 +228,10 @@ export const Navbar = () => {
                   onClick={() => router.push("/notifications")}
                 />
               </Badge>
-            ) : (
-              <IoNotifications
-                className="hover:cursor-pointer"
-                color="white"
-                size={24}
-                onClick={() => router.push("/notifications")}
-              />
-            )}
           </NavbarItem>
-        )}
 
-        <NavbarItem className="hidden md:flex">
-          {user && (
+        {/* Profile */}
+          <NavbarItem className="md:flex">
             <Dropdown>
               <DropdownTrigger>
                 <User
@@ -258,6 +264,22 @@ export const Navbar = () => {
                   >
                     {isArtist ? "Echoverse" : "Profile"}
                   </DropdownItem>
+                  <DropdownItem
+                    key={"terms"}
+                    onPress={() => {
+                     router.push("/terms-and-conditions")
+                    }}
+                  >
+                    Terms & Conditions
+                  </DropdownItem>
+                  <DropdownItem
+                    key={"terms"}
+                    onPress={() => {
+                     router.push("/support")
+                    }}
+                  >
+                        Help & Chat Support
+                  </DropdownItem>
                 </DropdownSection>
                 <DropdownSection>
                   <DropdownItem
@@ -271,47 +293,104 @@ export const Navbar = () => {
                 </DropdownSection>
               </DropdownMenu>
             </Dropdown>
-          )}
         </NavbarItem>
-        {user &&
-        <NavbarItem>
-            <Dropdown>
-                <DropdownTrigger>
-                    <Button isIconOnly variant="light"><HiDotsVertical /></Button>
-                </DropdownTrigger>
-                <DropdownMenu classNames={{base:""}}>
-                    <DropdownItem classNames={{wrapper:'bg-red-400'}} key={"terms"} onClick={()=>{}} startContent={<FaGavel />}>Terms and Conditions</DropdownItem>
-                    <DropdownItem key={"help"} startContent={<MdSupportAgent />}><Link href="/support">Help and Chat Support</Link></DropdownItem>
-                </DropdownMenu>
-            </Dropdown>
-        </NavbarItem>
-    }
-      </NavbarContent>
-
-
+        </NavbarContent>
+}
+ </NavbarContent>
 
       <NavbarMenu>
-        {/* {searchInput} */}
         <div className="mx-4 mt-2 flex flex-col gap-2">
-          {siteConfig.navMenuItems.map((item, index) => (
-            <NavbarMenuItem key={`${item}-${index}`}>
+        {user && (
+            <NavbarItem>
               <Link
-                color={
-                  index === 2
-                    ? "primary"
-                    : index === siteConfig.navMenuItems.length - 1
-                      ? "danger"
-                      : "foreground"
-                }
-                href="#"
-                size="lg"
+                className={cn("w-full text-white/50 p-2 rounded-md", {
+                  "text-blue-400": isActiveTab("/echoees"),
+                })}
+                href={"/echoees"}
               >
-                {item.label}
+                Echoees
               </Link>
-            </NavbarMenuItem>
-          ))}
+            </NavbarItem>
+          )}
+
+          {isArtist && (
+            <NavbarItem>
+              <Link
+                className={cn("w-full text-white/50 p-2 rounded-md", {
+                  "text-blue-400": isActiveTab("/echoverse"),
+                })}
+                href={"/echoverse"}
+              >
+                Echoverse
+              </Link>
+            </NavbarItem>
+          )}
+          {user && (
+            <>
+            <NavbarItem>
+              <Badge
+                color="danger"
+                content={unreadMessages?.unread_messages_count ?? 0}
+                isInvisible={
+                  !unreadMessages || unreadMessages?.unread_messages_count <= 0
+                }
+              >
+                <Link
+                  className={cn("w-full text-white/50 p-2 rounded-md", {
+                    "text-blue-400": isActiveTab("/messages"),
+                  })}
+                  href={"/messages"}
+                >
+                  Messages
+                </Link>
+              </Badge>
+            </NavbarItem>
+
+          <NavbarItem>
+            {!isArtist && (
+              <Link
+                className={cn(
+                  "w-full text-white/50 p-2 rounded-md",
+                  isActiveTab("/bookings") && "text-blue-400",
+                )}
+                href={"/bookings"}
+              >
+                Bookings
+              </Link>
+            )}
+          </NavbarItem>
+          <NavbarItem>
+            <Link className={cn(
+                  "w-full text-white/50 p-2 rounded-md",
+                  isActiveTab("/transactions") && "text-blue-400",
+                )} href="/transactions">Transactions</Link>
+          </NavbarItem>
+          <NavbarItem>
+          <Link className={cn(
+                  "w-full text-white/50 p-2 rounded-md",
+                  isActiveTab("/notifications") && "text-blue-400",
+                )} href="/notifications">Notifications</Link>
+
+          </NavbarItem>
+          <NavbarItem>
+          <Link className={cn(
+                  "w-full text-white/50 p-2 rounded-md",
+                  isActiveTab("/terms-and-conditions") && "text-blue-400",
+                )} href="/terms-and-conditions">Terms and Conditions</Link>
+
+          </NavbarItem>
+          <NavbarItem>
+          <Link className={cn(
+                  "w-full text-white/50 p-2 rounded-md",
+                  isActiveTab("/support") && "text-blue-400",
+                )} href="/support">Help and Chat Support</Link>
+
+          </NavbarItem>
+          </>
+          )}
         </div>
       </NavbarMenu>
+
       {/* LOGOUT MODAL */}
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalContent>

@@ -3,7 +3,7 @@ import { Image } from "@nextui-org/image";
 
 import { IconSvgProps } from "@/types";
 
-export const Logo = () => <Image className="w-[30px]" src="/favicon.ico" />;
+export const Logo = () => <Image className="min-w-[30px] max-w-[30px]" src="/favicon.ico" />;
 
 export const DiscordIcon: React.FC<IconSvgProps> = ({
   size = 24,

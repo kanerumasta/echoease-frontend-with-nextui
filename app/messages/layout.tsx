@@ -40,7 +40,6 @@ const MessagesList = ({
 }) => {
   const router = useRouter();
 
-  console.log(conversations);
 
   return (
     <ul className="">
@@ -53,8 +52,16 @@ const MessagesList = ({
           )}
           onClick={() => router.push(`/messages/${conv.code}`)}
         >
+
           <Avatar src={conv.partner?.profile?.profile_image} />
-          <p>{conv.partner.fullname}</p>
+          <div className=" flex-1">
+            <div className="flex justify-between items-center">
+          <p className="text-md text-white/80">{conv.partner.fullname}</p>
+          <p className="text-[10px] text-white/30">{conv.last_message_time}</p>
+            </div>
+            <p className="text-[10px] text-white/40">{conv.last_message.slice(0,20)}{conv.last_message.length > 20 && '...'}</p>
+          </div>
+
         </li>
       ))}
     </ul>
