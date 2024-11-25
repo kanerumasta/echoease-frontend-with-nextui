@@ -1,19 +1,10 @@
 "use client";
-import { cn } from "@/lib/utils";
-import { useFetchCurrentUserQuery } from "@/redux/features/authApiSlice";
-import {
-  useFetchChatByCodeQuery,
-  useFetchMessagesQuery,
-} from "@/redux/features/chatApiSlice";
-import { ChatSchema, MessageSchema } from "@/schemas/chat-schemas";
-import { UserSchema } from "@/schemas/user-schemas";
 import { Avatar } from "@nextui-org/avatar";
 import { Input } from "@nextui-org/input";
 import { Spinner } from "@nextui-org/spinner";
 import { useParams } from "next/navigation";
 import { MdSend } from "react-icons/md";
 import { z } from "zod";
-import { filterConversationParticipants } from "../util-func";
 import {
   Dispatch,
   Fragment,
@@ -23,24 +14,155 @@ import {
   useState,
 } from "react";
 import { Spacer } from "@nextui-org/spacer";
-import { toast } from "react-toastify";
+import { Button } from "@nextui-org/button";
+import { User } from "@nextui-org/user";
 
-//Declare that participants is many but assumes that only one, thats why we get the first one only
-const Header = ({
-  conversation,
-}: {
-  conversation: z.infer<typeof ChatSchema> | null;
-}) => {
-  return (
-    <h1 className="capitalize text-2xl bg-white/30 h-12 w-full flex items-center px-4">
-      {conversation ? (
-        `${conversation.participants[0].first_name} ${conversation.participants[0].last_name}`
-      ) : (
-        <Spinner />
-      )}
-    </h1>
+import { UserSchema } from "@/schemas/user-schemas";
+import { MessageSchema } from "@/schemas/chat-schemas";
+import {
+  useFetchChatByCodeQuery,
+  useFetchChatsQuery,
+  useFetchConversationDetailQuery,
+  useFetchUnreadMessagesCountQuery,
+  useMarkConversationReadMutation,
+} from "@/redux/features/chatApiSlice";
+import { useFetchCurrentUserQuery } from "@/redux/features/authApiSlice";
+import { cn } from "@/lib/utils";
+
+import { useChatWebSocket } from "../useChatWebsocket";
+
+import { DeleteConversation } from "./components/delete-conversation";
+
+export default function MessagePage() {
+  const [messages, setMessages] = useState<z.infer<typeof MessageSchema>[]>([]);
+  const [page, setPage] = useState(1);
+  const { data: currentUser } = useFetchCurrentUserQuery();
+  const { refetch: refetchChats } = useFetchChatsQuery();
+  const { refetch: refetchCount } = useFetchUnreadMessagesCountQuery();
+  const params = useParams<{ code: string }>();
+  const scrollRef = useRef<HTMLDivElement | null>(null);
+
+  const { data: conversation, isLoading: isConversationLoading, refetch:refetchChatsCode } =
+    useFetchChatByCodeQuery({
+      code: params.code,
+      page: page,
+    },{
+        refetchOnMountOrArgChange:true,
+
+
+    });
+  const { data: convDetail, refetch:refetchConvDetail } = useFetchConversationDetailQuery(params.code);
+  const [markConversationRead] = useMarkConversationReadMutation();
+
+  const websocketURL = `${process.env.NEXT_PUBLIC_CHAT_WEBSOCKET}/${params.code}`;
+  const { newMessage, setNewMessage, sendMessage } = useChatWebSocket(
+    params.code,
+    websocketURL,
+    setMessages,
   );
-};
+  
+   // Refetch conversation and details on first mount
+   useEffect(() => {
+    const fetchData = async () => {
+      await Promise.all([refetchChatsCode(), refetchConvDetail()]);
+    };
+
+    fetchData();
+  }, [refetchChatsCode, refetchConvDetail]);
+
+
+  useEffect(() => {
+    if (conversation) {
+
+      // Prepend new messages but maintain order
+      setMessages((prevMessages) => [
+        ...conversation.messages,
+        ...prevMessages,
+      ]);
+      refetchChats();
+      scrollToTop();
+    }
+  }, [conversation]);
+
+  // Scroll to top when loading previous messages
+  useEffect(() => {
+    if (page > 1 && conversation) {
+      scrollToTop();
+    }
+  }, [page, conversation]);
+  useEffect(() => {
+    const markRead = async () => {
+      await markConversationRead(params.code);
+      refetchCount();
+      refetchChats();
+    };
+
+    markRead();
+  }, []);
+
+  // Scroll to bottom when sending a message
+  const handleSendMessage = () => {
+    sendMessage();
+    scrollToBottom();
+  };
+
+  const scrollToBottom = () => {
+    scrollRef.current?.scrollTo({
+      top: scrollRef.current.scrollHeight,
+      behavior: "smooth",
+    });
+  };
+
+  const scrollToTop = () => {
+    scrollRef.current?.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+  };
+
+  return (
+    <div className="w-full flex flex-col bg-black/50 rounded-lg overflow-hidden">
+      <div className="min-h-14 bg-white/10 flex items-center px-2 justify-between">
+        {convDetail && (
+          <User
+            avatarProps={{ src: convDetail?.partner.profile?.profile_image }}
+            description={convDetail?.partner.role}
+            name={convDetail?.partner.fullname}
+          />
+        )}
+        {convDetail && <DeleteConversation conversation={convDetail} />}
+      </div>
+
+      <div
+        ref={scrollRef}
+        className={cn("min-h-[70vh] max-h-[70vh] overflow-y-scroll px-4", {
+          "flex items-center justify-center": isConversationLoading,
+        })}
+      >
+        {isConversationLoading && <Spinner color="primary" />}
+        <div className="w-full flex justify-center py-3">
+          <Button
+            isDisabled={!conversation?.has_next}
+            variant="light"
+            onPress={() =>
+              conversation?.has_next && setPage((prev) => prev + 1)
+            }
+          >
+            {conversation?.has_next
+              ? "Load Previous Messages"
+              : "No more previous messages"}
+          </Button>
+        </div>
+        {currentUser && <Body currentUser={currentUser} messages={messages} />}
+      </div>
+      <SendInput
+        value={newMessage}
+        onChange={setNewMessage}
+        onHandleSend={handleSendMessage}
+      />
+    </div>
+  );
+}
 
 const Body = ({
   messages,
@@ -49,24 +171,24 @@ const Body = ({
   messages: z.infer<typeof MessageSchema>[];
   currentUser: z.infer<typeof UserSchema>;
 }) => {
-  const scrollToBottom = (container: HTMLDivElement) => {
-    container?.lastElementChild?.scrollIntoView({
-      behavior: "auto",
-      block: "end",
-      inline: "nearest",
-    });
-  };
   const scrollRef = useRef<HTMLDivElement | null>(null);
+
   useEffect(() => {
-    if (scrollRef.current) {
-      scrollToBottom(scrollRef.current);
-    }
+    scrollToBottom();
   }, [messages]);
 
+  const scrollToBottom = () => {
+    scrollRef.current?.scrollTo({
+      top: scrollRef.current.scrollHeight,
+      behavior: "smooth",
+    });
+  };
+
   return (
-    <div className="bg-white/10 p-4 flex-1 overflow-y-scroll">
-      {messages.map((msg) => (
+    <div ref={scrollRef} className="">
+      {messages.map((msg, index) => (
         <div
+          key={index}
           className={cn("flex my-4", {
             "justify-end": msg.author === currentUser.email,
           })}
@@ -90,124 +212,36 @@ const Body = ({
           )}
         </div>
       ))}
+      <div className="h-14" />
     </div>
   );
 };
 
 const SendInput = ({
+  value,
   onChange,
   onHandleSend,
-  value,
 }: {
+  value: string;
   onChange: Dispatch<SetStateAction<string>>;
   onHandleSend: any;
-  value: string;
 }) => {
   return (
     <Input
-      size="lg"
-      value={value}
-      onChange={(e) => onChange(e.target.value)}
-      radius="none"
       className="self-end"
-      placeholder="Type your message here..."
       endContent={
         <MdSend
           className="cursor-pointer"
-          size={30}
           color="#2f9fe1"
-          onClick={() => {
-            onHandleSend();
-          }}
+          size={30}
+          onClick={onHandleSend}
         />
       }
+      placeholder="Type your message here..."
+      radius="none"
+      size="lg"
+      value={value}
+      onChange={(e) => onChange(e.target.value)}
     />
   );
 };
-
-export default function MessagePage() {
-  const [messages, setMessages] = useState<
-    z.infer<typeof MessageSchema>[] | []
-  >([]);
-  const { data: currentUser, isLoading: isUserLoading } =
-    useFetchCurrentUserQuery();
-  const [filteredConversation, setFilteredConversation] = useState<z.infer<
-    typeof ChatSchema
-  > | null>(null);
-  const params = useParams<{ code: string }>();
-  const {
-    data: dataMessages,
-    isLoading: isMessagesLoading,
-    isError: isMessagesError,
-    isSuccess: isMessagesSuccess,
-  } = useFetchMessagesQuery(params.code);
-  const {
-    data: conversation,
-    isLoading: isConversationLoading,
-    isError: isConversationError,
-  } = useFetchChatByCodeQuery(params.code);
-  useEffect(() => {
-    if (conversation && currentUser) {
-      const f = filterConversationParticipants(conversation, currentUser.email);
-      setFilteredConversation(f);
-    } else {
-      setFilteredConversation(null);
-    }
-  }, [conversation, currentUser]);
-
-  const websocketURL = `${process.env.NEXT_PUBLIC_CHAT_WEBSOCKET}/${params.code}`;
-  const websocket = useRef<WebSocket | null>(null);
-  const [newMessage, setNewMessage] = useState<string>("");
-
-  const handleSend = () => {
-    websocket.current && websocket.current.send(newMessage);
-    setNewMessage("");
-  };
-
-  useEffect(() => {
-    if (isMessagesSuccess) {
-      setMessages(dataMessages);
-    }
-  }, [isMessagesSuccess]);
-
-  useEffect(() => {
-    const socket = new WebSocket(websocketURL);
-    socket.onopen = () => {
-      toast.success("Connected..");
-    };
-    socket.onclose = () => console.log("Socket Disconnected..");
-    socket.onmessage = (event) => {
-      try {
-        const newMessage = MessageSchema.safeParse(JSON.parse(event.data));
-        if (newMessage.success) {
-          setMessages((prevMessages) => [...prevMessages, newMessage.data]);
-        } else {
-          console.log("Error parsing message | Zod");
-        }
-      } catch (error) {
-        console.error("Error parsing WebSocket message:", error);
-      }
-    };
-    websocket.current = socket;
-
-    return () => socket.close();
-  }, [websocketURL]);
-
-  return (
-    <div className="w-full flex flex-col h-[80vh]">
-      <Header conversation={filteredConversation} />
-
-      {isMessagesLoading && (
-        <div className="flex-1 flex items-center justify-center">
-          <Spinner color="primary" className="" />
-        </div>
-      )}
-      {currentUser && <Body messages={messages} currentUser={currentUser} />}
-      <SendInput
-        value={newMessage}
-        onChange={setNewMessage}
-        onHandleSend={handleSend}
-      />
-    </div>
-  );
-}

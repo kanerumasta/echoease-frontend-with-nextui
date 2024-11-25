@@ -1,12 +1,12 @@
 "use client";
-import { EyeFilledIcon } from "@/components/icons/eye";
-import { EyeSlashFilledIcon } from "@/components/icons/eyeslash";
-import { useConfirmPasswordReset } from "@/hooks/auth";
-import { DevTool } from "@hookform/devtools";
 import { Button } from "@nextui-org/button";
 import { Input } from "@nextui-org/input";
 import { useState } from "react";
 import { Controller, FormProvider } from "react-hook-form";
+
+import { useConfirmPasswordReset } from "@/hooks/auth";
+import { EyeSlashFilledIcon } from "@/components/icons/eyeslash";
+import { EyeFilledIcon } from "@/components/icons/eye";
 
 export default function ConfirmPasswordResetForm() {
   const { form, onSubmit, isLoading } = useConfirmPasswordReset();
@@ -17,22 +17,21 @@ export default function ConfirmPasswordResetForm() {
     <FormProvider {...form}>
       <form className="space-y-4" onSubmit={onSubmit}>
         <Controller
-          name="new_password"
           control={form.control}
+          name="new_password"
           render={({ field }) => (
             <Input
+              errorMessage={form.formState.errors.new_password?.message}
+              isInvalid={!!form.formState.errors.new_password}
               type={isPasswordVisible ? "text" : "password"}
               variant="faded"
-              isInvalid={!!form.formState.errors.new_password}
-              errorMessage={form.formState.errors.new_password?.message}
               {...field}
-              label="New Password"
               endContent={
                 <button
+                  aria-label="toggle password visibility"
                   className="focus:outline-none"
                   type="button"
                   onClick={() => setPasswordIsVisible(!isPasswordVisible)}
-                  aria-label="toggle password visibility"
                 >
                   {isPasswordVisible ? (
                     <EyeSlashFilledIcon className="text-2xl text-default-400 pointer-events-none" />
@@ -41,26 +40,26 @@ export default function ConfirmPasswordResetForm() {
                   )}
                 </button>
               }
+              label="New Password"
             />
           )}
         />
         <Controller
-          name="re_new_password"
           control={form.control}
+          name="re_new_password"
           render={({ field }) => (
             <Input
+              errorMessage={form.formState.errors.re_new_password?.message}
+              isInvalid={!!form.formState.errors.re_new_password}
               type={isRePasswordVisible ? "text" : "password"}
               variant="faded"
-              isInvalid={!!form.formState.errors.re_new_password}
-              errorMessage={form.formState.errors.re_new_password?.message}
               {...field}
-              label="Confirm New Password"
               endContent={
                 <button
+                  aria-label="toggle password visibility"
                   className="focus:outline-none"
                   type="button"
                   onClick={() => setRePasswordIsVisible(!isRePasswordVisible)}
-                  aria-label="toggle password visibility"
                 >
                   {isRePasswordVisible ? (
                     <EyeSlashFilledIcon className="text-2xl text-default-400 pointer-events-none" />
@@ -69,10 +68,11 @@ export default function ConfirmPasswordResetForm() {
                   )}
                 </button>
               }
+              label="Confirm New Password"
             />
           )}
         />
-        <Button type="submit" color="primary" radius="sm">
+        <Button color="primary" radius="sm" type="submit">
           Submit New Password
         </Button>
       </form>

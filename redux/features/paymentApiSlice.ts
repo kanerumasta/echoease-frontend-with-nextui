@@ -1,48 +1,74 @@
 import { apiSlice } from "../services/apiSlice";
 
-type TCreateOrder = {
-  amount: number;
-  booking: number;
-  return_url: string;
-  cancel_url: string;
-};
-
-type TCreateOrderResponse = {
-  success: string;
-  msg: string;
-  payer_action: string;
-};
-
-type TCapturePayment = {
-  payment_id: string;
-  payer_id: string;
-};
-
 const paymentApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
-    capturePayment: builder.mutation<any, TCapturePayment>({
-      query: (body) => ({
+    createInvoice: builder.mutation<
+      { invoice_url: string },
+      { booking_id: string; payment_type: string; redirect_url: string }
+    >({
+      query: (data) => ({
+        url: "/payments/create-invoice",
         method: "POST",
-        url: "/paypal/capture-payment",
-        body: body,
+        body: data,
       }),
     }),
-    createOrder: builder.mutation<TCreateOrderResponse, TCreateOrder>({
-      query: (body) => ({
+    createDownPaymentIntent: builder.mutation<
+      { payment_intent_id: string },
+      any
+    >({
+      query: (data) => ({
+        url: "/payments/create-downpayment-intent",
         method: "POST",
-        url: "/paypal/create-order",
-        body: body,
+        body: data,
       }),
     }),
-    createPaymongoPaymentLink : builder.mutation<{checkout_link : string},{amount:string}>({
-      query:(data)=>({
-        method:'POST',
-        url:"/paymongo/create-link",
-        body:data
-      })
-    })
+    attachDownPaymentIntent: builder.mutation({
+      query: (data) => ({
+        url: "/payments/attach-downpayment-intent",
+        method: "POST",
+        body: data,
+      }),
+    }),
+    finalizeDownPayment: builder.mutation({
+      query: (data) => ({
+        url: "/payments/retrieve-downpayment-intent",
+        method: "POST",
+        body: data,
+      }),
+    }),
+    createFinalPaymentIntent: builder.mutation<
+      { payment_intent_id: string },
+      { booking: number }
+    >({
+      query: (data) => ({
+        url: "/payments/create-finalpayment-intent",
+        method: "POST",
+        body: data,
+      }),
+    }),
+    attachFinalPayment: builder.mutation({
+      query: (data) => ({
+        url: "/payments/attach-finalpayment-intent",
+        method: "POST",
+        body: data,
+      }),
+    }),
+    finalizeFinalPayment: builder.mutation({
+      query: (data) => ({
+        url: "/payments/retrieve-finalpayment-intent",
+        method: "POST",
+        body: data,
+      }),
+    }),
   }),
 });
 
-export const { useCapturePaymentMutation, useCreateOrderMutation, useCreatePaymongoPaymentLinkMutation } =
-  paymentApiSlice;
+export const {
+  useCreateDownPaymentIntentMutation,
+  useAttachDownPaymentIntentMutation,
+  useFinalizeDownPaymentMutation,
+  useCreateFinalPaymentIntentMutation,
+  useAttachFinalPaymentMutation,
+  useFinalizeFinalPaymentMutation,
+  useCreateInvoiceMutation,
+} = paymentApiSlice;

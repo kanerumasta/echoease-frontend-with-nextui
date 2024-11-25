@@ -1,76 +1,61 @@
 "use client";
 
+import { Spacer } from "@nextui-org/spacer";
+import { notFound } from "next/navigation";
+import { Tab, Tabs } from "@nextui-org/tabs";
+
 import EchoLoading from "@/components/echo-loading";
+import { UserRoles } from "@/config/constants";
 import useLoginRequired from "@/hooks/use-login-required";
 import { useFetchCurrentUserQuery } from "@/redux/features/authApiSlice";
-import { useFetchMyBookingsQuery } from "@/redux/features/bookingApiSlice";
-import { Button } from "@nextui-org/button";
-import { Spinner } from "@nextui-org/spinner";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableColumn,
-  TableHeader,
-  TableRow,
-} from "@nextui-org/table";
-import { useRouter } from "next/navigation";
+import { useFetchUpcomingEventsQuery } from "@/redux/features/bookingApiSlice";
+
+import { AwaitingDownpayments } from "./components/awaiting-downpayment";
+import { BookingHistory } from "./components/booking-history";
+import PendingPayments from "./components/pending-payments";
+import UpcomingBookings from "./components/upcoming-bookings";
 
 export default function BookingPage() {
-  const router = useRouter();
-  const {
-    data: bookings,
-    isLoading: isBookingsLoading,
-    isError: isBookingsError,
-  } = useFetchMyBookingsQuery();
+  const { data: upcomingBookings = [] } = useFetchUpcomingEventsQuery();
   const { data: currentUser, isLoading: isCurrentUserLoading } =
     useFetchCurrentUserQuery();
+
   useLoginRequired("/bookings");
-  if (isCurrentUserLoading || isBookingsLoading) {
-    return <EchoLoading />
+  if (isCurrentUserLoading) {
+    return <EchoLoading />;
   }
+  if (currentUser && currentUser.role === UserRoles.artist) {
+    return notFound();
+  }
+
   return (
     <div>
-      <h1>Bookings</h1>
-      <div>
-        {/* {isBookingsLoading && <Spinner color="primary" />} */}
-        <Table>
-          <TableHeader>
-            <TableColumn>ECHOEE</TableColumn>
-            <TableColumn>EVENT</TableColumn>
-            <TableColumn>DATE</TableColumn>
-            <TableColumn>TIME</TableColumn>
-            <TableColumn>ACTIONS</TableColumn>
-          </TableHeader>
-          <TableBody emptyContent={<div className="space-y-4"><p>You don't have bookings yet</p><Button onClick={()=>router.push('/echoees')} color="primary" size="lg" radius="sm">Find Echoees</Button></div>} items={bookings ? bookings : []}>
-            {(item) => (
-              <TableRow key={item.id}>
-                <TableCell>
-                  <div className="relative w-[150px] h-[150px]">
-                    <div className=" w-[150px] h-[150px] overflow-hidden rounded-lg">
-                      <img
-                        className="w-full h-full object-cover"
-                        width={100}
-                        src={`${process.env.NEXT_PUBLIC_HOST}${item.artist.user.profile?.profile_image}`}
-                      />
-                    </div>
-                    <div className="absolute -top-2 -right-10 z-50 bg-blue-400 p-2 rounded-full">
-                      <p className="capitalize">{item.artist.user.fullname}</p>
-                    </div>
-                  </div>
-                </TableCell>
-                <TableCell>{item.event_name}</TableCell>
-                <TableCell>{item.formatted_event_date}</TableCell>
-                <TableCell>{item.formatted_event_time}</TableCell>
-                <TableCell>
-                  <Button onPress={() => router.push(`/bookings/${item.id}`)}>
-                    Detail
-                  </Button>
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
+      <h1 className="text-2xl font-bold mb-10 text-white/80">Bookings</h1>
+
+      <Spacer y={6} />
+      <div className="flex w-full gap-2 ">
+        {upcomingBookings && (
+          <div className="bg-white/5 lg:max-w-2/6 lg:min-w-2/6 max-h-[90vh] mb-2 p-4 space-y-2 rounded-md">
+            <h1 className="text-lg mb-3 text-white/40 whitespace-nowrap">
+              Upcoming Events
+            </h1>
+            <UpcomingBookings bookings={upcomingBookings} />
+          </div>
+        )}
+
+        <div className="w-full">
+          <Tabs classNames={{}} color="primary">
+            <Tab key={"history"} title="Booking History">
+              <BookingHistory />
+            </Tab>
+            <Tab key={"awaiting"} title="Awaiting Downpayments">
+              <AwaitingDownpayments />
+            </Tab>
+            <Tab key={"pending"} title="Pending Payments">
+              <PendingPayments />
+            </Tab>
+          </Tabs>
+        </div>
       </div>
     </div>
   );

@@ -1,115 +1,115 @@
-import { EyeFilledIcon } from "@/components/icons/eye";
-import { EyeSlashFilledIcon } from "@/components/icons/eyeslash";
-import { MailIcon } from "@/components/icons/mail";
-import { useRegister } from "@/hooks/auth";
-import { passwordSchema } from "@/schemas/auth-schemas";
 import { Button } from "@nextui-org/button";
 import { Input } from "@nextui-org/input";
 import { Spinner } from "@nextui-org/spinner";
 import React, { useState } from "react";
 import { Controller, FormProvider } from "react-hook-form";
-import { z } from "zod";
-import { DevTool } from "@hookform/devtools";
 import { Checkbox } from "@nextui-org/checkbox";
+
+import { useRegister } from "@/hooks/auth";
+import { MailIcon } from "@/components/icons/mail";
+import { EyeSlashFilledIcon } from "@/components/icons/eyeslash";
+import { EyeFilledIcon } from "@/components/icons/eye";
+import { useRouter } from "next/navigation";
 
 export default function RegisterForm() {
   const { form, onSubmit, isError, isLoading } = useRegister();
   const [isPasswordVisible, setPasswordIsVisible] = React.useState(false);
   const [isRePasswordVisible, setRePasswordIsVisible] = React.useState(false);
   const [isAgree, setIsAgree] = useState(false);
+  const router = useRouter()
+
   return (
     <>
       <FormProvider {...form}>
         <form
           autoComplete="off"
-          onSubmit={form.handleSubmit(onSubmit)}
           className="space-y-4 w-full"
+          onSubmit={form.handleSubmit(onSubmit)}
         >
           <input
-            type="email"
-            name="fake_email"
             autoComplete="username"
+            name="fake_email"
             style={{ display: "none" }}
+            type="email"
           />
           <input
-            type="password"
-            name="fake_password"
             autoComplete="new-password"
+            name="fake_password"
             style={{ display: "none" }}
+            type="password"
           />
           <div className="flex space-x-2">
             <Controller
-              name="first_name"
               control={form.control}
+              name="first_name"
               render={({ field }) => (
                 <Input
-                  radius="sm"
+                    maxLength={100}
                   label="Firstname"
+                  radius="sm"
                   {...field}
-                  variant="faded"
-                  placeholder="E.g. Juan"
-                  isInvalid={!!form.formState.errors.first_name}
                   errorMessage={form.formState.errors.first_name?.message}
+                  isInvalid={!!form.formState.errors.first_name}
+                  placeholder="E.g. Juan"
+                  variant="faded"
                 />
               )}
             />
             <Controller
-              name="last_name"
               control={form.control}
+              name="last_name"
               render={({ field }) => (
                 <Input
-                  radius="sm"
+                maxLength={100}
                   label="Lastname"
+                  radius="sm"
                   {...field}
-                  variant="faded"
-                  placeholder="E.g. Dela Cruz"
-                  isInvalid={!!form.formState.errors.last_name}
                   errorMessage={form.formState.errors.last_name?.message}
+                  isInvalid={!!form.formState.errors.last_name}
+                  placeholder="E.g. Dela Cruz"
+                  variant="faded"
                 />
               )}
             />
           </div>
           <Controller
-            name="email"
             control={form.control}
+            name="email"
             render={({ field }) => (
               <Input
-                type="email"
-                radius="sm"
+              maxLength={250}
                 label="Email"
+                radius="sm"
+                type="email"
                 {...field}
-                variant="faded"
                 autoComplete="off"
-                placeholder="example@gmail.com"
-                isInvalid={!!form.formState.errors.email}
-                errorMessage={form.formState.errors.email?.message}
                 endContent={
                   <MailIcon className="text-2xl text-default-400 pointer-events-none flex-shrink-0" />
                 }
+                errorMessage={form.formState.errors.email?.message}
+                isInvalid={!!form.formState.errors.email}
+                placeholder="example@gmail.com"
+                variant="faded"
               />
             )}
           />
 
           <Controller
-            name="password"
             control={form.control}
+            name="password"
             render={({ field }) => (
               <Input
-                variant="faded"
-                label="Password"
                 autoComplete="off"
+                label="Password"
                 radius="sm"
+                variant="faded"
                 {...field}
-                placeholder="Create a strong password"
-                type={isPasswordVisible ? "text" : "password"}
-                isInvalid={!!form.formState.errors.password}
-                errorMessage={form.formState.errors.password?.message}
                 endContent={
                   <button
+                    aria-label="toggle password visibility"
                     className="focus:outline-none"
                     type="button"
                     onClick={() => setPasswordIsVisible(!isPasswordVisible)}
-                    aria-label="toggle password visibility"
                   >
                     {isPasswordVisible ? (
                       <EyeSlashFilledIcon className="text-2xl text-default-400 pointer-events-none" />
@@ -118,28 +118,28 @@ export default function RegisterForm() {
                     )}
                   </button>
                 }
+                errorMessage={form.formState.errors.password?.message}
+                isInvalid={!!form.formState.errors.password}
+                placeholder="Create a strong password"
+                type={isPasswordVisible ? "text" : "password"}
               />
             )}
           />
           <Controller
-            name="re_password"
             control={form.control}
+            name="re_password"
             render={({ field }) => (
               <Input
-                variant="faded"
                 label="Confirm Password"
                 radius="sm"
+                variant="faded"
                 {...field}
-                placeholder="Confirm your password"
-                type={isRePasswordVisible ? "text" : "password"}
-                isInvalid={!!form.formState.errors.re_password}
-                errorMessage={form.formState.errors.re_password?.message}
                 endContent={
                   <button
+                    aria-label="toggle password visibility"
                     className="focus:outline-none"
                     type="button"
                     onClick={() => setRePasswordIsVisible(!isRePasswordVisible)}
-                    aria-label="toggle password visibility"
                   >
                     {isRePasswordVisible ? (
                       <EyeSlashFilledIcon className="text-2xl text-default-400 pointer-events-none" />
@@ -148,6 +148,10 @@ export default function RegisterForm() {
                     )}
                   </button>
                 }
+                errorMessage={form.formState.errors.re_password?.message}
+                isInvalid={!!form.formState.errors.re_password}
+                placeholder="Confirm your password"
+                type={isRePasswordVisible ? "text" : "password"}
               />
             )}
           />
@@ -155,27 +159,32 @@ export default function RegisterForm() {
             <Checkbox isSelected={isAgree} onValueChange={setIsAgree} />
             <p className="text-sm">
               By creating an account, you agree to our{" "}
-              <span className="text-blue-400 cursor-pointer hover:underline font-bold">
-                Terms of Service
-              </span>{" "}
+              <span
+  onClick={() => window.open('/terms-and-conditions', '_blank')}
+  className="text-blue-400 cursor-pointer hover:underline font-bold"
+>
+  Terms of Service
+</span>
               and{" "}
-              <span className="text-blue-400 cursor-pointer hover:underline font-bold">
+              <span
+              onClick={() => window.open('/privacy-policy', '_blank')}
+              className="text-blue-400 cursor-pointer hover:underline font-bold">
                 Privacy Policy
               </span>
             </p>
           </div>
           <Button
             className="w-full"
-            type="submit"
             color="primary"
+            isDisabled={isLoading || !isAgree}
             radius="sm"
             size="lg"
-            isDisabled={isLoading || !isAgree}
+            type="submit"
           >
             {isLoading ? (
               <div className="flex items-center gap-2">
                 {" "}
-                <Spinner size="sm" color="white" />
+                <Spinner color="white" size="sm" />
                 Loading..
               </div>
             ) : (

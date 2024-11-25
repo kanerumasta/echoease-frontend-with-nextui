@@ -1,206 +1,122 @@
 "use client";
 
-import CustomError from "@/components/custom-error";
-import DisputeIcon from "@/components/icons/dispute";
+import { Spacer } from "@nextui-org/spacer";
+import { notFound, useParams } from "next/navigation";
+import { Fragment, useEffect } from "react";
+
+import BookingProgress from "@/components/booking-status-progress";
+import { UserRoles } from "@/config/constants";
 import { useFetchCurrentUserQuery } from "@/redux/features/authApiSlice";
 import { useFetchBookingDetailQuery } from "@/redux/features/bookingApiSlice";
-import { Button } from "@nextui-org/button";
-import { Input, Textarea } from "@nextui-org/input";
-import {
-  Modal,
-  ModalBody,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  useDisclosure,
-} from "@nextui-org/modal";
-import { Select, SelectItem } from "@nextui-org/select";
-import { Spinner } from "@nextui-org/spinner";
-import { useParams } from "next/navigation";
-import { Fragment, useEffect, useRef } from "react";
-import { DisputeReasonOptions } from "./utils";
-import { useCreateClientDispute } from "@/hooks/disputes";
-import { toast } from "react-toastify";
-import useCreateOrder from "@/hooks/payment/use-create-order";
-import { useCreatePaymongoPaymentLinkMutation } from "@/redux/features/paymentApiSlice";
+import { useFetchNewNotificationsQuery } from "@/redux/features/notificationApiSlice";
+import { MyMap } from "@/components/map";
+
+import ArtistDetails from "./components/artist-details";
+import BasicBookingInfo from "./components/basic-details";
+import { CancelBooking } from "./components/cancel-booking";
+import { CreateDispute } from "./components/create-dispute";
+import DownpaymentInfo from "./components/downpayment-info";
+import { Heading } from "./components/heading";
+import PaymentInfo from "./components/payment-info";
+import { PostReview } from "./components/post-review";
+import { Disputes } from "./components/disputes";
 
 export default function BookingDetailPage() {
   const params = useParams<{ id: string }>();
-  const { isOpen, onClose, onOpen, onOpenChange } = useDisclosure();
-  const [createPaymongoLink, { isLoading, isError, data }] =
-    useCreatePaymongoPaymentLinkMutation();
-  const {
-    form,
-    onSubmit,
-    isLoading: submitDisputeLoading,
-    isError: submitDisputeError,
-    isSuccess: submitDisputeSuccess,
-  } = useCreateClientDispute();
-  const disputeFormRef = useRef<HTMLFormElement | null>(null);
-  const bookingId = params.id;
-  const {
-    data: curUser,
-    isLoading: isCurUserLoading,
+  const { refetch: refetchNewNotif } = useFetchNewNotificationsQuery();
 
-    isError: isCurUserError,
-  } = useFetchCurrentUserQuery();
+  const bookingId = params.id;
+  const { data: curUser } = useFetchCurrentUserQuery();
 
   const {
     data: bookingDetail,
-    isLoading: isBookingLoading,
-    isError: isBookingError,
-  } = useFetchBookingDetailQuery(bookingId);
+    refetch: refetchBooking,
+    refetch,
+  } = useFetchBookingDetailQuery(bookingId, {
+    refetchOnMountOrArgChange: true,
+  });
 
-  if (isBookingError) {
-    return (
-      <CustomError
-        message="Error fetching your booking!"
-        onRetry={() => alert("retry")}
-      />
-    );
-  }
-  const handlePayButtonPress = () => {
-    const formData = new FormData();
-    bookingDetail && formData.append("booking_id", bookingDetail.id.toString());
-    formData.append("amount", "200");
-    bookingDetail &&
-      formData.append(
-        "cancel_url",
-        `localhost:3000/bookings/${bookingDetail.id}`
-      );
-
-    const payload = {
-      amount: "200",
-    };
-
-    createPaymongoLink(payload);
-  };
   useEffect(() => {
-    if (data) {
-      window.location.href = data.checkout_link;
-    }
-  }, [data]);
+    refetchNewNotif();
+    refetch();
+  }, []);
 
-  const handleSubmitButtonPress = () => {
-    if (disputeFormRef.current) {
-      disputeFormRef.current.requestSubmit();
-    }
-  };
+  if (curUser && curUser.role === UserRoles.artist) {
+    return notFound();
+  }
 
   return (
     <div>
       {bookingDetail && (
         <Fragment>
-          <p>{bookingDetail.event_name}</p>
-          <p>{bookingDetail.event_location}</p>
-          <p>{bookingDetail.formatted_event_date}</p>
-          <p>{bookingDetail.formatted_event_time}</p>
-          {bookingDetail.status === "approved" && (
-            <div>
-              {!bookingDetail.is_completed && (
-                <Button
-                  onClick={handlePayButtonPress}
-                  color="primary"
-                  size="lg"
-                  radius="sm"
-                >
-                  Pay Now
-                </Button>
-              )}
-              <Button
-                radius="sm"
-                variant="faded"
-                color="danger"
-                size="lg"
-                endContent={<DisputeIcon />}
-                onPress={onOpen}
-              >
-                Create a Dispute
-              </Button>
+          <Heading booking={bookingDetail} />
+          <Spacer y={4} />
+          <div className="w-full flex justify-center">
+            <BookingProgress status={bookingDetail.status} />
+          </div>
+          <div className="flex gap-3">
+            <div className="w-full bg-white/5 p-2 rounded-md    ">
+              <div className="flex flex-col gap-2">
+                <BasicBookingInfo booking={bookingDetail} />
+                <ArtistDetails booking={bookingDetail} />
+                <Spacer y={4} />
+                <div className="flex gap-3">
+                  {bookingDetail.is_event_due && curUser && (
+                    <CreateDispute
+                      booking={bookingDetail}
+                      clientId={curUser.id}
+                    />
+                  )}
+                  {bookingDetail.is_completed &&
+                    !bookingDetail.is_reviewed &&
+                    curUser && <PostReview bookingId={bookingDetail.id} />}
+                  {!bookingDetail.is_completed &&
+                    !(bookingDetail.status === "rejected") &&
+                    !(bookingDetail.status === "cancelled") &&
+                    !bookingDetail.is_event_due && (
+                      <CancelBooking booking={bookingDetail} />
+                    )}
+                  {/* <DownloadBookingPDF bookingId={bookingDetail.id}/> */}
+                </div>
+              </div>
+              {/* <ClientDetails booking={bookingDetail}/> */}
             </div>
-          )}
-          {bookingDetail.status === "pending" &&
-            bookingDetail.artist.user.id === curUser?.id && (
-              <Button color="secondary">Confirm</Button>
+            {bookingDetail.status === "awaiting_downpayment" && (
+              <DownpaymentInfo booking={bookingDetail} />
             )}
+            {bookingDetail.status === "completed" ||
+              (bookingDetail.status === "approved" && (
+                <PaymentInfo booking={bookingDetail} />
+              ))}
+          </div>
+
+          {bookingDetail.status === "rejected" &&
+            bookingDetail.decline_reason && (
+              <div className="p-3 space-y-2 rounded-md bg-white/5">
+                <h3 className="text-lg text-white/50">Reason of Decline</h3>
+                <p className="text-md">{bookingDetail.decline_reason}</p>
+              </div>
+            )}
+          {bookingDetail.status === "cancelled" &&
+            bookingDetail.cancel_reason && (
+              <div className="p-3 space-y-2 rounded-md bg-white/5">
+                <h3 className="text-lg text-white/50">
+                  Reason of Cancellation
+                </h3>
+                <p className="text-md">{bookingDetail.cancel_reason}</p>
+              </div>
+            )}
+          {bookingDetail.disputes.length > 0 && (
+            <Disputes
+              disputes={bookingDetail.disputes}
+              onRefetch={refetchBooking}
+            />
+          )}
+          {bookingDetail.latitude && bookingDetail.longitude && (
+            <MyMap booking={bookingDetail} />
+          )}
         </Fragment>
       )}
-      <Modal isDismissable={false} isOpen={isOpen} onOpenChange={onOpenChange}>
-        <ModalContent>
-          <ModalHeader>
-            <div className="space-y-2">
-              <h1>Report a dispute for your booking</h1>
-              <p className="text-xs font-normal dark:text-white/30">
-                Please provide the details of the issue related to your booking.
-                Our team will review your dispute and get back to you shortly.
-              </p>
-            </div>
-          </ModalHeader>
-          <ModalBody>
-            <form
-              onSubmit={form.handleSubmit(onSubmit)}
-              ref={disputeFormRef}
-              className="space-y-2"
-            >
-              <input
-                {...form.register("client")}
-                value={curUser?.id}
-                style={{ display: "none" }}
-              />
-              <Input
-                {...form.register("booking")}
-                variant="faded"
-                isInvalid={!!form.formState.errors.booking}
-                errorMessage={form.formState.errors.booking?.message}
-                size="lg"
-                radius="sm"
-                label="Booking Reference No."
-                value={bookingDetail?.id.toString()}
-                isReadOnly
-              />
-              <Select
-                variant="faded"
-                isInvalid={!!form.formState.errors.reason}
-                errorMessage={form.formState.errors.reason?.message}
-                onChange={(e) => form.setValue("reason", e.target.value)}
-                size="lg"
-                radius="sm"
-                label="Dispute Reason"
-              >
-                {DisputeReasonOptions.map((r) => (
-                  <SelectItem key={r.id}>{r.label}</SelectItem>
-                ))}
-              </Select>
-
-              <Textarea
-                {...form.register("description")}
-                variant="faded"
-                isInvalid={!!form.formState.errors.description}
-                errorMessage={form.formState.errors.description?.message}
-                radius="sm"
-                label="Description"
-                placeholder="Please type here the dispute description..."
-              />
-            </form>
-          </ModalBody>
-          <ModalFooter>
-            <Button size="lg" radius="sm" onPress={onClose}>
-              Cancel
-            </Button>
-            <Button
-              onPress={handleSubmitButtonPress}
-              color="danger"
-              variant="faded"
-              radius="sm"
-              size="lg"
-              isLoading={submitDisputeLoading}
-              isDisabled={submitDisputeLoading}
-            >
-              Submit
-            </Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
     </div>
   );
 }

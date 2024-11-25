@@ -1,8 +1,9 @@
 "use client";
-import { useRolePickMutation } from "@/redux/features/accountApiSlice";
-import { RolePickingSchema } from "@/schemas/user-schemas";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+
+import { useRolePickMutation } from "@/redux/features/accountApiSlice";
+import { RolePickingSchema } from "@/schemas/user-schemas";
 
 export default function useRolePicking() {
   const [rolePick, { isLoading, isError, isSuccess }] = useRolePickMutation();
@@ -22,7 +23,7 @@ export default function useRolePicking() {
           ? "event_organizer"
           : data.category === "bar owner"
             ? "bar_owner"
-            : data.category
+            : data.category,
       );
 
     //organizer ?
@@ -32,6 +33,9 @@ export default function useRolePicking() {
       data.organizer_images.map((d, index) => {
         formData.append(`doc_image${index + 1}`, d);
       });
+
+    data.businessName && formData.append("business_name", data.businessName);
+    data.businessImage && formData.append("business_image", data.businessImage);
 
     //bar owner
     data.business_permit &&

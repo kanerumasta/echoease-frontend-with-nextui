@@ -1,23 +1,17 @@
 "use client";
-import { EyeFilledIcon } from "@/components/icons/eye";
-import { EyeSlashFilledIcon } from "@/components/icons/eyeslash";
-import { MailIcon } from "@/components/icons/mail";
-import { useLogin } from "@/hooks/auth";
 import { Button } from "@nextui-org/button";
 import { Input } from "@nextui-org/input";
 import React, { useEffect } from "react";
-import SocialButtons from "./SocialButtons";
-import {
-  Controller,
-  Form,
-  FormProvider,
-  useController,
-  useFormContext,
-} from "react-hook-form";
+import { Controller, FormProvider } from "react-hook-form";
 import { z } from "zod";
 import { Spinner } from "@nextui-org/spinner";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
+
+import { useLogin } from "@/hooks/auth";
+import { MailIcon } from "@/components/icons/mail";
+import { EyeSlashFilledIcon } from "@/components/icons/eyeslash";
+import { EyeFilledIcon } from "@/components/icons/eye";
 
 const LoginSchema = z.object({
   email: z
@@ -37,9 +31,7 @@ export default function LoginForm({ redirect }: { redirect: string }) {
   useEffect(() => {
     if (isSuccess) {
       toast.success("Logged in successfully.");
-      setTimeout(() => {
-        window.location.href = redirect;
-      }, 2000);
+      router.replace("/");
     }
     if (isError) {
       toast.error("Email or password is incorrect.");
@@ -48,58 +40,55 @@ export default function LoginForm({ redirect }: { redirect: string }) {
 
   return (
     <FormProvider {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 w-full">
+      <form className="space-y-4 w-full" onSubmit={form.handleSubmit(onSubmit)}>
         <input
-          type="email"
-          name="fake_email"
           autoComplete="username"
+          name="fake_email"
           style={{ display: "none" }}
+          type="email"
         />
         <input
-          type="password"
-          name="fake_password"
           autoComplete="new-password"
+          name="fake_password"
           style={{ display: "none" }}
+          type="password"
         />
         <Controller
-          name="email"
           control={form.control}
+          name="email"
           render={({ field }) => (
             <Input
-              type="email"
-              radius="sm"
+                maxLength={250}
               label="Email"
+              radius="sm"
+              type="email"
               {...field}
-              variant="faded"
-              placeholder="example@gmail.com"
-              isInvalid={!!form.formState.errors.email}
-              errorMessage={form.formState.errors.email?.message}
               endContent={
                 <MailIcon className="text-2xl text-default-400 pointer-events-none flex-shrink-0" />
               }
+              errorMessage={form.formState.errors.email?.message}
+              isInvalid={!!form.formState.errors.email}
+              placeholder="example@gmail.com"
+              variant="faded"
             />
           )}
         />
 
         <Controller
-          name="password"
           control={form.control}
+          name="password"
           render={({ field }) => (
             <Input
-              variant="faded"
               label="Password"
               radius="sm"
+              variant="faded"
               {...field}
-              placeholder="Enter your password"
-              type={isPasswordVisible ? "text" : "password"}
-              isInvalid={!!form.formState.errors.password}
-              errorMessage={form.formState.errors.password?.message}
               endContent={
                 <button
+                  aria-label="toggle password visibility"
                   className="focus:outline-none"
                   type="button"
                   onClick={() => setPasswordIsVisible(!isPasswordVisible)}
-                  aria-label="toggle password visibility"
                 >
                   {isPasswordVisible ? (
                     <EyeSlashFilledIcon className="text-2xl text-default-400 pointer-events-none" />
@@ -108,25 +97,29 @@ export default function LoginForm({ redirect }: { redirect: string }) {
                   )}
                 </button>
               }
+              errorMessage={form.formState.errors.password?.message}
+              isInvalid={!!form.formState.errors.password}
+              placeholder="Enter your password"
+              type={isPasswordVisible ? "text" : "password"}
             />
           )}
         />
         <small
-          onClick={() => router.push("/password-reset")}
           className="text-black/50 dark:text-white/50 hover:text-blue-400 dark:hover:text-blue-400 cursor-pointer"
+          onClick={() => router.push("/password-reset")}
         >
           Forgot password?
         </small>
         <Button
           className="w-full"
-          type="submit"
           color="primary"
           isDisabled={isLoading}
+          type="submit"
         >
           {isLoading ? (
             <div className="flex items-center gap-2">
               {" "}
-              <Spinner size="sm" color="white" />
+              <Spinner color="white" size="sm" />
               Loading..
             </div>
           ) : (

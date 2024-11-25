@@ -1,9 +1,5 @@
-"use client"
-import useLoginRequired from "@/hooks/use-login-required";
+"use client";
 
-export default function MessagesPage(){
-  
-    return <div>
-        
-    </div>
+export default function MessagesPage() {
+  return <div />;
 }

@@ -1,57 +1,49 @@
-import {
-  useCreateNewBookingMutation,
-  useFetchMyBookingsQuery,
-} from "@/redux/features/bookingApiSlice";
-import { BookingSchema } from "@/schemas/booking-schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import { z } from "zod";
 
-export default function useCreateBooking() {
+import { BookingSchema } from "@/schemas/booking-schemas";
+import { ArtistInSchema } from "@/schemas/artist-schemas";
+import { useCreateNewBookingMutation } from "@/redux/features/bookingApiSlice";
+
+export default function useCreateBooking(
+  artist: z.infer<typeof ArtistInSchema>,
+) {
   const [createNewBooking, bookingState] = useCreateNewBookingMutation();
-  const { refetch } = useFetchMyBookingsQuery();
+
   const form = useForm<z.infer<typeof BookingSchema>>({
     resolver: zodResolver(BookingSchema),
-    shouldUnregister: false,
   });
 
-  const router = useRouter();
   const onSubmit = (data: z.infer<typeof BookingSchema>) => {
-    alert("dff");
-    if (data.artist) {
-      const formData = new FormData();
-      formData.append("artist", data.artist.toString());
-      formData.append("event_name", data.eventName);
-      formData.append("event_date", data.eventDate);
-      formData.append("event_time", data.eventTime);
-      formData.append("province", data.province);
-      formData.append("municipality", data.municipality);
-      formData.append("barangay", data.barangay);
-      formData.append("street", data.street);
-      formData.append("landmark", data.landmark);
-      formData.append("rate", data.rate);
-      console.log(data.artist);
+    const formattedDate = `${data.eventDate.getFullYear()}-${data.eventDate.getMonth() + 1}-${data.eventDate.getDate()}`;
+    const payload = {
+      artist: artist.id.toString(),
+      event_name: data.eventName,
+      event_date: formattedDate,
+      start_time: data.startTime.toString(),
+      end_time: data.endTime.toString(),
+      province: "Cebu",
+      municipality: data.municipality,
+      barangay: data.barangay,
+      street: data.street,
+      landmark: data.landmark,
+      rate: data.rate,
+      venue: data.venue,
+    };
 
-      createNewBooking(formData)
-        .unwrap()
-        .then(() => {
-          refetch();
-        })
-        .catch(() =>
-          toast.error("Error creating your booking. Please try again later.")
-        );
-    }
+    createNewBooking(payload).unwrap();
   };
+
   useEffect(() => {
     if (bookingState.isSuccess) {
       toast.success("Your booking is successfully created");
       console.log(bookingState.data);
       setTimeout(() => {
         if (bookingState.data.id)
-          router.push(`/bookings/${bookingState.data.id}`);
+          window.location.href = `/bookings/${bookingState.data.id}`;
       }, 2000);
     }
   }, [bookingState.isSuccess, bookingState.isError]);

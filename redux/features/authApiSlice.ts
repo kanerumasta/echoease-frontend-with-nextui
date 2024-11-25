@@ -1,8 +1,9 @@
 import { z } from "zod";
-import { apiSlice } from "../services/apiSlice";
+
 import { UserSchema } from "@/schemas/user-schemas";
 import { ResetPasswordConfirmSchema } from "@/schemas/auth-schemas";
 
+import { apiSlice } from "../services/apiSlice";
 
 interface User {
   first_name: string;
@@ -25,6 +26,7 @@ const authApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     fetchCurrentUser: builder.query<z.infer<typeof UserSchema>, void>({
       query: () => "/whoami",
+      providesTags: ["CurrentUser"],
     }),
     loginUser: builder.mutation({
       query: ({ email, password }) => ({
@@ -36,6 +38,7 @@ const authApiSlice = apiSlice.injectEndpoints({
         },
         body: { email, password },
       }),
+      invalidatesTags: ["CurrentUser"],
     }),
     registerNewUser: builder.mutation({
       query: ({ first_name, last_name, email, password, re_password }) => ({
@@ -67,6 +70,13 @@ const authApiSlice = apiSlice.injectEndpoints({
         body: { uid, token },
       }),
     }),
+    resendActivation: builder.mutation({
+      query: (data) => ({
+        url: "/users/resend_activation/",
+        method: "POST",
+        body: data,
+      }),
+    }),
     resetPassword: builder.mutation({
       query: (email) => ({
         url: "/users/reset_password/",
@@ -89,7 +99,7 @@ const authApiSlice = apiSlice.injectEndpoints({
     socialAuthenticate: builder.mutation<CreateUserResponse, SocialAuthArgs>({
       query: ({ provider, state, code }) => ({
         url: `/o/${provider}/?state=${encodeURIComponent(
-          state
+          state,
         )}&code=${encodeURIComponent(code)}`,
         method: "POST",
         headers: {
@@ -97,9 +107,21 @@ const authApiSlice = apiSlice.injectEndpoints({
           "Content-Type": "x-www-form-urlencoded",
         },
       }),
-    
     }),
-   
+    activateUser: builder.mutation<any, void>({
+      query: () => ({
+        url: "/activate/",
+        method: "POST",
+      }),
+      invalidatesTags: ["CurrentUser"],
+    }),
+    deactivateUser: builder.mutation<any, void>({
+      query: () => ({
+        url: "/deactivate/",
+        method: "POST",
+      }),
+      invalidatesTags: ["CurrentUser"],
+    }),
   }),
 });
 
@@ -113,5 +135,7 @@ export const {
   useVerifyUserMutation,
   useResetPasswordConfirmMutation,
   useResetPasswordMutation,
-
+  useResendActivationMutation,
+  useDeactivateUserMutation,
+  useActivateUserMutation,
 } = authApiSlice;

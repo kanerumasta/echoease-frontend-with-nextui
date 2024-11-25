@@ -1,11 +1,12 @@
 "use client";
 
-import { useCreateClientDisputeMutation } from "@/redux/features/disputeApiSlice";
-import { ClientDisputeSchema } from "@/schemas/dispute-schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import { z } from "zod";
+
+import { ClientDisputeSchema } from "@/schemas/dispute-schemas";
+import { useCreateClientDisputeMutation } from "@/redux/features/disputeApiSlice";
 
 export default function useCreateClientDispute() {
   const form = useForm<z.infer<typeof ClientDisputeSchema>>({
@@ -15,18 +16,19 @@ export default function useCreateClientDispute() {
     useCreateClientDisputeMutation();
   const onSubmit = (data: z.infer<typeof ClientDisputeSchema>) => {
     const validatedData = ClientDisputeSchema.safeParse(data);
+
     if (validatedData.success) {
       createClientDispute(data)
         .unwrap()
         .then(() =>
           toast.success(
-            "Dispute successfully created. Please wait for admin resolution."
-          )
+            "Dispute successfully created. Please wait for admin resolution.",
+          ),
         )
         .catch();
     } else {
       console.log(
-        "ERROR: data is not valid - validated by safeParse in Hooks submit"
+        "ERROR: data is not valid - validated by safeParse in Hooks submit",
       );
     }
   };

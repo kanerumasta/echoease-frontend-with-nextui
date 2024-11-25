@@ -1,28 +1,69 @@
 "use client";
 
-import useLoginRequired from "@/hooks/use-login-required";
-import { useFetchDetailArtistBySlugQuery } from "@/redux/features/artistApiSlice";
-import { useFetchCurrentUserQuery } from "@/redux/features/authApiSlice";
-import { Modal, useDisclosure } from "@nextui-org/modal";
-import { notFound, useParams } from "next/navigation";
-import Loading from "../auth/facebook/loading";
+import { useDisclosure } from "@nextui-org/modal";
 import { Spacer } from "@nextui-org/spacer";
-import { Button } from "@nextui-org/button";
-import { BookingForm } from "./forms/booking-form";
+import {
+  notFound,
+  useParams,
+  useRouter,
+  useSearchParams,
+} from "next/navigation";
+import { useEffect, useState } from "react";
+import { skipToken } from "@reduxjs/toolkit/query";
+
+import EchoLoading from "@/components/echo-loading";
+import { Footer } from "@/components/footer";
+import useLoginRequired from "@/hooks/use-login-required";
+import {
+  useFetchArtistRatesQuery,
+  useFetchDetailArtistBySlugQuery,
+} from "@/redux/features/artistApiSlice";
+import { useFetchCurrentUserQuery } from "@/redux/features/authApiSlice";
+import { AnimatedComponent } from "@/components/animated-container";
+import {
+  useFetchArtistScheduleDaysQuery,
+  useFetchArtistUnavailableDatesQuery,
+} from "@/redux/features/scheduleApiSlice";
+
 import AboutSection from "./sections/about";
 import { IntroductionSection } from "./sections/intro";
 import { PortfolioSection } from "./sections/portfolio";
-import EchoLoading from "@/components/echo-loading";
+import { Genres } from "./sections/genres";
+import { Prices } from "./sections/prices";
+import { Reviews } from "./components/reviews";
+import Connections from "./sections/connections";
 
 export default function SlugPage() {
   const params = useParams<{ slug: string }>();
+  const searchParams = useSearchParams();
+  const open = searchParams.get("open");
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
-  const { data: currentUser } = useFetchCurrentUserQuery();
+  const { data: currentUser, isLoading: currentUserLoading } =
+    useFetchCurrentUserQuery();
+
+  const router = useRouter();
+  const [firstOpen, setFirstOpen] = useState(open === "1");
   const {
     data: artist,
     isLoading: isArtistLoading,
     isError: isArtistError,
   } = useFetchDetailArtistBySlugQuery(params.slug);
+
+  const { data: rates } = useFetchArtistRatesQuery(
+    artist ? artist.id.toString() : skipToken,
+  );
+  const { data: schedules } = useFetchArtistScheduleDaysQuery(
+    artist ? artist.id : skipToken,
+  );
+  const { data: unavailableDates } = useFetchArtistUnavailableDatesQuery(
+    artist ? artist.id : skipToken,
+  );
+
+  useEffect(() => {
+    if (currentUser && !currentUser?.profile?.is_complete) {
+      window.location.href = `/auth/register/profile?redirect=${encodeURIComponent(`/${params.slug}`)}`;
+    }
+  }, [currentUser]);
 
   const { loginChecked } = useLoginRequired(`/${params.slug}`);
 
@@ -31,50 +72,42 @@ export default function SlugPage() {
   if (isArtistError && loginChecked) {
     return notFound();
   }
+  if (currentUserLoading) {
+    return <EchoLoading />;
+  }
 
-  const handleBookPress = () => {
-    //check if current user profile is not yet complete
-    if (!currentUser?.profile?.is_complete) {
-      window.location.href = `/auth/register/profile?redirect=${encodeURIComponent(`/${artist?.slug}`)}`;
-    }
-    //check if current user has no user role (organizer, regular, bar owner)
-    else if (!currentUser.is_roled) {
-      window.location.href = `/auth/register/picking-role?redirect=${encodeURIComponent(`/${artist?.slug}`)}`;
-    } else {
-      onOpen();
-    }
-  };
   return (
-    <div className="flex w-full min-h-screen flex-col">
-      {artist && <IntroductionSection artist={artist} />}
-      <div className="">
-        {artist && <AboutSection artist={artist} />}
+    <>
+      <div className="flex w-full min-h-screen flex-col">
+        {artist && (
+          <div>
+            <IntroductionSection
+              artist={artist}
+              firstOpen={firstOpen}
+              setFirstOpen={setFirstOpen}
+              slug={params.slug}
+            />
+            <Spacer y={8} />
 
-        <Spacer y={8} />
-        <h1 className="text-3xl text-center mb-8 font-bold text-blue-400">
-          Portfolio
-        </h1>
-        {artist && <PortfolioSection artist={artist} />}
-        {artist?.user.id !== currentUser?.id && (
-          <Button
-            onClick={handleBookPress}
-            color="primary"
-            className="fixed top-6 right-6 overflow-visible  rounded-full hover:-translate-y-1 px-12 shadow-xl bg-blue-500/70 animate-bounce after:content-[''] after:absolute after:rounded-full after:inset-0 after:bg-blue-500/80 after:z-[-1] after:transition after:!duration-500 hover:after:scale-150 hover:after:opacity-0"
-          >
-            Book Me
-          </Button>
+            <AboutSection artist={artist} />
+
+            <AnimatedComponent className="">
+              <Prices artist={artist} />
+            </AnimatedComponent>
+            <AnimatedComponent className="mt-12">
+              <Genres artist={artist} />
+            </AnimatedComponent>
+            <Spacer y={8} />
+            <h1 className="text-center mb-4 text-2xl font-bold tracking-wider text-blue-400">
+              My Highlights
+            </h1>
+            {artist && <PortfolioSection artist={artist} />}
+            {artist && <Reviews artistId={artist.id} />}
+            {artist && <Connections artistId={artist.id} />}
+          </div>
         )}
-        <Modal
-          size="3xl"
-          onOpenChange={onOpenChange}
-          scrollBehavior="outside"
-          isDismissable={false}
-          isKeyboardDismissDisabled={false}
-          isOpen={isOpen}
-        >
-          {artist && <BookingForm artist={artist} />}
-        </Modal>
       </div>
-    </div>
+      <Footer />
+    </>
   );
 }

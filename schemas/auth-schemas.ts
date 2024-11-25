@@ -15,11 +15,9 @@ export const passwordSchema = z
   .refine((value) => /[\W_]/.test(value), {
     message: "Password must include at least one special character",
   });
-
 export const ResetPasswordConfirmSchema = z.object({
-    uid: z.string(),
-    token: z.string(),
-    new_password: z.string(),
-    re_new_password: z.string(),
-  });
-  
+  uid: z.string(),
+  token: z.string(),
+  new_password: z.string(),
+  re_new_password: z.string(),
+});

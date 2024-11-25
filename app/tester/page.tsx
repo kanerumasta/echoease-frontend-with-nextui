@@ -1,13 +1,16 @@
 "use client";
 
-import EchoLoading from "@/components/echo-loading";
-import FormSkeleton from "@/components/form-skeleton";
-import RegisterForm from "@/components/forms/auth/register-form";
+import { useEffect, useState } from "react";
 
 export default function TesterPage() {
-  return (
-    <div className="h-screen flex items-center justify-center">
-      <EchoLoading />
-    </div>
-  );
+  const [prop, setProps] = useState(0);
+
+  useEffect(() => {
+    setTimeout(() => {
+      if (prop < 100) setProps((prev) => prev + 5);
+      else setProps(0);
+    }, 100);
+  }, [prop]);
+
+  return <div>{/* <Step5 /> */}</div>;
 }

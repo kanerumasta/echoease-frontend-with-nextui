@@ -1,21 +1,19 @@
 "use client";
 
-import { useReadNotificationMutation } from "@/redux/features/notificationApiSlice";
-import { NotificationInSchema } from "@/schemas/notification-schemas";
 import { useRouter } from "next/navigation";
 import { z } from "zod";
+
+import { useReadNotificationMutation } from "@/redux/features/notificationApiSlice";
+import { NotificationInSchema } from "@/schemas/notification-schemas";
+
 import NotificationCard from "./card";
 
 export default function Notifications({
   notifications,
-  title,
   isNew,
-  onDelete,
 }: {
   notifications: z.infer<typeof NotificationInSchema>[];
-  title: string;
   isNew: boolean;
-  onDelete: () => void;
 }) {
   const router = useRouter();
 
@@ -23,6 +21,7 @@ export default function Notifications({
 
   const handleClick = (notif: z.infer<typeof NotificationInSchema>) => {
     let url = "/";
+
     if (notif.booking) {
       url = `/bookings/${notif.booking.id}`;
     }
@@ -37,10 +36,15 @@ export default function Notifications({
 
   return (
     <div className="">
-      <h1 className="capitalize font-semibold text-2xl">{title}</h1>
-      {notifications.map((notif) => (
-        <NotificationCard onDelete={onDelete} notif={notif} isNew={isNew} />
-      ))}
+      {notifications.length > 0 ? (
+        notifications.map((notif) => (
+          <NotificationCard isNew={isNew} notif={notif} />
+        ))
+      ) : (
+        <div className="p-8 bg-white/5 rounded-md flex justify-center">
+          Empty notifications
+        </div>
+      )}
     </div>
   );
 }

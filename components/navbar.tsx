@@ -14,19 +14,6 @@ import {
   Navbar as NextUINavbar,
 } from "@nextui-org/navbar";
 import NextLink from "next/link";
-
-import {
-  DiscordIcon,
-  GithubIcon,
-  Logo,
-  SearchIcon,
-  TwitterIcon,
-} from "@/components/icons";
-import { siteConfig } from "@/config/site";
-import { useLogout } from "@/hooks/auth";
-import { useFetchCurrentUserQuery } from "@/redux/features/authApiSlice";
-import { useCountNewNotificationsQuery } from "@/redux/features/notificationApiSlice";
-import { useIsCurrentUserAnArtist } from "@/utils/check-is-artist";
 import { Badge } from "@nextui-org/badge";
 import {
   Dropdown,
@@ -44,94 +31,134 @@ import {
   useDisclosure,
 } from "@nextui-org/modal";
 import { User } from "@nextui-org/user";
-import { useRouter } from "next/navigation";
-import { Fragment } from "react";
-import { IoNotifications } from "react-icons/io5";
+import { usePathname, useRouter } from "next/navigation";
+import { Fragment, useCallback, useState } from "react";
+import { IoChatbubble, IoNotifications } from "react-icons/io5";
+
+import { useIsCurrentUserAnArtist } from "@/utils/check-is-artist";
+import { useFetchNewNotificationsQuery } from "@/redux/features/notificationApiSlice";
+import { useFetchCurrentUserQuery } from "@/redux/features/authApiSlice";
+import { useLogout } from "@/hooks/auth";
+import { siteConfig } from "@/config/site";
+import {
+  DiscordIcon,
+  GithubIcon,
+  Logo,
+  SearchIcon,
+  TwitterIcon,
+} from "@/components/icons";
+import { cn } from "@/lib/utils";
+import { useFetchPendingBookingsQuery } from "@/redux/features/bookingApiSlice";
+import { useFetchUnreadMessagesCountQuery } from "@/redux/features/chatApiSlice";
+import { HiDotsVertical } from "react-icons/hi";
+import { MdSupportAgent } from "react-icons/md";
+import { FaGavel } from "react-icons/fa";
 
 export const Navbar = () => {
   const { data: user, isLoading, isError } = useFetchCurrentUserQuery();
   const { isOpen, onClose, onOpen } = useDisclosure();
   const { logout } = useLogout();
   const router = useRouter();
-  const { data: notifData } = useCountNewNotificationsQuery();
+  const { data: newNotifications = [] } = useFetchNewNotificationsQuery();
+  const { data: pendingBookings } = useFetchPendingBookingsQuery();
+  const currentPath = usePathname();
+  const { data: unreadMessages } = useFetchUnreadMessagesCountQuery();
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
+
+  const isActiveTab = useCallback(
+    (path: string) => currentPath.includes(path),
+    [currentPath],
+  );
 
   const { isArtist, isLoading: checkUserAnArtistLoading } =
     useIsCurrentUserAnArtist();
 
-  const searchInput = (
-    <Input
-      radius="full"
-      aria-label="Search"
-      classNames={{
-        inputWrapper: "bg-default-100",
-        input: "text-sm",
-      }}
-      endContent={
-        <Kbd className="hidden lg:inline-block" keys={["command"]}>
-          K
-        </Kbd>
-      }
-      labelPlacement="outside"
-      placeholder="Search..."
-      startContent={
-        <SearchIcon className="text-base text-default-400 pointer-events-none flex-shrink-0" />
-      }
-      type="search"
-    />
-  );
 
   return (
     <NextUINavbar
       className="bg-black dark:bg-transparent"
       maxWidth="xl"
       position="sticky"
+      isMenuOpen={isMenuOpen}
+      onMenuOpenChange={setIsMenuOpen}
     >
-      <NavbarContent className="basis-1/5 sm:basis-full" justify="start">
+        {/* Toggle */}
+        <NavbarContent className="md:hidden w-[80px] " justify="start">
+            <NavbarMenuToggle aria-label={isMenuOpen ? "Close menu" : "Open menu"} />
+            <NavbarBrand as="li" className="gap-3 max-w-fit">
+                <NextLink className="flex justify-start items-center gap-1" href="/">
+                    <Logo />
+                    <p className="font-bold text-blue-400">EchoEase</p>
+                </NextLink>
+                </NavbarBrand>
+        </NavbarContent>
+
+        <NavbarContent className="hidden md:flex ">
         <NavbarBrand as="li" className="gap-3 max-w-fit">
-          <NextLink className="flex justify-start items-center gap-1" href="/">
-            <Logo />
-            <p className="font-bold text-blue-400">EchoEase</p>
-          </NextLink>
-        </NavbarBrand>
-        <ul className="hidden lg:flex gap-4 justify-start ml-2">
-          {siteConfig.navItems.map((item) => (
-            <NavbarItem key={item.href}>
-              <Link className="text-white" href={item.href}>
-                {item.label}
+                <NextLink className="flex justify-start items-center gap-1" href="/">
+                    <Logo />
+                    <p className="font-bold text-blue-400">EchoEase</p>
+                </NextLink>
+                </NavbarBrand>
+        </NavbarContent>
+
+
+      <NavbarContent className="hidden md:flex basis-1/5 md:basis-full">
+
+          {user && (
+            <NavbarItem>
+              <Link
+                className={cn("text-white/50 p-2 rounded-md", {
+                  "bg-blue-500 text-white": isActiveTab("/echoees"),
+                })}
+                href={"/echoees"}
+              >
+                Echoees
               </Link>
             </NavbarItem>
-          ))}
-        </ul>
+          )}
+
+          {isArtist && (
+            <NavbarItem>
+              <Link
+                className={cn("text-white/50 p-2 rounded-md", {
+                  "bg-blue-500 text-white": isActiveTab("/echoverse"),
+                })}
+                href={"/echoverse"}
+              >
+                Echoverse
+              </Link>
+            </NavbarItem>
+          )}
+          {user && (
+            <>
+            {!isArtist && (
+          <NavbarItem>
+              <Link
+                className={cn(
+                  "text-white/50 p-2 rounded-md",
+                  isActiveTab("/bookings") && "bg-blue-500 text-white",
+                )}
+                href={"/bookings"}
+              >
+                Bookings
+              </Link>
+          </NavbarItem>
+            )}
+          <NavbarItem>
+            <Link className={cn(
+                  "text-white/50 p-2 rounded-md",
+                  isActiveTab("/transactions") && "bg-blue-500 text-white",
+                )} href="/transactions">Transactions</Link>
+          </NavbarItem>
+          </>
+          )}
       </NavbarContent>
 
       <NavbarContent
-        className="hidden sm:flex basis-1/5 sm:basis-full"
+        className="basis-1/5 sm:basis-full"
         justify="end"
       >
-        {
-            !(user?.role === 'artist') && (
-                <NavbarItem>
-                <Link className="text-white" href={"/become-an-echoee"}>
-                  Become an echoee
-                </Link>
-              </NavbarItem>
-            )
-        }
-
-        <NavbarItem className="hidden sm:flex gap-2">
-          <Link isExternal aria-label="Twitter" href={siteConfig.links.twitter}>
-            <TwitterIcon className="text-default-500" />
-          </Link>
-          <Link isExternal aria-label="Discord" href={siteConfig.links.discord}>
-            <DiscordIcon className="text-default-500" />
-          </Link>
-          <Link isExternal aria-label="Github" href={siteConfig.links.github}>
-            <GithubIcon className="text-default-500" />
-          </Link>
-          {/* <ThemeSwitch /> */}
-        </NavbarItem>
-        {/* <NavbarItem className="hidden lg:flex">{searchInput}</NavbarItem> */}
-
         {!user && (
           <Fragment>
             <NavbarItem>
@@ -152,41 +179,58 @@ export const Navbar = () => {
             </NavbarItem>
           </Fragment>
         )}
-        {user && (
-          <NavbarItem>
-            {notifData?.notifications_count && notifData.notifications_count > 0 ?
-            <Badge color="danger" content={notifData.notifications_count}>
-              <IoNotifications
-                className="hover:cursor-pointer"
-                onClick={() => router.push("/notifications")}
-                color="white"
-                size={24}
-              />
-            </Badge> :  <IoNotifications
-                className="hover:cursor-pointer"
-                onClick={() => router.push("/notifications")}
-                color="white"
-                size={24}
-              />
-}
-          </NavbarItem>
-        )}
+{user &&
 
-        <NavbarItem className="hidden md:flex">
-          {user && (
+
+<NavbarContent justify="end">
+<NavbarItem>
+              <Badge
+                color="danger"
+                content={unreadMessages?.unread_messages_count ?? 0}
+                isInvisible={
+                  !unreadMessages || unreadMessages?.unread_messages_count <= 0
+                }
+              >
+                <IoChatbubble
+                 className="hover:cursor-pointer"
+                 color="white"
+                 size={24}
+                 onClick={() => router.push("/messages")}
+                />
+
+
+              </Badge>
+            </NavbarItem>
+            <NavbarItem >
+              <Badge
+                color="danger"
+                content={newNotifications.length.toString()}
+                isInvisible={!newNotifications || newNotifications.length <= 0}
+              >
+                <IoNotifications
+                  className="hover:cursor-pointer"
+                  color="white"
+                  size={24}
+                  onClick={() => router.push("/notifications")}
+                />
+              </Badge>
+          </NavbarItem>
+
+        {/* Profile */}
+          <NavbarItem className="md:flex">
             <Dropdown>
               <DropdownTrigger>
                 <User
-                  className="capitalize text-white hover:cursor-pointer"
-                  name={`${user.first_name} ${user.last_name}`}
-                  description="Singer"
                   avatarProps={{
                     fallback: `${user.first_name[0]} ${user.last_name[0]}`,
-                    src: `${process.env.NEXT_PUBLIC_HOST}${user.profile?.profile_image}`,
+                    src: user.profile?.profile_image,
                   }}
+                  className="capitalize text-white hover:cursor-pointer"
+                  description={isArtist ? "Echoee" : ""}
+                  name={`${user.first_name} ${user.last_name}`}
                 />
               </DropdownTrigger>
-              <DropdownMenu variant="faded" aria-label="menu">
+              <DropdownMenu aria-label="menu" variant="faded">
                 <DropdownItem>
                   <div>
                     <p className="text-xs dark:text-white/50 text-black/50">
@@ -195,64 +239,144 @@ export const Navbar = () => {
                     <p className="font-bold">{user.email}</p>
                   </div>
                 </DropdownItem>
-                <DropdownSection className="font-bold" showDivider>
+                <DropdownSection showDivider className="font-bold">
                   <DropdownItem
+                    key={"profile"}
                     onPress={() => {
                       isArtist
-                        ? router.push("/echoverse/about")
+                        ? router.push("/echoverse")
                         : router.push("/profile");
                     }}
-                    key={"profile"}
                   >
-                    Profile
+                    {isArtist ? "Echoverse" : "Profile"}
+                  </DropdownItem>
+                  <DropdownItem
+                    key={"terms"}
+                    onPress={() => {
+                     router.push("/terms-and-conditions")
+                    }}
+                  >
+                    Terms & Conditions
+                  </DropdownItem>
+                  <DropdownItem
+                    key={"terms"}
+                    onPress={() => {
+                     router.push("/support")
+                    }}
+                  >
+                        Help & Chat Support
                   </DropdownItem>
                 </DropdownSection>
                 <DropdownSection>
                   <DropdownItem
-                    onClick={onOpen}
                     key={"logout"}
                     className="text-danger"
                     color="danger"
+                    onClick={onOpen}
                   >
                     Logout
                   </DropdownItem>
                 </DropdownSection>
               </DropdownMenu>
             </Dropdown>
-          )}
         </NavbarItem>
-      </NavbarContent>
-
-      <NavbarContent className="sm:hidden basis-1 pl-4" justify="end">
-        <Link isExternal aria-label="Github" href={siteConfig.links.github}>
-          <GithubIcon className="text-default-500" />
-        </Link>
-        {/* <ThemeSwitch /> */}
-        <NavbarMenuToggle />
-      </NavbarContent>
+        </NavbarContent>
+}
+ </NavbarContent>
 
       <NavbarMenu>
-        {/* {searchInput} */}
         <div className="mx-4 mt-2 flex flex-col gap-2">
-          {siteConfig.navMenuItems.map((item, index) => (
-            <NavbarMenuItem key={`${item}-${index}`}>
+        {user && (
+            <NavbarItem>
               <Link
-                color={
-                  index === 2
-                    ? "primary"
-                    : index === siteConfig.navMenuItems.length - 1
-                      ? "danger"
-                      : "foreground"
-                }
-                href="#"
-                size="lg"
+                className={cn("w-full text-white/50 p-2 rounded-md", {
+                  "text-blue-400": isActiveTab("/echoees"),
+                })}
+                href={"/echoees"}
               >
-                {item.label}
+                Echoees
               </Link>
-            </NavbarMenuItem>
-          ))}
+            </NavbarItem>
+          )}
+
+          {isArtist && (
+            <NavbarItem>
+              <Link
+                className={cn("w-full text-white/50 p-2 rounded-md", {
+                  "text-blue-400": isActiveTab("/echoverse"),
+                })}
+                href={"/echoverse"}
+              >
+                Echoverse
+              </Link>
+            </NavbarItem>
+          )}
+          {user && (
+            <>
+            <NavbarItem>
+              <Badge
+                color="danger"
+                content={unreadMessages?.unread_messages_count ?? 0}
+                isInvisible={
+                  !unreadMessages || unreadMessages?.unread_messages_count <= 0
+                }
+              >
+                <Link
+                  className={cn("w-full text-white/50 p-2 rounded-md", {
+                    "text-blue-400": isActiveTab("/messages"),
+                  })}
+                  href={"/messages"}
+                >
+                  Messages
+                </Link>
+              </Badge>
+            </NavbarItem>
+
+          <NavbarItem>
+            {!isArtist && (
+              <Link
+                className={cn(
+                  "w-full text-white/50 p-2 rounded-md",
+                  isActiveTab("/bookings") && "text-blue-400",
+                )}
+                href={"/bookings"}
+              >
+                Bookings
+              </Link>
+            )}
+          </NavbarItem>
+          <NavbarItem>
+            <Link className={cn(
+                  "w-full text-white/50 p-2 rounded-md",
+                  isActiveTab("/transactions") && "text-blue-400",
+                )} href="/transactions">Transactions</Link>
+          </NavbarItem>
+          <NavbarItem>
+          <Link className={cn(
+                  "w-full text-white/50 p-2 rounded-md",
+                  isActiveTab("/notifications") && "text-blue-400",
+                )} href="/notifications">Notifications</Link>
+
+          </NavbarItem>
+          <NavbarItem>
+          <Link className={cn(
+                  "w-full text-white/50 p-2 rounded-md",
+                  isActiveTab("/terms-and-conditions") && "text-blue-400",
+                )} href="/terms-and-conditions">Terms and Conditions</Link>
+
+          </NavbarItem>
+          <NavbarItem>
+          <Link className={cn(
+                  "w-full text-white/50 p-2 rounded-md",
+                  isActiveTab("/support") && "text-blue-400",
+                )} href="/support">Help and Chat Support</Link>
+
+          </NavbarItem>
+          </>
+          )}
         </div>
       </NavbarMenu>
+
       {/* LOGOUT MODAL */}
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalContent>
@@ -267,8 +391,8 @@ export const Navbar = () => {
               Cancel
             </Button>
             <Button
-              radius="sm"
               color="danger"
+              radius="sm"
               variant="faded"
               onPress={() => logout()}
             >

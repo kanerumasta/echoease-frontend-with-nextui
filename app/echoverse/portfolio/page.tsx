@@ -1,9 +1,9 @@
 "use client";
-import { HiX } from "react-icons/hi";
-import { useCreateNewPortfolio } from "@/hooks/artists/use-create-new-portfolio";
+
+import { z } from "zod";
+import React, { useEffect, useRef, useState } from "react";
+import { IoAdd, IoClose } from "react-icons/io5";
 import { Button } from "@nextui-org/button";
-import { Image } from "@nextui-org/image";
-import { Input, Textarea } from "@nextui-org/input";
 import {
   Modal,
   ModalBody,
@@ -12,375 +12,370 @@ import {
   ModalHeader,
   useDisclosure,
 } from "@nextui-org/modal";
+import { HiDotsVertical } from "react-icons/hi";
 import {
-  Dispatch,
-  Fragment,
-  Ref,
-  SetStateAction,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+  Dropdown,
+  DropdownItem,
+  DropdownMenu,
+  DropdownTrigger,
+} from "@nextui-org/dropdown";
+import { toast } from "react-toastify";
+
+import { DeleteIcon } from "@/components/icons/delete";
 import {
-  useCreateNewPortfolioMutation,
+  ArtistInSchema,
+  InPortfolioItemSchema,
+  MediaSchema,
+} from "@/schemas/artist-schemas";
+import {
+  useDeletePortofolioItemMediaMutation,
+  useDeletePortofolioItemMutation,
   useFetchDetailCurrentArtistQuery,
   useFetchPortfolioQuery,
 } from "@/redux/features/artistApiSlice";
-import { toast } from "react-toastify";
-import { DevTool } from "@hookform/devtools";
-import CustomError from "@/components/custom-error";
-import {
-  InPortfolioItemSchema,
-  InPortfolioSchema,
-} from "@/schemas/artist-schemas";
-import { z } from "zod";
-import { FaPlay } from "react-icons/fa";
+import CustomImage from "@/components/image";
 import { cn } from "@/lib/utils";
 
+import { CreatePortofolioItem } from "./forms/create-portfolio-item";
+import { AddMedia } from "./forms/add-media";
+
 export default function PortfolioPage() {
-  const { isOpen, onOpen, onClose, onOpenChange } = useDisclosure();
-  const [isUploadSuccess, setIsUploadSuccess] = useState(false);
-  const [isUploadingPortfolio, setIsUploadingPortfolio] = useState(false);
+  const [refresh, setRefresh] = useState(0);
   const {
-    data: currentArtist,
-    isLoading: isCurrentArtistLoading,
-    isError: isCurrentArtistError,
-    refetch,
+    data: artist,
+    isLoading,
+    isError,
   } = useFetchDetailCurrentArtistQuery();
 
-  const {
-    data: portfolio,
-    isLoading: isPortfolioLoading,
-    isError: isPortfolioError,
-    refetch: refetchPortfolio,
-  } = useFetchPortfolioQuery(currentArtist?.id?.toString() || "", {
-    skip: !currentArtist?.id,
-  });
-
-  const formReference = useRef<HTMLFormElement | null>(null);
-
-  const reset = () => {
-    setIsUploadingPortfolio(false);
-    setIsUploadSuccess(false);
-    onClose();
-  };
-
-  useEffect(() => {
-    if (isUploadSuccess) {
-      toast.success("Portfolio added");
-      reset();
-    }
-  }, [isUploadSuccess, isUploadingPortfolio]);
-  useEffect(() => {
-    if (currentArtist?.id) {
-      refetchPortfolio();
-    }
-  }, [currentArtist]);
   return (
-    <Fragment>
-      {portfolio && <PortfolioItems portfolio={portfolio} />}
-      <div>
-        <Button onPress={onOpen}>Add a new portfolio item</Button>
-      </div>
-      <Modal isDismissable={false} isOpen={isOpen} onOpenChange={onOpenChange}>
-        <ModalContent>
-          <ModalHeader>
-            <h1>Create a new portofolio</h1>
-          </ModalHeader>
-          <ModalBody>
-            {currentArtist?.portfolio && (
-              <AddNewPortfolioForm
-                portfolio={currentArtist.portfolio.toString()}
-                formRef={formReference}
-                setUploadSuccess={setIsUploadSuccess}
-                setUploading={setIsUploadingPortfolio}
-              />
-            )}
-          </ModalBody>
-          <ModalFooter>
-            <Button onPress={onClose} radius="sm" color="default">
-              Cancel
-            </Button>
-            <Button
-              isLoading={isUploadingPortfolio}
-              onPress={() => {
-                if (formReference.current) {
-                  formReference.current.requestSubmit();
-                }
-              }}
-              radius="sm"
-              color="secondary"
-            >
-              Upload
-            </Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
-    </Fragment>
+    <div>
+      {artist && (
+        <div className="bg-white/5 p-4">
+          <Portfolio artist={artist} />
+          <CreatePortofolioItem artist={artist} />
+        </div>
+      )}
+    </div>
   );
 }
 
-// portfolio = models.ForeignKey(Portfolio, on_delete=models.CASCADE, related_name="items", null=True)
-// title = models.CharField(max_length = 255, null=True, blank=True)
-// description = models.CharField(max_length = 255, null=True, blank=True)
-// group = models.CharField(max_length=50,default="portfolio",choices=GROUPS,null=True, blank=True)
-
-// #LIMIT TWO VIDEOS AND 5 IMAGES
-// video1 = models.FileField(upload_to="videos/",null=True, blank=True),
-// video2 = models.FileField(upload_to="videos/",null=True, blank=True),
-
-// image1 = models.ImageField(upload_to="images/", null=True, blank=True)
-// image2 = models.ImageField(upload_to="images/", null=True, blank=True)
-// image3 = models.ImageField(upload_to="images/", null=True, blank=True)
-// image4 = models.ImageField(upload_to="images/", null=True, blank=True)
-// image5 = models.ImageField(upload_to="images/", null=True, blank=True)
-
-const PortfolioItems = ({
-  portfolio,
-}: {
-  portfolio: z.infer<typeof InPortfolioSchema>;
-}) => {
-  return (
-    <Fragment>
-      {portfolio.items.map((item, index) => {
-        return (
-          <div className="flex flex-col justify-center">
-            <p>{item.title}</p>
-            {item.description && <p>{item.description}</p>}
-            <Grid item={item} />
-          </div>
-        );
-      })}
-    </Fragment>
+const Portfolio = ({ artist }: { artist: z.infer<typeof ArtistInSchema> }) => {
+  const { data: portfolio, isLoading } = useFetchPortfolioQuery(
+    artist.id.toString(),
   );
-};
 
-const Grid = ({ item }: { item: z.infer<typeof InPortfolioItemSchema> }) => {
-  const maxVisible = 4; // Maximum number of media to display
-  const allMedia = [...item.videos, ...item.images]; // Combine videos and images into one array
-  const visibleMedia = allMedia.slice(0, maxVisible); // Show only the first 9 media
-  const remainingCount = allMedia.length - maxVisible;
   return (
-    <div className="grid relative grid-cols-2 grid-rows-2 w-full md:w-[50%] gap-2">
-      {visibleMedia.map((media, mediaIndex) => (
-        <div
-          key={mediaIndex}
-          className={cn(
-            "hover:cursor-pointer hover:opacity-80 transition duration-150 ease-in-out flex-grow min-w-[150px]  max-h-[200px] rounded-md overflow-hidden",
-            {
-              relative: mediaIndex === 3,
-            }
-          )}
-        >
-          {media.endsWith(".mp4") ? (
-            <div className="relative w-full h-full">
-              <video className="w-full h-full object-cover" width={200}>
-                <source src={`${process.env.NEXT_PUBLIC_HOST}${media}`} />
-              </video>
-              <FaPlay
-                color="white"
-                size={30}
-                className="absolute top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%]"
-              />
-            </div>
-          ) : (
-            <img
-              className="w-full h-full object-cover"
-              width={200}
-              height={200}
-              src={`${process.env.NEXT_PUBLIC_HOST}${media}`}
-              alt="Portfolio Media"
-            />
-          )}
-          {mediaIndex === 3 && (
-            <div className="absolute bottom-0 right-0 bg-black bg-opacity-70 flex items-center justify-center text-3xl text-white w-full h-full rounded-md z-10">
-              {`+${remainingCount}`}
-            </div>
-          )}
-        </div>
+    <div className="w-full flex  flex-wrap justify-center items-center gap-3 ">
+      {portfolio?.items.map((portfolioItem) => (
+        <PortfolioItem key={portfolioItem.id} portfolioItem={portfolioItem} />
       ))}
     </div>
   );
 };
 
-const AddNewPortfolioForm = ({
-  formRef,
-  setUploading,
-  setUploadSuccess,
-  portfolio,
+const PortfolioItem = ({
+  portfolioItem,
 }: {
-  formRef: React.RefObject<HTMLFormElement>;
-  setUploading: Dispatch<SetStateAction<boolean>>;
-  setUploadSuccess: Dispatch<SetStateAction<boolean>>;
-  portfolio: string;
+  portfolioItem: z.infer<typeof InPortfolioItemSchema>;
 }) => {
-  const { form, onSubmit, isLoading, isError, isSuccess } =
-    useCreateNewPortfolio();
-  const videosInputReference = useRef<HTMLInputElement | null>(null);
-
-  const imagesInputReference = useRef<HTMLInputElement | null>(null);
-  const selectedVideos: File[] | [] = form.watch("videos") || [];
-  const selectedImages: File[] | [] = form.watch("images") || [];
-
-  const isDuplicateFile = (file: File, files: File[]) => {
-    return files.some(
-      (existingFile) =>
-        existingFile.name === file.name && existingFile.size === file.size
-    );
+  const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
+  const addMediaModal = useDisclosure();
+  const [deletePortfolioItem, { isLoading }] =
+    useDeletePortofolioItemMutation();
+  const handleDeleteItem = async () => {
+    await deletePortfolioItem(portfolioItem.id.toString()).unwrap();
+    onClose();
   };
-
-  const removeFile = (index: number, fileFieldName: "videos" | "images") => {
-    const files = form.watch(fileFieldName);
-    const updatedFiles = files?.filter((_, i) => i !== index); // Exclude the clicked file
-    form.setValue(fileFieldName, updatedFiles); // Update the form state
-  };
-
-  useEffect(() => {
-    if (isLoading) {
-      setUploading(true);
-    }
-    if (isSuccess) {
-      setUploadSuccess(true);
-    }
-    if (isError) {
-      toast.error("error");
-    }
-  }, [isSuccess, isError, isLoading]);
 
   return (
-    <form ref={formRef} onSubmit={form.handleSubmit(onSubmit)}>
-      <input
-        {...form.register("portfolio")}
-        value={portfolio}
-        style={{ display: "none" }}
-      />
-      <input
-        ref={videosInputReference}
-        type="file"
-        accept="video/*"
-        multiple
-        style={{ display: "none" }}
-        onChange={(e) => {
-          if (e.target.files) {
-            if (selectedVideos.length < 1) {
-              form.setValue("videos", Array.from(e.target.files));
-            } else {
-              const newselectedVideos = [
-                ...selectedVideos,
-                ...Array.from(e.target.files).filter(
-                  (file) => !isDuplicateFile(file, selectedVideos)
-                ),
-              ];
-
-              form.setValue("videos", newselectedVideos);
-            }
-          }
-        }}
-      />
-      <input
-        ref={imagesInputReference}
-        type="file"
-        accept="image/*"
-        multiple
-        style={{ display: "none" }}
-        onChange={(e) => {
-          if (e.target.files) {
-            if (selectedImages.length < 1) {
-              form.setValue("images", Array.from(e.target.files));
-            } else {
-              const newselectedImages = [
-                ...selectedImages,
-                ...Array.from(e.target.files).filter(
-                  (file) => !isDuplicateFile(file, selectedImages)
-                ),
-              ];
-
-              form.setValue("images", newselectedImages);
-            }
-          }
-        }}
-      />
-
-      <Input
-        radius="sm"
-        size="lg"
-        variant="faded"
-        label="Title"
-        placeholder="What is this portfolio all about?"
-        isInvalid={!!form.formState.errors.title}
-        errorMessage={form.formState.errors.title?.message}
-        {...form.register("title")}
-      />
-      <Textarea
-        radius="sm"
-        size="lg"
-        variant="faded"
-        label="Description"
-        isInvalid={!!form.formState.errors.description}
-        errorMessage={form.formState.errors.description?.message}
-        placeholder="You can describe about this portfolio here"
-        {...form.register("description")}
-      />
-      <div className="h-[200px] flex items-center flex-col border-2 border-dashed border-blue-500 rounded-lg">
-        <div
-          onClick={() => {
-            if (videosInputReference.current) {
-              videosInputReference.current.click();
-            }
-          }}
-          className="p-4 rounded-lg bg-blue-300 w-[50%]"
+    <>
+      <div
+        key={portfolioItem.id}
+        className="relative w-full lg:min-w-[450px] lg:max-w-[450px] rounded-lg bg-white/5 p-4 group"
+      >
+        <h1 className="text-center text-2xl capitalize my-3">
+          {portfolioItem.title}
+        </h1>
+        <MediaGrid
+          key={portfolioItem.id}
+          maxVisible={4}
+          portfolioItem={portfolioItem}
+        />
+        <Dropdown radius="sm">
+          <DropdownTrigger className="absolute top-2 right-2">
+            <Button
+              isIconOnly
+              className="opacity-0 text-2xl hover:cursor-pointer group-hover:opacity-100"
+              color="primary"
+              radius="full"
+              variant="light"
+            >
+              <HiDotsVertical size={24} />
+            </Button>
+          </DropdownTrigger>
+          <DropdownMenu>
+            <DropdownItem
+              startContent={<IoAdd />}
+              onClick={addMediaModal.onOpen}
+            >
+              Add Item
+            </DropdownItem>
+            <DropdownItem
+              startContent={<DeleteIcon className="text-danger-500" />}
+              onClick={onOpen}
+            >
+              Delete
+            </DropdownItem>
+          </DropdownMenu>
+        </Dropdown>
+        <Modal
+          isDismissable={false}
+          isOpen={addMediaModal.isOpen}
+          onOpenChange={addMediaModal.onOpenChange}
         >
-          Upload
-        </div>
-        Drag or Upload videos here
-        <div className="flex">
-          {form.watch("videos")?.map((fl, index) => (
-            <div className="overflow-hidden w-[180px] h-[100px] rounded-lg relative">
+          <ModalContent>
+            <ModalHeader>Add Media</ModalHeader>
+            <ModalBody>
+              <AddMedia
+                portfolioItem={portfolioItem}
+                onClose={addMediaModal.onClose}
+              />
+            </ModalBody>
+          </ModalContent>
+        </Modal>
+      </div>
+
+      <Modal isDismissable={false} isOpen={isOpen} onOpenChange={onOpenChange}>
+        <ModalContent>
+          <ModalHeader>Delete Portfolio Item</ModalHeader>
+          <ModalBody>
+            <h1 className="text-lg">Do you want to delete this portfolio?</h1>
+            <p className="text-sm text-white/20">
+              This action cannot be undone.
+            </p>
+          </ModalBody>
+          <ModalFooter>
+            <Button radius="sm" onPress={onClose}>
+              No
+            </Button>
+            <Button
+              color="danger"
+              isDisabled={isLoading}
+              isLoading={isLoading}
+              radius="sm"
+              onClick={handleDeleteItem}
+            >
+              Yes
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+    </>
+  );
+};
+
+const MediaGrid = ({
+  portfolioItem,
+  maxVisible,
+}: {
+  portfolioItem: z.infer<typeof InPortfolioItemSchema>;
+  maxVisible?: number;
+}) => {
+  const [isOpen, setIsOpen] = useState(false);
+
+  const filteredMedias = portfolioItem.medias.slice(0, maxVisible || 4); // Default to 4 if maxVisible is not provided
+
+  return (
+    <>
+      <div
+        className="w-full flex flex-wrap items-center justify-center mx-auto  cursor-pointer"
+        onClick={() => setIsOpen(true)}
+      >
+        {filteredMedias.map((media, index) => (
+          <div key={media.id} className="relative overflow-hidden rounded-md">
+            {index === filteredMedias.length - 1 &&
+              filteredMedias.length < portfolioItem.medias.length && (
+                <div className="absolute flex items-center justify-center top-0 left-0 bg-black/45 min-w-full min-h-full text-3xl font-bold">
+                  +{portfolioItem.medias.length - filteredMedias.length}
+                </div>
+              )}
+            <MediaItem key={media.id} media={media} />
+          </div>
+        ))}
+      </div>
+      {/* modal */}
+      {isOpen && (
+        <MediaModal
+          medias={portfolioItem.medias}
+          onClose={() => setIsOpen(false)}
+        />
+      )}
+    </>
+  );
+};
+
+const MediaItem = React.memo(
+  ({ media }: { media: z.infer<typeof MediaSchema> }) => {
+    const mediaSrc = `${process.env.NEXT_PUBLIC_HOST}${media.file}`;
+
+    return (
+      <div className="flex-shrink-0 m-1">
+        {media.media_type === "video" ? (
+          <div className="w-[200px] h-[150px] overflow-hidden">
+            <video className="w-full h-full object-cover">
+              <source src={mediaSrc} />
+              Your browser does not support the video tag.
+            </video>
+          </div>
+        ) : (
+          <CustomImage
+            className="w-full h-full"
+            height="150px"
+            src={mediaSrc}
+            width="200px"
+          />
+        )}
+      </div>
+    );
+  },
+);
+
+const MediaModal = ({
+  medias,
+  onClose,
+}: {
+  medias: z.infer<typeof MediaSchema>[];
+  onClose: () => void;
+}) => {
+  const [heroMedia, setHeroMedia] = useState(medias[0]);
+  const [deletePortfolioItemMedia] = useDeletePortofolioItemMediaMutation();
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+  const { isOpen, onClose: close, onOpen, onOpenChange } = useDisclosure();
+
+  // Effect to update video source when heroMedia changes
+  useEffect(() => {
+    if (videoRef.current) {
+      videoRef.current.load(); // Reload the videox
+    }
+  }, [heroMedia]);
+
+  const handleDeleteMedia = async (id: number) => {
+    await deletePortfolioItemMedia(id.toString());
+    toast.success("Deleted successfully.");
+    close();
+    onClose();
+  };
+
+  return (
+    <div className="fixed z-50 flex items-center justify-center top-0 left-0 w-screen min-h-screen bg-black/65 backdrop-blur-lg">
+      <IoClose
+        className="absolute hover:cursor-pointer top-4 right-4"
+        size={40}
+        onClick={onClose}
+      />
+      <div className="w-full lg:w-2/4 md:w-3/4 flex flex-col items-center">
+        <div className="h-[60vh] bg-black border-2 border-white/50 flex justify-center items-center w-full overflow-hidden">
+          <div className="relative w-full h-full flex items-center justify-center">
+            {heroMedia.media_type === "video" ? (
               <video
-                key={fl.name}
-                className="w-full h-full object-cover"
-                width={180}
+                key={heroMedia.file}
+                ref={videoRef}
+                autoPlay
+                controls
+                className="w-full h-full object-contain" // Use object-contain to maintain aspect ratio
               >
-                <source src={URL.createObjectURL(fl)} />
+                <source
+                  src={`${process.env.NEXT_PUBLIC_HOST}${heroMedia.file}`}
+                />
+                Your browser does not support the video tag.
               </video>
-              <HiX
-                onClick={() => removeFile(index, "videos")}
-                color="white"
-                className=" rounded-full absolute top-2 right-2 hover:bg-red-500"
-              />
-            </div>
-          ))}
-        </div>
-      </div>
-      <div className="h-[200px] border-2 border-dashed border-blue-500 rounded-lg">
-        <div
-          onClick={() => {
-            if (imagesInputReference.current) {
-              imagesInputReference.current.click();
-            }
-          }}
-        >
-          Upload
-        </div>
-        Drag or Upload images here
-        <div className="flex">
-          {form.watch("images")?.map((fl, index) => (
-            <div className="relative w-[100px] flex flex-wrap h-[100px] overflow-hidden rounded-md">
+            ) : (
               <img
-                key={fl.name}
-                className="w-full h-full object-cover"
-                src={URL.createObjectURL(fl)}
+                alt="Media content"
+                className="w-full h-full object-contain" // Use object-contain for images too
+                src={`${process.env.NEXT_PUBLIC_HOST}${heroMedia.file}`}
               />
-              <HiX
-                onClick={() => removeFile(index, "images")}
-                className="absolute top-2 right-2"
-              />
+            )}
+            <Dropdown>
+              <DropdownTrigger>
+                <Button
+                  isIconOnly
+                  className="absolute top-2 right-2"
+                  radius="full"
+                  variant="flat"
+                >
+                  <HiDotsVertical
+                    className="hover:text-blue-500 hover:cursor-pointer"
+                    size={24}
+                  />
+                </Button>
+              </DropdownTrigger>
+              <DropdownMenu>
+                <DropdownItem
+                  startContent={<DeleteIcon className="text-danger-500" />}
+                  onClick={onOpen}
+                >
+                  Delete
+                </DropdownItem>
+              </DropdownMenu>
+            </Dropdown>
+            <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
+              <ModalContent>
+                <ModalHeader>Delete</ModalHeader>
+                <ModalBody>
+                  Do you want to delete this item?
+                  <small>This action cannot be undone</small>
+                </ModalBody>
+                <ModalFooter>
+                  <Button radius="sm" onPress={close}>
+                    No
+                  </Button>
+                  <Button
+                    color="danger"
+                    radius="sm"
+                    onPress={() => handleDeleteMedia(heroMedia.id)}
+                  >
+                    Yes
+                  </Button>
+                </ModalFooter>
+              </ModalContent>
+            </Modal>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-3 mt-4 p-4 rounded-lg bg-white/10 flex-wrap justify-center">
+          {medias.map((media) => (
+            <div
+              key={media.id}
+              className={cn("hover:cursor-pointer rounded-lg opacity-50", {
+                "scale-110 border-2 border-white/10 opacity-100":
+                  heroMedia.id === media.id,
+              })}
+              onClick={() => {
+                setHeroMedia(media);
+              }}
+            >
+              {media.media_type === "video" ? (
+                <div className="w-[100px] h-[100px] rounded-md overflow-hidden">
+                  <video className="w-full h-full object-cover">
+                    <source
+                      src={`${process.env.NEXT_PUBLIC_HOST}${media.file}`}
+                    />
+                    Your browser does not support the video tag.
+                  </video>
+                </div>
+              ) : (
+                <CustomImage
+                  className="min-w-[100px] max-w-[100px]"
+                  height="100px"
+                  src={`${process.env.NEXT_PUBLIC_HOST}${media.file}`}
+                  width="100px"
+                />
+              )}
             </div>
           ))}
         </div>
       </div>
-      <p className="text-red-500">{form.formState.errors.images?.message}</p>
-      <DevTool control={form.control} />
-    </form>
+    </div>
   );
 };

@@ -1,8 +1,8 @@
-
-import { useSocialAuthenticateMutation } from "@/redux/features/authApiSlice";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useEffect, useRef } from "react";
 import { toast } from "react-toastify";
+
+import { useSocialAuthenticateMutation } from "@/redux/features/authApiSlice";
 
 export default function useSocialAuth(provider: string, providerName: string) {
   const refRan = useRef(false);
@@ -29,6 +29,7 @@ export default function useSocialAuth(provider: string, providerName: string) {
           toast.error("Something went wrong");
         });
     }
+
     return () => {
       refRan.current = true;
     };

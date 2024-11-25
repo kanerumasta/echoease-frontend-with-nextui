@@ -1,10 +1,20 @@
 import { z } from "zod";
+
 import { UserSchema } from "./user-schemas";
+const MAX_TOTAL_SIZE = 250 * 1024 * 1024;
 
 export const GenreOptionSchema = z.object({
   label: z.string(),
   value: z.string(),
   disable: z.boolean().optional(),
+});
+export const RateSchema = z.object({
+  id: z.number(),
+  amount: z.number(),
+  name: z.string(),
+  artist_application: z.number(),
+  artist: z.number(),
+  description: z.string().nullable(),
 });
 
 export const GenreSchema = z.object({
@@ -29,7 +39,16 @@ export const ArtistApplicationSchema = z.object({
       required_error: "At least 2 videos are required.",
     })
     .min(2, "Add at least 2 videos.")
-    .max(3, "You can only upload up to 3 videos."),
+    .refine(
+      (files) => {
+        const totalSize = files.reduce((sum, file) => sum + file.size, 0);
+
+        return totalSize <= MAX_TOTAL_SIZE;
+      },
+      {
+        message: `Total file size must be less than or equal to ${MAX_TOTAL_SIZE / 1024 / 1024} MB.`,
+      },
+    ),
 
   genres: z.array(z.string()).min(1, "Pick at least 1 genre."),
   idol: z.string().nullable().optional(),
@@ -41,13 +60,22 @@ export const ArtistApplicationSchema = z.object({
   twitter: z.string().nullable().optional(),
   fb_link: z.string().nullable().optional(),
   bio: z.string(),
-  rates: z.array(
-    z.object({
-      artist_application: z.string().nullable().optional(),
-      name: z.string(),
-      amount: z.string(),
-    })
-  ).min(1, 'You must add at least one artist rate.'),
+  stage_name: z.string().nullable().optional(),
+  channel_code: z.string(),
+  account_holder_name: z.string(),
+  account_number: z
+    .string()
+    .length(11, { message: "Phone number must be 11 digits long" })
+    .regex(/^09\d{9}$/, { message: "Phone number format is invalid." }),
+  rates: z
+    .array(
+      z.object({
+        artist_application: z.string().nullable().optional(),
+        name: z.string(),
+        amount: z.string(),
+      }),
+    )
+    .min(1, "You must add at least one artist rate."),
 });
 
 export const ArtistInSchema = z.object({
@@ -59,8 +87,6 @@ export const ArtistInSchema = z.object({
   instagram: z.string().nullable(),
   twitter: z.string().nullable(),
   status: z.string().nullable(),
-  date_approved: z.string().nullable(),
-  time_approved: z.string().nullable(),
   spotify: z.string().nullable(),
   youtube: z.string().nullable(),
   idol: z.string().nullable(),
@@ -71,6 +97,13 @@ export const ArtistInSchema = z.object({
   genres: z.array(z.object({ id: z.number(), name: z.string() })).nullable(),
   followers: z.array(z.number()),
   portfolio: z.number(),
+  connections: z.array(z.number()),
+  rates: z.array(RateSchema),
+  stage_name: z.string().nullable(),
+  is_new: z.boolean(),
+  created_at: z.string(),
+  updated_at: z.string(),
+  is_available:z.boolean(),
 });
 
 export const CreatePortfolioItemSchema = z
@@ -93,23 +126,28 @@ export const CreatePortfolioItemSchema = z
   .refine(
     (data) => {
       if (!data.images && !data.videos) {
-        console.log("here");
         return false;
       }
+
       return true;
-      console.log("here1");
     },
-    { message: "Attach at least an image or a video.", path: ["images"] }
+    { message: "Attach at least an image or a video.", path: ["images"] },
   );
+
+export const MediaSchema = z.object({
+  id: z.number(),
+  media_type: z.string(),
+  file: z.string(),
+  portfolio_item: z.number(),
+});
 
 export const InPortfolioItemSchema = z.object({
   id: z.number(),
   title: z.string(),
   description: z.string(),
   group: z.string(),
+  medias: z.array(MediaSchema),
   portfolio: z.number(),
-  videos: z.array(z.string()),
-  images: z.array(z.string()),
 });
 
 export const InPortfolioSchema = z.object({
@@ -118,48 +156,46 @@ export const InPortfolioSchema = z.object({
   artist: z.number(),
 });
 
-export const RateSchema = z.object({
+export const ConnectionRequestSchema = z.object({
   id: z.number(),
-  amount: z.number(),
-  name: z.string(),
-  artist_application: z.number(),
-  artist: z.number(),
+  timestamp: z.string(),
+  status: z.string(),
+  sender: ArtistInSchema,
+  receiver: ArtistInSchema,
 });
-// {
-//   "amount": 5000,
-//   "name": "1-3 songs",
-//   "artist_application": 5,
-//   "artist": 3
-// }
 
+export const MyConnectionsSchema = z.object({
+  connections: z.array(ArtistInSchema),
+});
 
+export const RecommendedArtistsConnectionsSchema = z.object({
+  id: z.number(),
+  user: UserSchema,
+  slug: z.string(),
+  genres: z.array(GenreSchema),
+  mutual: z.array(ArtistInSchema),
+});
 
+// "links": {
+//     "next": "http://localhost:8000/api/artists/?page=2",
+//     "previous": null
+//   },
+//   "total_pages": 2,
+//   "current_page": 1,
+//   "has_next": true,
+//   "has_previous": false,
+//   "count": 12,
+//   "results":
 
-// {
-//   "id": 16,
-//   "genres": [
-//     1,
-//     2
-//   ],
-//   "bio": null,
-//   "sample_video1": null,
-//   "sample_video2": null,
-//   "sample_video3": null,
-//   "fb_link": "fb.com",
-//   "instagram": "instag.com",
-//   "twitter": "twitte.com",
-//   "created": "2024-09-23T09:35:07.730518Z",
-//   "updated": "2024-09-23T09:35:07.730518Z",
-//   "status": "under_review",
-//   "idol": "jordan",
-//   "years_experience": null,
-//   "spotify": null,
-//   "youtube": null,
-//   "award_image1": null,
-//   "award_image2": null,
-//   "award_image3": null,
-//   "front_id": null,
-//   "back_id": null,
-//   "user": 8,
-//   "id_type": null
-// }
+export const PaginatedArtistInSchema = z.object({
+  links: z.object({
+    next: z.string().nullable(),
+    previous: z.string().nullable(),
+  }),
+  total_pages: z.number(),
+  current_page: z.number(),
+  has_next: z.boolean(),
+  has_previous: z.boolean(),
+  count: z.number(),
+  results: z.array(ArtistInSchema),
+});

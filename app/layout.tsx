@@ -1,13 +1,11 @@
 import "@/styles/globals.css";
 import { Metadata, Viewport } from "next";
-import { Link } from "@nextui-org/link";
 import clsx from "clsx";
-
-import { Providers } from "./providers";
 
 import { siteConfig } from "@/config/site";
 import { fontSans } from "@/config/fonts";
-import { Navbar } from "@/components/navbar";
+
+import { Providers } from "./providers";
 
 export const metadata: Metadata = {
   title: {
@@ -33,12 +31,16 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html suppressHydrationWarning lang="en">
+    <html suppressHydrationWarning className="overflow-x-hidden" lang="en">
+      <meta
+        content="width=device-width, initial-scale=1, user-scalable=no"
+        name="viewport"
+      />
       <head />
       <body
         className={clsx(
-          "min-h-screen bg-background font-sans antialiased",
-          fontSans.variable
+          "min-h-screen bg-black/80 w-screen font-sans antialiased ",
+          fontSans.variable,
         )}
       >
         <Providers

@@ -1,0 +1,5 @@
+console.log('API-BACKEND: ',process.env.NEXT_PUBLIC_HOST)
+console.log('API-NOTIFICATION-SOCKET: ',process.env.NEXT_PUBLIC_NOTIFICATION_WEBSOCKET)
+console.log('API-CHAT-SOCKET: ',process.env.NEXT_PUBLIC_CHAT_WEBSOCKET)
+console.log('SITE: ',process.env.NEXT_PUBLIC_SITE)
+console.log('\n')

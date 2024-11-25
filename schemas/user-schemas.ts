@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-const GenderSchema = z.union([z.literal("male"), z.literal("female")]);
+export const GenderSchema = z.union([z.literal("male"), z.literal("female")]);
 
 export const SetupProfileSchema = z.object({
   dob: z.string({ required_error: "This field is required" }),
@@ -14,10 +14,15 @@ export const SetupProfileSchema = z.object({
   municipality: z.string({ required_error: "This field is required" }),
   brgy: z.string({ required_error: "This field is required" }),
   street: z.string({ required_error: "This field is required" }),
-  zipcode: z.string({ required_error: "This field is required" }),
+  zipcode: z
+    .string({
+      required_error: "This field is required",
+    })
+    .regex(/^\d{4}$/, "Zipcode must be a valid 4-digit number"),
   profile_image: z.instanceof(File).nullable(),
   language: z.string().nullable().optional(),
   fb_page: z.string().nullable().optional(),
+
 });
 
 export const ProfileSchema = z.object({
@@ -30,8 +35,13 @@ export const ProfileSchema = z.object({
   municipality: z.string({ required_error: "This field is required" }),
   brgy: z.string({ required_error: "This field is required" }),
   street: z.string({ required_error: "This field is required" }),
-  zipcode: z.string({ required_error: "This field is required" }),
-  profile_image: z.instanceof(File).nullable(),
+  zipcode: z
+    .string({
+      required_error: "This field is required",
+    })
+    .regex(/^\d{4}$/, "Zipcode must be a valid 4-digit number"),
+
+  profile_image: z.string(),
   nationality: z.string().nullable().optional(),
   language: z.string().nullable().optional(),
   fb_page: z.string().nullable().optional(),
@@ -56,24 +66,13 @@ export const UserSchema = z.object({
   profile: ProfileSchema.optional(),
   fullname: z.string(),
   is_roled: z.boolean(),
+  has_echoee_application: z.boolean(),
+  business_name: z.string().nullable(),
+  business_image: z.string().nullable(),
+  is_deactivated: z.boolean(),
+  reputation_score :z.number()
 });
 
-// class Document(models.Model):
-//     #for organizers
-//     production_page = models.CharField(max_length=255, null=True, blank=True)
-
-//     doc_image1 = models.ImageField(upload_to="images/", null=True, blank=True)
-//     doc_image2 = models.ImageField(upload_to="images/", null=True, blank=True)
-//     doc_image3 = models.ImageField(upload_to="images/", null=True, blank=True)
-//     doc_image4 = models.ImageField(upload_to="images/", null=True, blank=True)
-//     doc_image5 = models.ImageField(upload_to="images/", null=True, blank=True)
-
-//     #for bar owners
-//     business_permit = models.ImageField(upload_to="images/",null=True, blank=True)
-
-//     #for individual // all
-//     government_id = models.ImageField(upload_to="images/", null=True, blank=True)
-//     government_id_type = models.CharField(max_length=255, null=True, blank=True)
 
 export const RolePickingSchema = z.object({
   category: z.string(), //bar|organizer|regular
@@ -81,5 +80,8 @@ export const RolePickingSchema = z.object({
   organizer_images: z.array(z.instanceof(File)).nullable().optional(),
   business_permit: z.instanceof(File).nullable().optional(),
   government_id: z.instanceof(File),
+  government_id_back: z.instanceof(File),
   government_id_type: z.string(),
+  businessName: z.string().nullable().optional(),
+  businessImage: z.instanceof(File).nullable().optional(),
 });

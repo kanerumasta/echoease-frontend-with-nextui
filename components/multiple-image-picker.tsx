@@ -29,12 +29,12 @@ export const MultipleImagePicker = (props: MultipleImagePickerProps) => {
   return (
     <div>
       <input
-        onChange={handleInputchange}
-        type="file"
+        ref={inputRef}
         multiple
         accept={"image/*"}
-        ref={inputRef}
         style={{ display: "none" }}
+        type="file"
+        onChange={handleInputchange}
       />
       <div
         className={
@@ -56,7 +56,7 @@ export const MultipleImagePicker = (props: MultipleImagePickerProps) => {
             </div>
           ))
         ) : (
-          <FaUpload size={40} color="#03a9f4" />
+          <FaUpload color="#03a9f4" size={40} />
         )}
       </div>
     </div>

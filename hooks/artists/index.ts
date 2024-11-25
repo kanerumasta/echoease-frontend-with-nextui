@@ -1,1 +1,0 @@
-// export {default as useCreateArtistApplication} from './use-create-artist-application'
