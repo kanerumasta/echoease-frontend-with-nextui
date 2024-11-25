@@ -50,7 +50,7 @@ export default function PortfolioPage() {
   return (
     <div>
       {artist && (
-        <div className="">
+        <div className="bg-white/5 p-4">
           <Portfolio artist={artist} />
           <CreatePortofolioItem artist={artist} />
         </div>

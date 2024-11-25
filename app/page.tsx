@@ -20,6 +20,10 @@ export default function Home() {
     router.replace("/account-deactivated");
   }
 
+  if(currentUser && !currentUser.is_roled && !(currentUser.role == 'artist')) {
+    router.replace("/auth/register/choose");
+  }
+
   return (
     <MainLayout>
       <AnimatedComponent className="flex bg-cover bg-center min-h-[80vh] mb-20 flex-col items-center justify-center gap-4 py-8 md:py-10">

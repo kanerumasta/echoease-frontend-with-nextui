@@ -10,7 +10,7 @@ export const Prices = ({
   return (
     <div className="">
       <h1 className="text-center my-6 text-2xl font-bold text-blue-400 mt-12">
-        Prices
+        Rates
       </h1>
       <div className=" flex justify-center gap-3 flex-wrap">
         {artist.rates.map((rate) => (

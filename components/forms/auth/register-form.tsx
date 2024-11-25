@@ -9,12 +9,14 @@ import { useRegister } from "@/hooks/auth";
 import { MailIcon } from "@/components/icons/mail";
 import { EyeSlashFilledIcon } from "@/components/icons/eyeslash";
 import { EyeFilledIcon } from "@/components/icons/eye";
+import { useRouter } from "next/navigation";
 
 export default function RegisterForm() {
   const { form, onSubmit, isError, isLoading } = useRegister();
   const [isPasswordVisible, setPasswordIsVisible] = React.useState(false);
   const [isRePasswordVisible, setRePasswordIsVisible] = React.useState(false);
   const [isAgree, setIsAgree] = useState(false);
+  const router = useRouter()
 
   return (
     <>
@@ -157,11 +159,16 @@ export default function RegisterForm() {
             <Checkbox isSelected={isAgree} onValueChange={setIsAgree} />
             <p className="text-sm">
               By creating an account, you agree to our{" "}
-              <span className="text-blue-400 cursor-pointer hover:underline font-bold">
-                Terms of Service
-              </span>{" "}
+              <span
+  onClick={() => window.open('/terms-and-conditions', '_blank')}
+  className="text-blue-400 cursor-pointer hover:underline font-bold"
+>
+  Terms of Service
+</span>
               and{" "}
-              <span className="text-blue-400 cursor-pointer hover:underline font-bold">
+              <span
+              onClick={() => window.open('/privacy-policy', '_blank')}
+              className="text-blue-400 cursor-pointer hover:underline font-bold">
                 Privacy Policy
               </span>
             </p>

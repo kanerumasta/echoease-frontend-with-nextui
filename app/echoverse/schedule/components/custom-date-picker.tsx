@@ -14,11 +14,13 @@ export const DatePicker = ({
   setDateSelected,
   unavailableDates,
   onDatePick,
+  onChange
 }: {
   dateSelected: Date;
   setDateSelected: Dispatch<SetStateAction<Date>>;
   unavailableDates: z.infer<typeof UnavailableDateSchema>[];
   onDatePick?: () => void;
+  onChange?:()=>void
 }) => {
   const extractedDates: Date[] = useMemo(() => {
     return unavailableDates.map((date) => new Date(date.date));
@@ -190,10 +192,10 @@ export const DatePicker = ({
       </div>
       <div className="mt-4 w-full flex justify-end">
         {isDateUnavailable(dateSelected.getDate()) && (
-          <SetDateAvailable id={findUDid(dateSelected)} />
+          <SetDateAvailable onChange={onChange ? onChange : ()=>{}} id={findUDid(dateSelected)} />
         )}
         {!isDateUnavailable(dateSelected.getDate()) && (
-          <SetDateUnavailable date={dateSelected} />
+          <SetDateUnavailable onChange={onChange ? onChange : ()=>{}} date={dateSelected} />
         )}
       </div>
     </div>

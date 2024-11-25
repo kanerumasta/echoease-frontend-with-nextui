@@ -69,6 +69,8 @@ export default function NotificationPage() {
     if (notification.notification_type === "application_accepted") {
       await readNotif(notification.id.toString());
       router.push("/echoverse");
+    }else if (notification.notification_type.split('_').includes("connection")){
+        router.push('/echoverse/connections');
     }
   };
 

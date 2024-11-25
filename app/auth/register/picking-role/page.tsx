@@ -35,6 +35,7 @@ const MainForm = () => {
   const [rolePicked, setRolePicked] = useState<string>("regular");
   const [businessPermit, setBusinessPermit] = useState<File | null>(null);
   const [govId, setGovId] = useState<File | null>(null);
+  const [govIdBack, setGovIdBack] = useState<File | null>(null);
   const [govIdType, setGovIdType] = useState<number | null>(null);
   const [organizerImages, setOrganizerImages] = useState<File[] | null>(null);
   const [productionPage, setProductionPage] = useState<string | null>(null);
@@ -50,6 +51,7 @@ const MainForm = () => {
     rolePicked && form.setValue("category", rolePicked);
     businessPermit && form.setValue("business_permit", businessPermit);
     govId && form.setValue("government_id", govId);
+    govIdBack && form.setValue("government_id_back", govIdBack);
     govIdType && form.setValue("government_id_type", govIdType.toString());
     organizerImages && form.setValue("organizer_images", organizerImages);
     productionPage && form.setValue("production_page", productionPage);
@@ -59,11 +61,13 @@ const MainForm = () => {
     rolePicked,
     businessPermit,
     govId,
+    govIdBack,
     govIdType,
     organizerImages,
     productionPage,
     businessImage,
     businessName,
+
   ]);
 
   useEffect(() => {
@@ -76,10 +80,8 @@ const MainForm = () => {
     if (isError) {
       toast.error("Error submitting");
     }
-    console.log("iscuss", isSuccess);
-    console.log("iserror", isError);
   }, [isSuccess, isLoading, isError]);
-  
+
   if(!profileChecked){
     return <EchoLoading />
   }
@@ -120,18 +122,22 @@ const MainForm = () => {
             )}
             {currentStep === 1 && rolePicked === "regular" && (
               <GeneralDocumentsForm
+                governmentIdBack={govIdBack}
                 governmentId={govId}
                 governmentIdType={govIdType}
                 setGovernmentId={setGovId}
+                setGovernmentIdBack={setGovIdBack}
                 setGovernmentIdType={setGovIdType}
               />
             )}
 
             {currentStep === 2 && rolePicked !== "regular" && (
               <GeneralDocumentsForm
+              governmentIdBack={govIdBack}
                 governmentId={govId}
                 governmentIdType={govIdType}
                 setGovernmentId={setGovId}
+                setGovernmentIdBack={setGovIdBack}
                 setGovernmentIdType={setGovIdType}
               />
             )}
@@ -145,6 +151,7 @@ const MainForm = () => {
           currentStep={currentStep}
           formRef={formRef}
           govId={govId}
+          govIdBack={govIdBack}
           isSubmitting={isLoading}
           setCurrentStep={setCurrentStep}
           steps={formSteps}
@@ -162,6 +169,7 @@ type Props = {
   steps: string[];
   isSubmitting?: boolean;
   govId: File | null;
+  govIdBack: File | null;
 };
 
 const FormStepper = ({
@@ -172,6 +180,7 @@ const FormStepper = ({
   steps,
   isSubmitting,
   govId,
+  govIdBack,
 }: Props) => {
   const handleNext = () => {
     setCurrentStep((prevStep) => prevStep + 1);
@@ -181,7 +190,7 @@ const FormStepper = ({
     setCurrentStep((prevStep) => prevStep - 1);
   };
   const triggersubmit = () => {
-    if (!govId) {
+    if (!govId || !govIdBack) {
       toast.error("Please upload government id");
 
       return false;

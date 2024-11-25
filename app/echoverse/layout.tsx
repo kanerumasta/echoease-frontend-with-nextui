@@ -102,8 +102,8 @@ import { usePathname, useRouter } from "next/navigation";
 import { useCallback, useMemo, useState } from "react";
 import { FaCalendarAlt } from "react-icons/fa";
 import { ImBooks } from "react-icons/im";
-import { IoMdGitNetwork } from "react-icons/io";
-import { IoCalendar, IoPlanet } from "react-icons/io5";
+import { IoMdGitNetwork, IoMdSpeedometer } from "react-icons/io";
+import { IoCalendar, IoPlanet, IoSpeedometer } from "react-icons/io5";
 import { MdPerson } from "react-icons/md";
 import { RiFolderUserFill } from "react-icons/ri";
 
@@ -169,6 +169,11 @@ const Sidebar = () => {
         label: "My Connections",
         icon: <IoMdGitNetwork />,
       },
+      {
+        href:'/echoverse/feedbacks',
+        label:'Feedbacks',
+        icon:<IoSpeedometer />
+      }
     ],
     [],
   );

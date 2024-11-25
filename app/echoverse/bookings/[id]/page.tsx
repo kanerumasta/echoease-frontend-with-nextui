@@ -41,7 +41,7 @@ export default function BookingDetailPage() {
           </div>
           <Spacer y={4} />
           <div className="flex gap-2 w-full justify-end">
-            {currentArtist && booking.is_completed && (
+            {currentArtist && (booking.status === 'approved' || booking.is_completed) && (
               <>
                 <CreateDispute artistId={currentArtist.id} booking={booking} />
               </>

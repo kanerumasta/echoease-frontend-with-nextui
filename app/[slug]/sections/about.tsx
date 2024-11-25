@@ -213,7 +213,7 @@ export default function AboutSection({
                 Following
               </Button>
             )}
-            {currentUser && (
+            {currentUser && artist.user.id !== currentUser.id && (
               <Button
                 color="default"
                 radius="sm"

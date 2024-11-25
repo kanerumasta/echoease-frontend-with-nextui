@@ -7,6 +7,7 @@ import { useFetchArtistFeedbacksQuery } from "@/redux/features/reviewsApiSlice";
 import { cn } from "@/lib/utils";
 
 import { Ratings } from "./rating";
+import { Avatar } from "@nextui-org/avatar";
 
 export const Reviews = ({ artistId }: { artistId: number }) => {
   const [page, setPage] = useState(1);
@@ -42,13 +43,7 @@ const ReviewItem = ({
   return (
     <div className="bg-white/10 flex flex-col gap-4 rounded-lg p-4">
       <div className="flex items-center gap-2">
-        <Image
-          alt={feedback.client.fullname}
-          className="rounded-full ring-2 ring-blue-400"
-          height={40}
-          src={`${process.env.NEXT_PUBLIC_HOST}${feedback.client.profile?.profile_image}`}
-          width={40}
-        />
+       <Avatar alt={feedback.client.first_name[0]} src={`${process.env.NEXT_PUBLIC_HOST}${feedback.client.profile?.profile_image}`}/>
         <div className="flex flex-col gap-1">
           <p className="text-md font-bold tracking-wider">
             {feedback.client.fullname}

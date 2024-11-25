@@ -3,7 +3,7 @@
     "version": "0.0.1",
     "private": true,
     "scripts": {
-        "dev": "next dev -H 192.168.1.242 -p 3000",
+        "dev": "next dev -H 192.168.204.223 -p 3000",
         "build": "next build",
         "start": "next start -H 192.168.204.223 -p 3000",
         "lint": "eslint . --ext .ts,.tsx -c .eslintrc.json --fix"

@@ -15,7 +15,7 @@ import { MdUpload } from "react-icons/md";
 import { z } from "zod";
 import { toast } from "react-toastify";
 
-import { DisputeReasonOptions } from "@/app/bookings/[id]/utils";
+
 import {
   useAddDisputeEvidenceMutation,
   useCreateDisputeMutation,
@@ -29,6 +29,16 @@ type CreateDisputeProps = {
   booking: z.infer<typeof BookInSchema>;
   artistId: number;
 };
+
+export const DisputeReasonOptions = [
+
+    { id: "no_show", label: "No Show" },
+    { id: "delayed_payment", label: "Delayed Payment" },
+    { id: "accomodation", label: "Accomodation" },
+    { id: "miscommunication", label: "Miscommunication" },
+    { id: "other", label: "Other" },
+  ];
+
 
 export const CreateDispute: React.FC<CreateDisputeProps> = ({
   booking,

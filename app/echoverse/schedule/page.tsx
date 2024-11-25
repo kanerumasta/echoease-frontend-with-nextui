@@ -376,7 +376,7 @@ const AddWeekDayOrRecurringAvailability = ({
         <ModalContent>
           {/* <ModalHeader>New Availability Schedule</ModalHeader> */}
           <ModalBody>
-            <h1 className="text-white/70">Choose Available Weekdays</h1>
+            <h1 className="text-white/70">Set Available Working Days</h1>
             <div className="p-4 grid grid-cols-3 gap-3">
               {daysOfWeek.map((day) => (
                 <Day
@@ -389,7 +389,7 @@ const AddWeekDayOrRecurringAvailability = ({
               ))}
             </div>
             <h1 className="mt-4  mb-1 text-white/70">
-              Available Working Hours
+              Set Available Working Hours
             </h1>
             <div className="flex gap-2 items-center">
               <TimeInput

@@ -140,7 +140,8 @@ const MediaItem = React.memo(
       <div className="flex-shrink-0 m-1">
         {media.media_type === "video" ? (
           <div className="md:w-[180px] md:h-[150px] w-[130px] h-[100px]  overflow-hidden">
-            <video className="w-full h-full object-cover">
+            <video
+            className="w-full h-full object-cover">
               <source src={mediaSrc} />
               Your browser does not support the video tag.
             </video>
@@ -253,7 +254,9 @@ const MediaModal = ({
               >
                 {media.media_type === "video" ? (
                   <div className="w-[100px] h-[100px] rounded-md overflow-hidden">
-                    <video className="w-full h-full object-cover">
+                    <video
+
+                    className="w-full h-full object-cover">
                       <source
                         src={`${process.env.NEXT_PUBLIC_HOST}${media.file}`}
                       />

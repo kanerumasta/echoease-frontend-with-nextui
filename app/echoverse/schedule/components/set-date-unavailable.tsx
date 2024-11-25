@@ -6,9 +6,10 @@ import { useCreateUnavailableDateMutation } from "@/redux/features/scheduleApiSl
 
 type Props = {
   date: Date;
+  onChange:()=>void
 };
 
-export const SetDateUnavailable = ({ date }: Props) => {
+export const SetDateUnavailable = ({ date, onChange }: Props) => {
   const [createUnavailableDate, { isLoading }] =
     useCreateUnavailableDateMutation();
 
@@ -19,6 +20,7 @@ export const SetDateUnavailable = ({ date }: Props) => {
     };
 
     createUnavailableDate(payload);
+    onChange(); // Triggering parent component's onChange function to update the schedule view.
   };
 
   return (

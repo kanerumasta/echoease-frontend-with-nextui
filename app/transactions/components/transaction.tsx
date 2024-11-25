@@ -51,13 +51,11 @@ export const Transaction: React.FC<TransactionProps> = ({ transaction }) => {
         <div className="flex justify-between items-center mt-2">
           <span className="font-medium text-gray-600">Payment Channel:</span>
           <span className="text-gray-500">
-            {transaction.payment.payer_channel?.toLowerCase() === "gcash" ? (
+            {transaction.payment.payer_channel?.split('_').includes('GCASH') ? (
               <img src="/media/GCash-Logo.png" width={80} />
-            ) : transaction.payment.payer_channel?.toLowerCase() ===
-              "paymaya" ? (
+            ) : transaction.payment.payer_channel?.split('_').includes('PAYMAYA') ? (
               <img src="/media/paymaya.png" width={80} />
-            ) : transaction.payment.payer_channel?.toLowerCase() ===
-              "grabpay" ? (
+            ) : transaction.payment.payer_channel?.split('_').includes('GRABPAY') ? (
               <img src="/media/grabpay.png" width={80} />
             ) : (
               transaction.payment.payer_channel
@@ -87,12 +85,7 @@ export const Transaction: React.FC<TransactionProps> = ({ transaction }) => {
             </span>
           </div>
         ) : null}
-        <div className="flex justify-between mt-2">
-          <span className="font-medium text-gray-600">Email:</span>
-          <span className="text-gray-500">
-            {transaction.payment.payer_email}
-          </span>
-        </div>
+
       </div>
 
       <div className="mt-4 border-t border-gray-300 pt-4">

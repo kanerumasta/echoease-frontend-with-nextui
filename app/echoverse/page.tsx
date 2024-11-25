@@ -31,7 +31,9 @@ export default function EchoversePage() {
 
   //login and isartist checking
   if (!loginChecked || isLoading) {
-    return <div>Loading...</div>;
+    return <div className="w-full h-full items-center justify-center">
+        <Image width={40} height={40} className="animate-rotate-x" alt="Echo" src={`/media/echo-bot.png`}/>
+    </div>;
   }
 
   if (!isLoading && !isArtist) {
@@ -73,12 +75,25 @@ export default function EchoversePage() {
                   ? parseFloat(ratingData.rating__avg.toFixed(1))
                   : 0
               }
-              href="/echoverse/bookings"
+              href="/echoverse/feedbacks"
               icon={
                 <Image alt="Icon Event" src={"/media/rating.png"} width={60} />
               }
               title={"Ratings"}
             />
+            {currentArtist &&
+            <EchoverseMenu
+              color="bg-gradient-to-r from-purple-700/30 to-purple-500/30"
+              count={
+                currentArtist?.user.reputation_score
+              }
+              href="/echoverse"
+              icon={
+                <Image alt="Icon Event" src={"/media/reliability.png"} width={60} />
+              }
+              title={"Reputation Score"}
+            />
+}
           </div>
           <div className="p-3 bg-white/10 rounded-lg h-[300px] w-full md:w-2/6">
             <ConnectionRequests />
@@ -122,12 +137,14 @@ const EchoverseMenu = ({
         )}
       >
         {icon}
-        <div className="text-white text-xl">{title}</div>
-        {count > 0 && (
-          <div className="text-white text-5xl w-14 flex items-center justify-center h-14 bg-white/5">
+        <div className="flex flex-col items-center justify-cente flex-1">
+          <div className="text-white text-5xl ">
             {count}
           </div>
-        )}
+        <div className="text-white text-center text-sm">{title}</div>
+
+          </div>
+
       </div>
     </Link>
   );

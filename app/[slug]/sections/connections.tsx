@@ -11,6 +11,7 @@ function Connections({ artistId }: { artistId: number }) {
 
   return (
     <div>
+        {artistConnections && artistConnections?.connections.length > 0 &&<>
       <h1 className="text-center mb-4 text-2xl font-bold tracking-wider text-blue-400">
         Connections
       </h1>
@@ -20,6 +21,7 @@ function Connections({ artistId }: { artistId: number }) {
             <EchoeeCard echoee={connection} />
           ))}
       </div>
+      </>}
     </div>
   );
 }

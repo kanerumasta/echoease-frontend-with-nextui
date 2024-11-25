@@ -110,10 +110,11 @@ export const IntroductionSection = ({
             <Button
               className="bg-blue-500 hover:scale-110 w-[300px]"
               radius="full"
+              isDisabled={!artist.is_available}
               size="lg"
               onPress={handleBookPress}
             >
-              Bring Me Onstage
+              {artist.is_available ? "Bring Me Onstage" : "No Schedules Yet"}
             </Button>
           )}
           <div className="flex items-center gap-3">

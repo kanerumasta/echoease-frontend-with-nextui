@@ -155,20 +155,6 @@ export const Navbar = () => {
           )}
       </NavbarContent>
 
-      {!(user?.role === "artist") && !user?.is_roled && user &&(
-      <NavbarContent >
-            <NavbarItem>
-            <Link className="text-white" href={"/become-an-echoee"}>
-              Be an Echoee
-            </Link>
-          </NavbarItem>
-          <NavbarItem>
-            <Link className="text-white" href={`/auth/register/picking-role`}>
-                 Be an Echoer
-            </Link>
-          </NavbarItem>
-      </NavbarContent>        )}
-
       <NavbarContent
         className="basis-1/5 sm:basis-full"
         justify="end"

@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 import { UserSchema } from "./user-schemas";
-const MAX_TOTAL_SIZE = 150 * 1024 * 1024;
+const MAX_TOTAL_SIZE = 250 * 1024 * 1024;
 
 export const GenreOptionSchema = z.object({
   label: z.string(),
@@ -39,7 +39,6 @@ export const ArtistApplicationSchema = z.object({
       required_error: "At least 2 videos are required.",
     })
     .min(2, "Add at least 2 videos.")
-    .max(3, "You can only upload up to 3 videos.")
     .refine(
       (files) => {
         const totalSize = files.reduce((sum, file) => sum + file.size, 0);
@@ -104,6 +103,7 @@ export const ArtistInSchema = z.object({
   is_new: z.boolean(),
   created_at: z.string(),
   updated_at: z.string(),
+  is_available:z.boolean(),
 });
 
 export const CreatePortfolioItemSchema = z

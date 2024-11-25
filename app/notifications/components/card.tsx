@@ -54,7 +54,9 @@ export default function NotificationCard({
     }
   };
 
+
   const handleRedirect = () => {
+    alert(notif.notification_type)
     if (currentUser) {
       alert(notif.notification_type);
       if (notif.notification_type === "application_accepted") {
@@ -66,7 +68,13 @@ export default function NotificationCard({
         notif.booking?.id
           ? router.push(`/echoverse/bookings/${notif.booking?.id}`)
           : router.push(`/echoverse/bookings`);
-      } else {
+      }
+      else if(notif.notification_type.split('_').includes('connection')){
+
+        router.push(`/echoverse/connections`)
+      }
+
+      else {
         router.push(`/bookings/${notif.booking?.id}`);
       }
     }

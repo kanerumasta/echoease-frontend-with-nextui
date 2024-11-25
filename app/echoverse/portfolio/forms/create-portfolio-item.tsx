@@ -128,7 +128,7 @@ export const CreatePortofolioItem = ({ artist }: Props) => {
 
   return (
     <>
-      <Button color="primary" radius="sm" size="lg" onPress={onOpen}>
+      <Button color="primary" className="ml-4 mt-4" radius="sm" size="lg" onPress={onOpen}>
         Add Portfolio
       </Button>
       <Modal

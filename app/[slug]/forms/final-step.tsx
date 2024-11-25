@@ -119,6 +119,7 @@ import { ArtistInSchema } from "@/schemas/artist-schemas";
 import { BookingSchema } from "@/schemas/booking-schemas";
 import { UserSchema } from "@/schemas/user-schemas";
 import { formatTimeTo12Hour } from "@/utils/format-time";
+import { Avatar } from "@nextui-org/avatar";
 
 export const FinalBookingStep = ({
   artist,
@@ -151,13 +152,14 @@ export const FinalBookingStep = ({
           Artist Details
         </h3>
         <div className="flex items-center gap-6">
-          <Image
+          {/* <Image
             alt={`${artist.user.first_name}'s profile`}
             className="rounded-full object-cover border border-gray-700"
             height={90}
             src={artist.user.profile?.profile_image || "/placeholder.png"}
             width={90}
-          />
+          /> */}
+          <Avatar size="lg"  src={artist.user.profile?.profile_image} alt={artist.user.first_name[0]}/>
           <div>
             <p className="text-lg font-medium text-gray-200">
               {artist.user.fullname}
