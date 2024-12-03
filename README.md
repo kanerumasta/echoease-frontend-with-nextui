@@ -1,5 +1,4 @@
-# Next.js & NextUI Template
-ECHOEASE
+#ECHOEASE
 
 ![Alt text](https://github.com/kanerumasta/echoease-frontend-with-nextui/blob/main/cover.png?raw=true)
 
