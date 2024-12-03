@@ -1,4 +1,7 @@
 # Next.js & NextUI Template
+ECHOEASE
+
+![Alt text](https://github.com/kanerumasta/echoease-frontend-with-nextui/blob/main/cover.png?raw=true)
 
 This is a template for creating applications using Next.js 14 (app directory) and NextUI (v2).
 
